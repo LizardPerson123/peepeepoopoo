@@ -541,7 +541,7 @@ class EnergyVodka extends Alcohol {
     })
 
     this.name = "Energy Vodka"
-    this.description = "Gives A Guranteed Live Next Turn"
+    this.description = "Gives A Guranteed Live For The Next Two Turns; But With A Risk Of Getting A Heart Attack And Losing A Lot Of Health"
     this.img = "energyvodka.png"
   }
 
@@ -656,7 +656,7 @@ class Player {
   }
 
   //Used here so that host and plebs can display results at the same time, this is for host
-  async multiplayerTurn(nextTurn, turn) {
+  async multiplayerTurn(playerIndex, turn) {
     getById("wheel").src = "images/wheel.png"
     dontTurnWheel = false
 
@@ -686,6 +686,8 @@ class Player {
         typeObj: "multiplayerAlcohol"
       }
     }
+
+    let nextTurn = players.getAlivePlayers()[players.getAlivePlayers().indexOf(players[playerIndex]) + 1] || players.getAlivePlayers()[0]
     
     await broadcast(JSON.stringify({
       code: 1,
@@ -693,7 +695,7 @@ class Player {
       result: result,
       playerDamaged: playerDamaged,
       msg: msg,
-      nextTurn: nextTurn,
+      nextTurn: nextTurn.name,
       hp: hp,
       effects: effects,
       activeAlcohol: activeAlcohol,
@@ -874,7 +876,7 @@ class FratBro extends Player {
 
     if (name == "pleb") {name = undefined}
   
-    super("Frat Bro " + (name || names[chosenName]))
+    super((name || "Frat Bro " + names[chosenName]))
     this.type = "FratBro"
     this.playerToNotAttack = playerToNotAttack
   }
