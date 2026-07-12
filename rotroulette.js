@@ -507,13 +507,13 @@ class IPA extends Alcohol {
   oname = "IPA"
 }
 
-class EnergyVodka extends Alcohol {
+class EnergyBeer extends Alcohol {
   constructor() {
     const turns = 1
     super(turns, function onUse(player, turns) {
       turns--
 
-      const msg = "Guranteed Live For 2 Turns"
+      const msg = "Guranteed Live For 2 Turns, But With A Risk Of Heart Attack"
       const effect = this.AlcoholEffect
       return [turns, msg, effect]
     })
@@ -540,12 +540,12 @@ class EnergyVodka extends Alcohol {
       return [newShootResult, msg]
     })
 
-    this.name = "Energy Vodka"
+    this.name = "Energy Beer"
     this.description = "Gives A Guranteed Live For The Next Two Turns; But With A Risk Of Getting A Heart Attack And Losing A Lot Of Health"
-    this.img = "energyvodka.png"
+    this.img = "energybeer.png"
   }
 
-  oname = "EnergyVodka"
+  oname = "EnergyBeer"
 }
 
 class Effect {
@@ -910,4 +910,4 @@ class FratBro extends Player {
   }
 }
 
-let AlcoholTypes = [Beer, Vodka, Whiskey, Gin, Red_Wine, White_Wine, Tequila, Brandy, MoonShine, Seltzer, IPA, EnergyVodka]
+let AlcoholTypes = [Beer, Vodka, Whiskey, Gin, Red_Wine, White_Wine, Tequila, Brandy, MoonShine, Seltzer, IPA, EnergyBeer]
