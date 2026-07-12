@@ -1,0 +1,68 @@
+#game {
+  justify-content: center;
+  gap: 5px;
+  display: none
+}
+
+#players, #messages {
+  flex-direction: column;
+}
+
+#lives {
+  display: flex;
+}
+
+#imgMode {top: 0px;}
+
+#statusEffects, #players, #events, #centerThing, #lives, #messages {overflow: scroll; border: solid;}
+
+.startButton {color: black;}
+
+@media screen and (max-width: 800px) {
+  #game {
+    flex-direction: column;
+    justify-content: space-evenly;
+    height: 100vh;
+  }
+
+  #lives {display: none;}
+
+  #statusEffects {
+    height: 15vh;
+    order: 2;
+  }
+
+  #players {order: 1;}
+
+  #events {order: 4;}
+
+  #centerThing {order: 3;}
+
+  #players {
+    flex-direction: row;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  #playerText {
+    display: none;
+  }
+
+  #buttons, #alcoholButtons, #shootButtons {
+    margin-bottom: 5px;
+  }
+
+  #statusEffects, #players, #events, #centerThing, #lives, #messages {border: none; border-top: solid; border-bottom: solid;}
+}
+
+@media screen and (max-width: 500px) {
+  #imgMode {
+    bottom: 0px;
+    top: auto;
+  }
+}
+
+@media (hover: hover) {
+  #achiLists div:hover {opacity: 0.8;}
+}

@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rotting Roulette</title>
+  <link rel="stylesheet" href="main.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Dancing+Script:wght@400..700&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playwrite+HU:wght@100..400&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/icon-x" href="favicon.ico">
+
+  <style>
+    * { font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; text-align: center;}
+
+    .startGameButton, #whatDoing, #new, #join, #startMultiplayer {color: black;}
+    
+    .playerOption {
+      border: none;
+      color: white;
+      background-color: black;
+      padding: 10px;
+      font-size: 15px;
+    }
+
+    #showMsgButton {
+      color: black;
+    }
+
+    @media (hover: hover){
+      button:hover {
+        opacity: 0.7;
+        cursor: pointer;
+      }
+
+      #imgMode:hover {
+        opacity: 0.7;
+        cursor: pointer;
+      }
+
+      .hoverTransparent:hover {opacity: 0.7;}
+    }
+
+    #start {
+      font-size: 2em;
+      background-color: #a434eb;
+      border: none;
+      border-radius: 5px;
+      padding: 0.3em;
+      padding-left: 0.8em;
+      padding-right: 0.8em;
+    }
+
+    #statusEffects::-webkit-scrollbar, #players::-webkit-scrollbar, #events::-webkit-scrollbar, #centerThing::-webkit-scrollbar, #lives::-webkit-scrollbar, #messages::-webkit-scrollbar {
+      display: none;
+    }
+  </style>
+
+  <style id="modeStyle"></style>
+  <script src="utility.js"></script>
+  <script src="modesStyle.js"></script>
+
+  <script>
+    let currentMode = "new"
+    let thisPlayer
+    let gameDisplay = "grid"
+    let gameMode = "normal"
+    let localMultiplayer = false
+    let peopleNum
+    let alcoholUsed = []
+
+    async function startGame() {
+      achi.register("Play Rotting Roulette", "bronze")
+
+      turnWheel()
+
+      getById("game").style.display = "grid"
+      getById("startGame").style.display = "none"
+
+      handlePhoneDisplays()
+
+      thisPlayer = "Player"
+
+      players.push(new Human("Player"))
+
+      if (localMultiplayer) {
+        let num = numberOfPeoplePlaying()
+        peopleNum = num
+
+        for (let i = 2; i <= num; i++) {
+          players.push(new Human("Person " + i))
+        }
+      }
+      else if (gameMode == "5players") {
+        players.push(new Bot("CPU 1"))
+        players.push(new Bot("CPU 2"))
+        players.push(new Bot("CPU 3"))
+        players.push(new Bot("CPU 4"))
+      }
+      else {
+        players.push(new Bot("CPU 1"))
+        players.push(new Bot("CPU 2"))
+      }
+
+      for (let i = 1; i <= 3; i++) {
+        let alcoholNum = getRndInt(0, AlcoholTypes.length)
+
+        let alcohol = AlcoholTypes[alcoholNum]
+
+        gameAlcohol.push(alcohol)
+
+        removeItem(AlcoholTypes, alcohol)
+      }
+
+      updatePlayers()
+
+      bulletList.generateNew(100)
+
+      if (localMultiplayer) {await firstAlcoholLocalMultiplayer()
+      }
+      else {await firstAlcoholSingleplayer()}
+
+      let turns = 0
+
+      while (true) {
+        turns++
+        // For Achievement
+        let numberOfPeopleWithOneHeart = 0
+        players.forEach(function(player) {
+          if (player.hp == 1) {numberOfPeopleWithOneHeart++}
+        })
+
+        if (numberOfPeopleWithOneHeart == 2 && players.getAlivePlayers().length == 2 && !localMultiplayer) {achi.register("Showdown", "silver")}
+
+        for (let i = 0; i < players.length; i++) {
+          if (localMultiplayer) {
+            thisPlayer = players[i].name
+
+            let status = getById("statusEffects")
+            status.innerHTML = "<h1>Alcohol</h1>"
+
+            players[i].activeAlcohol.forEach(function(alcohol) {
+              status.innerHTML += `<p onclick='displayAlcoholInfo("${alcohol.name}", "${alcohol.description}", "${alcohol.img}")' id='alcohol${alcohol.id}' style="font-size: 2em; margin-top: 1px; margin-bottom: 0px; cursor: pointer">${alcohol.name}</p>`
+            })
+          
+            getById("lifeImage").innerHTML = ""
+            for (let x = 1; x <= players[i].hp; x++) {
+              getById("lifeImage").innerHTML += '<img width="50em" src="images/life.png">'
+            }
+          }
+
+          await players[i].turn()
+
+          if (localMultiplayer) {
+            length = players.filter(function(player){
+              return (player.hp < 1)
+            }).length
+
+            if (length == peopleNum - 1) {
+              players.forEach(function(player) {
+                if (player.hp > 0) {
+                  alert(player.name + " Wins")
+                  reload()
+                }
+              })
+            }
+            continue
+          }
+
+          let playersAlive = 0
+          players.forEach(function(player) {
+            if (player.hp > 0) {
+              playersAlive++
+            }
+          })
+
+          if (playersAlive == players.length - 1 && gameMode == "survival") {
+            alert("You Survived " + turns + " Turns")
+            reload()
+          }
+       
+          if (players[0].hp < 1) {
+            let allUsed = checkIfAllAlcoholUsed()
+
+            if (allUsed == "None Used") {achi.laterRegi("Sober", "silver")}
+            else if (allUsed) {achi.laterRegi("Alcoholic", "silver")}
+ 
+            alert("You Lose")
+
+            achi.laterRegi("Lose Rotting Roulette", "bronze")
+
+            if (localStorage.getItem("username")) {
+              document.querySelector("body").innerText = "Please Wait..."
+
+              try {
+                await fetch("https://api.rottingpears.com/xp", {
+                  method: "POST",
+                  body: JSON.stringify({
+                    n: localStorage.getItem("username"),
+                    p: localStorage.getItem("password"),
+                    t: 0
+                  }),
+                  headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                  }
+                })
+              }
+              catch {}
+            }
+
+            reload()
+          }
+
+          else if (playersAlive == 1) {
+            alert("You Win")
+            achi.laterRegi("Win Rotting Roulette", "bronze")
+
+            if (i < 10) {achi.laterRegi("Accelerated Alcoholism", "gold")}
+
+            if (gameMode == "insane") {achi.laterRegi("Beat Insane Mode", "silver")}
+
+            let allUsed = checkIfAllAlcoholUsed()
+
+            if (allUsed == "None Used") {achi.laterRegi("Sober", "silver")}
+            else if (allUsed) {achi.laterRegi("Alcoholic", "silver")}
+
+            if (localStorage.getItem("username")) {
+              document.querySelector("body").innerText = "Please Wait..."
+              
+              try {
+                await fetch("https://api.rottingpears.com/xp", {
+                  method: "POST",
+                  body: JSON.stringify({
+                    n: localStorage.getItem("username"),
+                    p: localStorage.getItem("password"),
+                    t: 1
+                  }),
+                  headers: {
+                    "Content-type": "application/json; charset=UTF-8"
+                  }
+                })
+              }
+              catch {}
+            }
+
+            reload()
+          }
+        }
+      }
+
+    }
+    
+    //recursive
+    function numberOfPeoplePlaying() {
+      let num = prompt("How Many People Are Playing?")
+      num = Number(num)
+
+      if (!num) {
+        alert("Not A Number")
+      }
+      else if (num < 2) {
+        alert("Must Be At Least 2 People")
+      }
+      else if (num > 5) {
+        alert("Cannot Be More Than 5 People")
+      }
+      else {
+        return num
+      }
+
+      return numberOfPeoplePlaying()
+    }
+
+    function checkIfAllAlcoholUsed() {
+      // Also Checks If No Alcohol Was Used
+      // This Is For Achievements
+      let alcoholUsedNum = 0
+      gameAlcohol.forEach(function(alcohol) {
+        alcohol = new alcohol()
+        if (alcoholUsed.includes(alcohol.name)) {alcoholUsedNum++}
+      })
+
+      if (alcoholUsedNum == gameAlcohol.length) {return true}
+      else if (alcoholUsedNum == 0) {return "None Used"}
+      else {return false}
+    }
+    
+    //Code For User Selecting Starting Alcohol (Messy Code, Could Use For Loop Instead Of Function)
+    async function firstAlcohol() {
+      return new Promise(function(resolve) {
+        getById("wheelDiv").style.display = "none"
+        getById("firstAlcohol").style.display = "block"
+
+        function clickDecision(num) {
+          let alcohol
+
+          //try catch for multiplayer compatability
+          try {
+           alcohol = new gameAlcohol[num - 1]()
+          }
+          catch(e) {alcohol = gameAlcohol[num - 1]}
+
+          getById("op" + num).innerText = alcohol.name
+          getById("op" + num + "Img").src = "images/" + alcohol.img
+          getById("op" + num + "Desc").innerText = alcohol.description
+          getById("op" + num + "Div").addEventListener("click", function a() {
+            getById("statusEffects").innerHTML +=  `<p onclick='displayAlcoholInfo("${alcohol.name}", "${alcohol.description}", "${alcohol.img}")' id='alcohol${alcohol.id}' style="font-size: 2em; margin-top: 1px; margin-bottom: 0px; cursor: pointer">${alcohol.name}</p>`
+            getById("firstAlcohol").style.display = "none"
+            getById("wheelDiv").style.display = "block"
+
+            resolve([alcohol, num-1])
+
+            //Cleanup
+            let n1 = getById("op" + 1 + "Div").cloneNode(true)
+            let n2 = getById("op" + 2 + "Div").cloneNode(true)
+            let n3 = getById("op" + 3 + "Div").cloneNode(true)
+
+            getById("op" + 1 + "Div").remove()
+            getById("op" + 2 + "Div").remove()
+            getById("op" + 3 + "Div").remove()
+
+            getById("alcoholSelection").appendChild(n1)
+            getById("alcoholSelection").appendChild(n2)
+            getById("alcoholSelection").appendChild(n3)
+          })
+        }
+
+        clickDecision(1)
+        clickDecision(2)
+        clickDecision(3)
+      })
+    }
+    
+    //Specifically used in singleplayer
+    async function firstAlcoholSingleplayer() {
+      let [alcohol, num] = await firstAlcohol()
+
+      players[0].activeAlcohol.push(alcohol)
+      alcohol.startEffect(this, this)
+
+      players[1].activeAlcohol.push(new gameAlcohol[getRndInt(0, 3)])
+      players[2].activeAlcohol.push(new gameAlcohol[getRndInt(0, 3)])
+    }
+
+    async function firstAlcoholLocalMultiplayer() {
+      let status = getById("statusEffects")
+      let chooseAlcohol = getById("chooseAlcohol")
+      
+      for (let i = 0; i < peopleNum; i++) {
+        chooseAlcohol.innerHTML = `Player ${i+1}, Choose Alcohol`
+        let [alcohol, num] = await firstAlcohol()
+        status.innerHTML = "<h1>Alcohol</h1>"
+
+        players[i].activeAlcohol.push(alcohol)
+        alcohol.startEffect(players[i], players[i])
+      }
+    }
+
+    function multiplayer() {
+      getById("startGame").style.display = "none"
+      getById("multiplayerMenu").style.display = "flex"
+
+      getById("username").value = localStorage.getItem("username") || ""
+      getById("password").value = localStorage.getItem("password") || ""
+      getById("sessionCode").value = ""
+
+      getById("new").addEventListener("click", function a() {
+        currentMode = "new"
+        getById("sessionCode").style.display = "none"
+        getById("sessionCodeText").style.display = "none"
+        getById("whatDoing").innerText = "Creating New Session"
+
+        getById("new").style.display = "none"
+        getById("join").style.display = "inline"
+      })
+
+      getById("join").addEventListener("click", function b() {
+        currentMode = "join"
+        getById("sessionCode").style.display = "block"
+        getById("sessionCodeText").style.display = "block"
+        getById("whatDoing").innerText = "Joining Session"
+
+        getById("join").style.display = "none"
+        getById("new").style.display = "inline"
+      })
+
+      getById("startMultiplayer").addEventListener("click", function() {
+        ws = new WebSocket("wss://api.rottingpears.com/")
+
+        ws.onmessage = function () {
+          let username = getById("username").value
+          thisPlayer = username
+          let password = getById("password").value
+          let sessionCode = getById("sessionCode").value
+
+          if (username.length < 1 || password.length < 1) {
+            alert("Username And Password Must Not Be Blank")
+          }
+          else if (currentMode == "join") {
+            if (sessionCode.length < 5) {
+              alert("Session Code Must Be 5 Characters Long")
+            }
+            else {
+              joinSession(username, password, sessionCode)
+            }
+          }
+          else {
+            newSession(username, password)
+          }
+
+          localStorage.setItem("username", username)
+          localStorage.setItem("password", password)
+        }
+
+        ws.onclose = function() {
+          alert("Connection Disrupted")
+          reload()
+        }
+      })
+    }
+
+    function updatePlayers() {
+      getById("innerPlayers").innerHTML = ""
+      players.forEach(player => {
+        getById("innerPlayers").innerHTML += `
+          <div id='${player.id}Div'>
+            <p style='margin-bottom: 3px' id='${player.id}Name'>${player.name}</p>
+
+            <div id='${player.id}Effects'>
+
+            </div>
+
+            <div style='margin-bottom: 0px' id='${player.id}LifeImages'>
+              <img src='images/life.png' style='image-rendering: pixelated;'>
+              <img src='images/life.png' style='image-rendering: pixelated;'>
+              <img src='images/life.png' style='image-rendering: pixelated;'>
+            </div>
+          </div>
+        `
+      });
+    }
+
+    function addPlayer(player) {
+      getById("innerPlayers").innerHTML += `
+          <div id='${player.id}Div'>
+            <p style='margin-bottom: 3px' id='${player.id}Name'>${player.name}</p>
+
+            <div id='${player.id}Effects'>
+
+            </div>
+
+            <div style='margin-bottom: 0px' id='${player.id}LifeImages'>
+              <img src='images/life.png' style='image-rendering: pixelated;'>
+              <img src='images/life.png' style='image-rendering: pixelated;'>
+              <img src='images/life.png' style='image-rendering: pixelated;'>
+            </div>
+          </div>
+        `
+    }
+  </script>
+
+  <script>
+    window.addEventListener("pageshow", function() {
+      const urlParams = new URLSearchParams(window.location.search)
+      const origin = urlParams.get('origin')
+
+      if (origin == "rotpear") {howToPlay(); getById("back").onclick = () => {window.location.href = "../index.html"}}
+      else if (origin == "about") {howToPlay(); getById("back").onclick = () => {window.location.href = "../about.html"}}
+    })
+  </script>
+</head>
+<body>
+  <div id="achiLists" style="position: absolute; top: 20px; right: 0px; display: flex; flex-direction: column; gap: 20px">
+
+  </div>
+  <div id="game" style="grid-template-columns: 19vw 19vw 19vw 19vw 19vw; grid-template-rows: 19vh 19vh 19vh 19vh 19vh; align-content: center;">
+    <div id="lives" style="grid-area: 1/1/1/1; align-items: center; justify-content: center;">
+      <div id="lifeImage" style="display: flex; justify-content: center; image-rendering: pixelated; align-items: center;">
+        <img width="50em" src="images/life.png">
+        <img width="50em" src="images/life.png">
+        <img width="50em"  src="images/life.png">
+      </div>
+      
+    </div>
+
+    <div style="grid-area: 2/1/5/1;" id="statusEffects">
+      <h1>Alcohol</h1>
+    </div>
+
+    <div id="centerThing" style="grid-area: 1/2/5/5; display: flex; align-items: center; justify-content: center; position: relative;" >
+      <div id="wheelDiv" style="width: 80%; height: 80%; display: none; overflow: hidden;">
+        <img width="100%" height="100%" src="images/wheel.png" style="object-fit: contain; image-rendering: pixelated" id="wheel">
+      </div>
+
+      <div style="width: 100%;" id="firstAlcohol">
+        <h1 id="chooseAlcohol" style="margin-bottom: 2em;">Choose Alcohol</h1>
+        <div style="display: flex; justify-content: space-evenly; width: 100%;" id="alcoholSelection">
+          <div class="hoverTransparent" id="op1Div" style="width: 100%;">
+            <img id="op1Img" width="100%" class="startImage" style="image-rendering: pixelated;" src="images/alcohol.png">
+            <p id="op1" style="font-size: 1.5em;">One</p>
+            <p id="op1Desc"></p>
+          </div>
+
+          <div class="hoverTransparent" id="op2Div" style="width: 100%;">
+            <img id="op2Img" class="startImage" width="100%" style="image-rendering: pixelated;" src="images/alcohol.png">
+            <p id="op2" style="font-size: 1.5em;">Two</p>
+            <p id="op2Desc"></p>
+          </div>
+
+          <div class="hoverTransparent" id="op3Div" style="width: 100%;">
+            <img id="op3Img" class="startImage" width="100%" style="image-rendering: pixelated;" src="images/alcohol.png">
+            <p id="op3" style="font-size: 1.5em;">Three</p>
+            <p id="op3Desc"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="events" style="grid-area: 5/1/5/6; display: flex; flex-direction: column; align-items: center; width: 100%;">
+      <h1 style="margin-bottom: 0px;" id="eventHeader">Events</h1>
+      <p id="event" style="font-size: 2em; margin-top: 1px; margin-bottom: 5px;">Waiting For Game To Start...</p>
+
+      <div id="buttons" style="display: none;">
+        <button class="playerOption" id="shootButton" style="display: flex; align-items: center; margin-right: 2px;">
+          <img src="images/itsagun.png" style="margin-right: 3px; image-rendering: pixelated; cursor: pointer; background-color: transparent;">
+          Shoot Someone
+        </button>
+
+        <button class="playerOption" id="alcoholButton" style="display: flex; align-items: center;">
+          <img src="images/alcohol.png" style="margin-right: 2px; image-rendering: pixelated; background-color: transparent;">
+          Alcohol
+        </button>
+      </div>
+
+      <div id="alcoholButtons">
+        
+      </div>
+
+      <div id="shootButtons">
+        
+      </div>
+    </div>
+
+    <div style="grid-area: 1/5/5/5; display: flex;" id="players">
+      <h1 id="playerText">Players</h1>
+
+      <button id="showMsgButton" style="width: 70%; align-self: center; padding: none; font-size: 1.5em; border: solid; display: none;" onclick="getById('players').style.display = 'none'; getById('messages').style.display = 'flex'">Messages</button>
+
+      <p style="display: none;" id="msgPreview"><span style="color: gray;">Example</span> Hello World!</p>
+
+      <div id="innerPlayers"></div>
+    </div>
+
+    <div style="grid-area: 1/5/5/5; display: none; position: relative;" id="messages">
+      <div id="messageDiv" style="overflow: scroll; height: 70%;">
+        <h1>Players</h1>
+
+        <p><span style="color: gray;">Example</span> Hello World!</p>
+      </div>
+
+      <div style="display: flex; flex-direction: column; position: absolute; bottom: 0px; align-items: center; width: 100%; margin-bottom: 10px;">
+        <input style="border: solid; width: 90%; font-size: 1.2em;" id="textMsgInput">
+        <button class="playerOption" style="width: 90%; margin-top: 10px;" onclick="sendMessage()">Send Message</button>
+        <button class="playerOption" style="width: 90%; margin-top: 10px;" onclick="getById('messages').style.display = 'none'; getById('players').style.display = 'flex'">Go Back</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="startGame" style="display: flex; flex-direction: column; align-items: center; height: 40vh; justify-content: space-between;">
+   <div>
+    <h1 style="margin-bottom: 0px; font-size: 5em; margin-top: 0px; font-family: 'Papyrus';">Rotting</h1>
+    <h1 style="font-size: 4em; margin-top: -15px; font-family: 'Playwrite HU';">Roulette</h1>
+   </div>
+
+   <div id="buttonSet1">
+     <button style="justify-items: center; border: solid; width: 10em; font-size: 2em; font-family: cursive; background-color: rgba(0, 0, 0, 0.0); margin-bottom: 8px; display: block;" onclick="getById('buttonSet1').style.display = 'none'; getById('buttonSet2').style.display = 'block'" class="startGameButton">Singleplayer</button>
+     <button style="justify-items: center; border: solid; width: 10em; font-size: 2em; font-family: cursive; background-color: rgba(0, 0, 0, 0.0); margin-top: 0px; margin-bottom: 8px;" onclick="getById('buttonSet1').style.display = 'none'; getById('buttonSet3').style.display = 'block'" class="startGameButton">Multiplayer</button>
+     <button style="justify-items: center; border: solid; width: 10em; font-size: 2em; font-family: cursive; background-color: rgba(0, 0, 0, 0.0); margin-top: 0px; display: block; margin-bottom: 8px;" onclick="howToPlay()" class="startGameButton">How To Play</button>
+   </div>
+
+   <div id="buttonSet2" style="display: none;">
+     <button style="justify-items: center; border: solid; width: 10em; font-size: 2em; font-family: cursive; background-color: rgba(0, 0, 0, 0.0); margin-bottom: 8px; display: block;" onclick="startGame()" class="startGameButton">Normal Mode</button>
+     <button style="justify-items: center; border: solid; width: 10em; font-size: 2em; font-family: cursive; background-color: rgba(0, 0, 0, 0.0); color: #FF073A; margin-top: 0px; margin-bottom: 8px; display: block;" onclick="gameMode = 'insane'; startGame()" class="startGameButton">Insane Mode</button>
+     <button id="5p" style="justify-items: center; border: solid; width: 10em; font-size: 2em; font-family: cursive; background-color: rgba(0, 0, 0, 0.0); margin-top: 0px; margin-bottom: 8px; display: block; color: blue;" onclick="gameMode = '5players'; startGame()" class="startGameButton">5 Players</button>
+     <button style="justify-items: center; border: solid; width: 10em; font-size: 2em; font-family: cursive; background-color: rgba(0, 0, 0, 0.0); margin-top: 0px; margin-bottom: 8px; display: block; color: orange;" onclick="gameMode = 'survival'; startGame()" class="startGameButton">Survival</button>
+   </div>
+
+   <div id="buttonSet3" style="display: none;">
+     <button style="justify-items: center; border: solid; width: 10em; font-size: 2em; font-family: cursive; background-color: rgba(0, 0, 0, 0.0); margin-bottom: 8px; display: block;" onclick="getById('buttonSet3').style.display = 'none'; getById('buttonSet2').style.display = 'block'; getById('5p').style.display = 'none'; localMultiplayer = true" class="startGameButton">Local</button>
+     <button style="justify-items: center; border: solid; width: 10em; font-size: 2em; font-family: cursive; background-color: rgba(0, 0, 0, 0.0); margin-top: 0px; margin-bottom: 8px;" onclick="multiplayer()" class="startGameButton">Online</button>
+   </div>
+
+   <img id="imgMode" src="moon.svg" style="position: absolute; right: 10px;" width="100px" onclick="changeMode();">
+  </div>
+
+  <div id="alcoholInfo" style="display: none;">
+    <img width="150em" id="alcoholImg" style="image-rendering: pixelated;" src="images/alcohol.png"/>
+    <h1 id="name">Generic</h1>
+
+    <p id="description" style="font-size: 1.5em;">Alcohol Gives An Effect To A Person</p>
+
+    <button class="playerOption" onclick="goBack()">Go Back</button>
+  </div>
+
+  <div id="aboutGame" style="display: none;">
+    <h1>How To Play</h1>
+    <button id="back" class="playerOption" onclick="goBackHelp()">Go Back</button>
+
+    <h2>Basics</h2>
+
+    <p style="font-size: 1.5em; margin-bottom: 5px;">Rotting Roulette Is A Game Where The Players Try To Kill All Other Players By Shooting Them</p>
+    <p style="font-size: 1.5em; margin-top: 0em;">Each Player Has 3 HP</p>
+
+    <p style="margin-top: 3em; font-size: 1.5em; margin-bottom: 5px;">During Your Turn You Choose Who To Shoot</p>
+    <p style="font-size: 1.5em; margin-top: 0em;">When You Choose Who To Shoot, There Will Be Three Outcomes</p>
+
+    <p style="font-size: 1.5em; margin-top: 2em; margin-bottom: 5px;">Blank - Nothing Happens</p>
+    <p style="font-size: 1.5em; margin-top: 0em; margin-bottom: 5px;">Live - They Lose 1 HP</p>
+    <p style="font-size: 1.5em; margin-top: 0em;">Alcohol - They Get An Alcohol</p>
+
+    <h2 style="margin-top: 3em;">Alcohol</h2>
+    
+    <p style="font-size: 1.5em; margin-bottom: 5px;">When A Bullet Is Shot By You Or An Opponent It Has A Chance Of Being Alcohol, This Applies To Shooting Yourself Too.</p>
+    <p style="font-size: 1.5em; margin-top: 0em; margin-bottom: 5px;">For Information On A Type Of Alcohol, Click On The Alcohol In Your Inventory</p>
+
+    <h2 style="margin-top: 3em;">Insane Mode</h2>
+    <p style="font-size: 1.5em; margin-bottom: 5px;">In Insane Mode, Every Bullet Has A 50/50 Chance Of Being Live Or Alcohol</p>
+
+    <h2 style="margin-top: 3em;">5 Players</h2>
+    <p style="font-size: 1.5em; margin-bottom: 5px;">In 5 Players, There Are 5 Players (You And 4 CPUs)</p>
+
+    <h2 style="margin-top: 3em;">Survival</h2>
+    <p style="font-size: 1.5em; margin-bottom: 5px;">In Survival, You Have To Go As Long As Possible Without Anyone Dying</p>
+  </div>
+
+  <div id="multiplayerMenu" style="display: none; flex-direction: column; width: 100%; align-items: center;">
+      <h1 style="margin-bottom: 10px;">Multiplayer</h1>
+      <h2 style="margin-bottom: 0.7em; margin-top: 5px;" id="whatDoing">Creating New Session</h2>
+      <div>
+        <input type="button" id="new" name="joinOrNew" value="New Session" style="display: none; margin-bottom: 30px; border: solid; background: none; font-size: 1.5em;">
+        <input type="button" id="join" name="joinOrNew" value="Join Session" style="margin-bottom: 30px; border: solid; background: none; font-size: 1.5em;"><br>
+      </div>
+      <label for="username" style="font-size: 1.5em; margin-bottom: 10px;">Username:</label><br>
+      <input type="text" id="username" name="username" style="width: 60%; border: solid; margin-bottom: 2em; border-radius: 1.5em; font-size: 1.5em; padding-top: 10px; padding-bottom: 10px;"><br>
+      <label for="password" style="font-size: 1.5em; margin-bottom: 10px;">Password:</label><br>
+      <input type="text" id="password" name="password" style="width: 60%; border: solid; margin-bottom: 2em; border-radius: 1.5em; font-size: 1.5em; padding-top: 10px; padding-bottom: 10px;"><br>
+
+      <label for="sessionCode" style="font-size: 1.5em; display: none; margin-bottom: 10px;" id="sessionCodeText">Session Code:</label><br>
+      <input type="text" id="sessionCode" name="sessionCode" style="width: 60%; border: solid; margin-bottom: 2em; border-radius: 1.5em; font-size: 1.5em; display: none; padding-top: 10px; padding-bottom: 10px;" onkeypress="return isNumberKey(event)"><br>
+
+      <button style="font-size: 2em; padding-left: 50px; padding-right: 50px; margin-top: 1.5em; border: solid; background: none;" id="startMultiplayer">Start</button>
+  </div>
+
+  <div style="display: none;" id="multiplayerNewMenu">
+    <h1>Multiplayer</h1>
+    <h2 id="status"></h2>
+    <button style="margin-bottom: 20px; display: none;" class="playerOption" onclick="getById('beginGameButton').style.display = 'none'; getById('multiplayerButton2').style.display = 'inline-block'; getById('multiplayerButton3').style.display = 'inline-block'; getById('multiplayerButton4').style.display = 'inline-block'" id="beginGameButton">Start Game</button>
+    <button style="margin-bottom: 20px; display: none;" class="playerOption" onclick="beginGameHost()" id="multiplayerButton2">Normal Mode</button>
+    <button style="margin-bottom: 20px; display: none; color: rgb(255, 0, 0);" class="playerOption" onclick="gameMode = 'insane'; beginGameHost()" id="multiplayerButton3">Insane Mode</button>
+    <button style="margin-bottom: 20px; display: none; color: orange;" class="playerOption" onclick="gameMode = 'survival'; beginGameHost()" id="multiplayerButton4">Survival</button>
+    <div style="padding-top: 0.5em; padding-bottom: 1em; border: solid;" id="usernames">
+      <h2 style="font-size: 1.7em;">Players</h2>
+    </div>
+  </div>
+
+  <div style="display: none;" id="multiplayerJoin">
+    <h1>Waiting To Start...</h1>
+    <h2 id="host"></h1>
+    <div style="padding-top: 0.5em; padding-bottom: 1em; border: solid;" id="usernames2">
+      <h2 style="font-size: 1.7em;">Players</h2>
+    </div>
+  </div>
+  
+  <div style="display: none; width: 100%; height: 100%; flex-direction: column;" id="messages2">
+      <div id="messageDiv2" style="overflow: scroll;">
+        <h1>Players</h1>
+
+        <p><span style="color: gray;">Example</span> Hello World!</p>
+      </div>
+
+      <div style="display: flex; flex-direction: column; align-items: center; width: 100%; margin-bottom: 10px;">
+        <input style="border: solid; width: 90%; font-size: 1.2em;" id="textMsgInput2">
+        <button class="playerOption" style="width: 90%; margin-top: 10px;" onclick="sendMessage()">Send Message</button>
+        <button class="playerOption" style="width: 90%; margin-top: 10px;" onclick="getById('messages2').style.display = 'none'; getById('players').style.display = 'flex'; getById('game').style.display = gameDisplay">Go Back</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="rotroulette.js"></script>
+  <script src="displaystuff.js"></script>
+  <script src="rottingextensions.js"></script>
+  <script src="multiplayer/host.js"></script>
+  <script src="multiplayer/pleb.js"></script>
+  <script src="multiplayer/pearnet.js"></script>
+</body>
+</html>

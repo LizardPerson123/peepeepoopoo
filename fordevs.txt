@@ -1,0 +1,13 @@
+I sincerly apologize for how utterly garbage some of the code here is
+
+A Couple Of Notes
+  multiplayerContext is used by plebs to give host info about who they are attacking
+  AND it is used to run pleb-specific code
+
+  A lot of this code returns lists, which in retrospect, was a bad idea (would have been better to use data dictionaries)
+
+  This code resizes on mobile, using javascript (should have used css for it, not sure why I didn't, will change at some point)
+
+  Wheel Turns At 40 Frames Per Second
+
+  In Multiplayer, players[0] is host
