@@ -689,7 +689,7 @@ class Player {
       }
     }
 
-    let nextTurn = players.getAlivePlayers()[players.getAlivePlayers().indexOf(players[playerIndex]) + 1] || players.getAlivePlayers()[0]
+    let nextTurn = players.getAlivePlayers()[players.getAlivePlayers().indexOf(players[players.indexOf(this)]) + 1] || players.getAlivePlayers()[0]
     
     await broadcast(JSON.stringify({
       code: 1,
