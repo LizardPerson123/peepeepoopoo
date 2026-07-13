@@ -3,6 +3,9 @@ const players = []
 let clickEvents = []
 let resolveFunc
 let gameAlcohol = []
+let names = ["Dan", "Dave", "Derick", "Dustin", "Darlineeee", "Elizabeth", "Eggbert", "Egg", "Gorbachev", "Benjamin", "Anita", "Emily", "Boris Moris",
+       "Gerald", "Doug", "Doctor"
+]
 
 let currentBlankChance = 13
 let currentLiveChance = 4
@@ -524,7 +527,6 @@ class EnergyBeer extends Alcohol {
 
     this.AlcoholEffect = new Effect(effectMsg, effectTurns, onDamage, function onShoot(player, result) {
       let heartAttack = getRndInt(0, 3) == 0
-      alert(heartAttack)
       if (heartAttack) {
         if (player.hp == 1) {player.damage(1)}
         while (player.hp > 1) {
@@ -868,10 +870,6 @@ class MultiplayerHuman extends Player {
 
 class FratBro extends Player {
   constructor(playerToNotAttack, name) {
-    let names = ["Dan", "Dave", "Derick", "Dustin", "Darlineeee", "Elizabeth", "Eggbert", "Egg", "Gorbachev", "Benjamin", "Anita", "Emily", "Boris Moris",
-       "Gerald", "Doug", "Doctor"
-    ]
-
     let chosenName = getRndInt(0, names.length)
 
     if (name == "pleb") {name = undefined}
