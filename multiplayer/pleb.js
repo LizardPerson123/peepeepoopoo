@@ -178,11 +178,16 @@ async function beginGamePleb() {
         
         if (player.alcoholEffects.sort().join(",") != msg.effects[player.name].sort().join(",")) {
           player.removeEffects()
-
+          players[players.indexOf(player)].confused = false
           players[players.indexOf(player)].alcoholEffects = msg.effects[player.name]
+          
           player.alcoholEffects.forEach(function(alcoholEffect) {
             players[players.indexOf(player)].alcoholEffects.push(alcoholEffect)
             getById(`${player.id}Effects`).innerHTML += `<p style='margin-top: 0px; margin-bottom: 2px' id='${alcoholEffect.id}Effect'>${alcoholEffect.name}</p>`
+
+            if (player.name == thisPlayer && alcoholEffect.name == "Confusion") {
+              players[players.indexOf(player)].confused = true
+            }
           })
         }
 
