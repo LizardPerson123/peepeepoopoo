@@ -407,13 +407,13 @@ function keyPressSendMessage() {
 
 function handlePhoneDisplays() {
   //This Can, (And Should), Be Converted To A Css Media Query
-  if (window.innerWidth < 800) {
+  if (window.innerWidth < 750) {
     getById("game").style.display = "flex"
     gameDisplay = "flex"
   }
 
   function manage() {
-    if (window.innerWidth < 800) {
+    if (window.innerWidth < 750) {
       getById("game").style.display = "flex"
       gameDisplay = "flex"
 
