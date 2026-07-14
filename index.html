@@ -104,13 +104,12 @@
       }
 
       for (let i = 1; i <= 3; i++) {
-        let alcoholNum = getRndInt(0, AlcoholTypes.length)
+        if (localMultiplayer) {
+          addAlcoholLocalMultiplayer()
+          continue
+        }
 
-        let alcohol = AlcoholTypes[alcoholNum]
-
-        gameAlcohol.push(alcohol)
-
-        removeItem(AlcoholTypes, alcohol)
+        addAlcoholSinglePlayer()
       }
 
       updatePlayers()
@@ -120,6 +119,15 @@
       if (localMultiplayer) {await firstAlcoholLocalMultiplayer()
       }
       else {await firstAlcoholSingleplayer()}
+
+      for (let i = 1; i <= 2; i++) {
+        if (localMultiplayer) {
+          addAlcoholLocalMultiplayer()
+          continue
+        }
+        
+        addAlcoholSinglePlayer()
+      }
 
       let turns = 0
 
@@ -249,6 +257,26 @@
         }
       }
 
+    }
+
+    function addAlcoholSinglePlayer() {
+      let alcoholNum = getRndInt(0, SinglePlayerAlcoholTypes.length)
+
+      let alcohol = SinglePlayerAlcoholTypes[alcoholNum]
+
+      gameAlcohol.push(alcohol)
+
+      removeItem(SinglePlayerAlcoholTypes, alcohol)
+    }
+
+    function addAlcoholLocalMultiplayer() {
+      let alcoholNum = getRndInt(0, SinglePlayerAlcoholTypes.length)
+
+      let alcohol = SinglePlayerAlcoholTypes[alcoholNum]
+
+      gameAlcohol.push(alcohol)
+
+      removeItem(SinglePlayerAlcoholTypes, alcohol)
     }
     
     //recursive
@@ -549,7 +577,7 @@
 
       <p style="display: none;" id="msgPreview"><span style="color: gray;">Example</span> Hello World!</p>
 
-      <div id="innerPlayers"></div>
+      <div id="innerPlayers" style="display: flex;"></div>
     </div>
 
     <div style="grid-area: 1/5/5/5; display: none; position: relative;" id="messages">

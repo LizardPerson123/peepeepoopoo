@@ -550,13 +550,171 @@ class EnergyBeer extends Alcohol {
   oname = "EnergyBeer"
 }
 
+class Rum extends Alcohol {
+  constructor() {
+    const turns = 1
+    super(turns, function(player, turns, multiplayerContext) {
+      return new Promise(async function(resolve) {
+        turns--
+
+        let applyEffectTo
+        
+        if (player.type == "Human") {
+          getById("eventHeader").innerHTML = "Who To Give Confusion To?"
+          applyEffectTo = players[await choseShoot(false)]
+        }
+        else if (!(multiplayerContext == undefined) && multiplayerContext != "pleb") {
+          //This Is For Host To Apply Pleb Choice In Multiplayer (multiplayerContext is who pleb is giving forced blanks to)
+          applyEffectTo = players[multiplayerContext]
+        }
+        else {
+          applyEffectTo = getRndInt(0, players.getAlivePlayers().length)
+          applyEffectTo = players.getAlivePlayers()[applyEffectTo]
+        }
+
+        applyEffectTo.alcoholEffects.push(this.AlcoholEffect)
+
+        if (multiplayerContext == "pleb") {
+          const attackedPlayer = players.indexOf(applyEffectTo)
+          resolve([turns, attackedPlayer, undefined])
+        }
+
+        applyEffectTo.confused = true
+
+        getById(`${applyEffectTo.id}Effects`).innerHTML += `<p style='margin-top: 0px; margin-bottom: 2px' id='${this.AlcoholEffect.id}Effect'>${this.AlcoholEffect.name}</p>`
+        
+        const msg = "Gave Confusion To " + applyEffectTo.name + " For 2 Turns"
+        resolve([turns, msg, undefined])
+      }.bind(this))
+    })
+    
+    const effectMsg = "Confusion"
+    const effectTurns = 3
+    const onDamage = undefined
+    const onShoot = undefined
+    this.AlcoholEffect = new Effect(effectMsg, effectTurns, onDamage, onShoot, function onEnd(player) {
+      let doRemove = true
+      player.alcoholEffects.forEach(function(effect) {
+        if (effect.name == "Confusion") {doRemove = false}
+      })
+
+      if (doRemove) {
+        player.confused = false
+      }
+    })
+
+    this.name = "Rum"
+    this.description = "Give A Selected Player Confusion For 2 Turns"
+    this.img = "rum.png"
+  }
+}
+
+class Mead extends Alcohol {
+  constructor() {
+    const turns = 1
+    super(turns, function(player, turns, multiplayerContext) {
+      return new Promise(async function(resolve) {
+        turns--
+
+        let applyEffectTo
+        
+        if (player.type == "Human") {
+          getById("eventHeader").innerHTML = "Who To Skip The Next Turn Of?"
+          applyEffectTo = players[await choseShoot(false)]
+        }
+        else if (!(multiplayerContext == undefined) && multiplayerContext != "pleb") {
+          //This Is For Host To Apply Pleb Choice In Multiplayer (multiplayerContext is who pleb is giving forced blanks to)
+          applyEffectTo = players[multiplayerContext]
+        }
+        else {
+          applyEffectTo = getRndInt(0, players.getAlivePlayers().length)
+          applyEffectTo = players.getAlivePlayers()[applyEffectTo]
+        }
+
+        applyEffectTo.alcoholEffects.push(this.AlcoholEffect)
+
+        if (multiplayerContext == "pleb") {
+          const attackedPlayer = players.indexOf(applyEffectTo)
+          resolve([turns, attackedPlayer, undefined])
+        }
+
+        getById(`${applyEffectTo.id}Effects`).innerHTML += `<p style='margin-top: 0px; margin-bottom: 2px' id='${this.AlcoholEffect.id}Effect'>${this.AlcoholEffect.name}</p>`
+        applyEffectTo.skipTurn = 1
+        
+        const msg = "Skipping Next Turn Of " + applyEffectTo.name
+        resolve([turns, msg, undefined])
+      }.bind(this))
+    })
+    
+    const effectMsg = "Skip Turn"
+    const effectTurns = 1
+    const onDamage = undefined
+    const onShoot = undefined
+    this.AlcoholEffect = new Effect(effectMsg, effectTurns, onDamage, onShoot)
+
+    this.name = "Mead"
+    this.description = "Give A Selected Player Forced Blanks For 2 Turns"
+    this.img = "brandy.png"
+  }
+}
+
+class Mocktail extends Alcohol {
+  constructor() {
+    const turns = 1
+    super(turns, function(player, turns, multiplayerContext) {
+      return new Promise(async function(resolve) {
+        if (multiplayerContext != "pleb") {
+          let msg
+          switch(getRndInt(0, 3)) {
+            case(2): {
+              msg = "Guranteed Live"
+              this.name = "Beer"
+              this.AlcoholEffect.name = "Guranteed Live"
+              break
+            }
+            case (1): {
+              msg = "Invincible For One Turn"
+              this.name = "Red Wine"
+              this.AlcoholEffect.name = "Invincible"
+              break
+            }
+            case (0): {
+              msg = "Attacks On Them Can Now Damage The Attacker"
+              this.name = "Gin"
+              this.AlcoholEffect.turns = 3
+              this.AlcoholEffect.name = "Shield"
+              break
+            }
+          }
+
+          resolve([--turns, msg, this.AlcoholEffect])
+          return
+        }
+
+        resolve([--turns, undefined, undefined])
+      }.bind(this))
+    })
+    
+    const effectMsg = ""
+    const effectTurns = 1
+    const onDamage = undefined
+    const onShoot = undefined
+    this.AlcoholEffect = new Effect(effectMsg, effectTurns, onDamage, onShoot)
+
+    this.name = "Mocktail"
+    this.description = "Give A Selected Player Forced Blanks For 2 Turns"
+    this.img = "brandy.png"
+  }
+}
+
 class Effect {
-  constructor(name, turns, onDamage = undefined, onShootResult = undefined) {
+  constructor(name, turns, onDamage = undefined, onShootResult = undefined, onEnd = () => {}) {
     this.turns = turns
     this.id = generateRandomCode(10, 0, 9)
     this.damage = onDamage
     this.shoot = onShootResult
     this.name = name
+    this.end = onEnd
   }
 }
 
@@ -575,6 +733,12 @@ class Player {
     if (this.hp < 1) {
       //Returning Undefined Will Skip Turn
       return [undefined, undefined]
+    }
+
+    if (this.skipTurn) {
+      this.skipTurn--
+      this.clearEffects()
+      return ["Skip Turn"]
     }
 
     let use = await this.whatToDo()
@@ -714,6 +878,7 @@ class Player {
       effect.turns--
       if (effect.turns < 1) {
         removeItem(this.alcoholEffects, effect)
+        effect.end(this)
         getById(`${effect.id}Effect`).remove()
       }
     }.bind(this))
@@ -908,4 +1073,5 @@ class FratBro extends Player {
   }
 }
 
-let AlcoholTypes = [Beer, Vodka, Whiskey, Gin, Red_Wine, White_Wine, Tequila, Brandy, MoonShine, Seltzer, IPA, EnergyBeer]
+let AlcoholTypes = [Beer, Vodka, Whiskey, Gin, Red_Wine, White_Wine, Tequila, Brandy, MoonShine, Seltzer, IPA, EnergyBeer, Rum, Mead, Mocktail]
+let SinglePlayerAlcoholTypes = [Beer, Vodka, Whiskey, Gin, Red_Wine, White_Wine, Tequila, Brandy, MoonShine, Seltzer, IPA, EnergyBeer, Mead]

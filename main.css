@@ -4,7 +4,7 @@
   display: none
 }
 
-#players, #messages {
+#players, #messages, #innerPlayers {
   flex-direction: column;
 }
 
@@ -22,15 +22,24 @@
   #game {
     flex-direction: column;
     justify-content: space-evenly;
-    height: 100vh;
   }
-
+  
   #lives {display: none;}
 
   #statusEffects {
-    height: 15vh;
+    height: 25vh;
     order: 2;
   }
+
+  #events {
+    height: 20vh;
+  }
+
+  #centerThing {
+    height: 50vh;
+  }
+
+  #players {height: 15vh;}
 
   #players {order: 1;}
 
@@ -38,10 +47,9 @@
 
   #centerThing {order: 3;}
 
-  #players {
+  #innerPlayers {
     flex-direction: row;
     justify-content: center;
-    flex-wrap: wrap;
     gap: 10px;
   }
 
@@ -54,6 +62,12 @@
   }
 
   #statusEffects, #players, #events, #centerThing, #lives, #messages {border: none; border-top: solid; border-bottom: solid;}
+}
+
+@media screen and (max-height: 850px) {
+  #events {
+    height: 25vh;
+  }
 }
 
 @media screen and (max-width: 500px) {

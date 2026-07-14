@@ -7,9 +7,16 @@ function waitForPlayerInput() {
   getById("buttons").style.display = "flex"
   return new Promise(function(resolve) {
     resolveFunc = resolve
+    let confused = false
 
     function resetButton() {
       getById("alcoholButton").removeEventListener("click", clickEvents[0])
+
+      getById("shootButton").innerHTML = `<img src="images/itsagun.png" style="margin-right: 3px; image-rendering: pixelated; cursor: pointer; background-color: transparent;">
+      Shoot Someone`
+
+      getById("alcoholButton").innerHTML = `<img src="images/alcohol.png" style="margin-right: 2px; image-rendering: pixelated; background-color: transparent;">
+      Alcohol`
 
       getById("shootButton").removeEventListener("click", clickEvents[1])
 
@@ -17,16 +24,24 @@ function waitForPlayerInput() {
     }
 
     let alcoholButtonClick = function() {
+      if (confused && getRndInt(0, 2) == 0) {
+        resolveFunc("shoot")
+      }
+
       resolveFunc("alcohol")
 
       resetButton()
     }
 
     let shootButtonClick = function() {
+      if (confused && getRndInt(0, 2) == 0 && this.activeAlcohol.length > 0) {
+        resolveFunc("alcohol")
+      }
+
       resolveFunc("shoot")
 
       resetButton()
-    }
+    }.bind(this)
 
     if (this.activeAlcohol.length == 0) {
       getById("alcoholButton").style.display = "none"
@@ -35,12 +50,21 @@ function waitForPlayerInput() {
       getById("alcoholButton").style.display = "flex"
     }
 
+    players.forEach(function(player) {
+      if (player.confused == true && player.name == thisPlayer) confused = true
+    })
+
     clickEvents.push(alcoholButtonClick)
     clickEvents.push(shootButtonClick)
 
     getById("alcoholButton").addEventListener("click", alcoholButtonClick)
 
     getById("shootButton").addEventListener("click", shootButtonClick)
+
+    if (confused) {
+      getById("alcoholButton").innerHTML = "?"
+      getById("shootButton").innerHTML = "?"
+    }
 
   }.bind(this))
 }
@@ -49,14 +73,30 @@ function choseAlcohol(useAlcohol = false, multiplayerContext = undefined) {
   return new Promise(function(resolve) {
     getById("buttons").style.display = "none"
     getById("alcoholButtons").style.display = "flex"
+    let confused = false
+
+    players.forEach(function(player) {
+      if (player.confused == true && player.name == thisPlayer) confused = true
+    })
+
+    let activeAlcohol = this.activeAlcohol
+
+    if (confused) {
+      activeAlcohol = activeAlcohol.slice(0)
+      shuffleArray(activeAlcohol)
+    }
 
     getById("alcoholButtons").innerHTML += `<button class="playerOption" style='margin-right: 5px; display: flex; align-items: center;' id='goBackButton'>
       Go Back</button>`
 
-    this.activeAlcohol.forEach(function(alcohol) {
+    activeAlcohol.forEach(function(alcohol) {
       getById("alcoholButtons").innerHTML += `<button class="playerOption" style='margin-right: 5px; display: flex; align-items: center;' id='${alcohol.id}Button'>
       <img src="images/${alcohol.img}" style="margin-right: 2px; width: 30px; height: 30px; image-rendering: pixelated; background-color: transparent;">
       ${alcohol.name}</button>`
+
+      if (confused) {
+        getById(`${alcohol.id}Button`).innerText = "?"
+      }
     })
 
     getById("goBackButton").addEventListener("click", function() {
@@ -66,7 +106,7 @@ function choseAlcohol(useAlcohol = false, multiplayerContext = undefined) {
       resolve("goBack")
     })
 
-    this.activeAlcohol.forEach(function(alcohol) {
+    activeAlcohol.forEach(function(alcohol) {
       getById(`${alcohol.id}Button`).addEventListener("click", function() {
         if (useAlcohol) {
           //This Is For Multiplayer
@@ -100,17 +140,30 @@ function choseShoot(includePlayer = true) {
     getById("buttons").style.display = "none"
     getById("shootButtons").style.display = "inline-block"
     let alivePlayers = players.getAlivePlayers()
+    let confused = false
 
     if (includePlayer) {
       getById("shootButtons").innerHTML += `<button class="playerOption" style='margin-right: 5px;' id='goBackButton'>
       Go Back</button>`
     }
+
+    players.forEach(function(player) {
+      if (player.confused == true && player.name == thisPlayer) confused = true
+    })
+
+    if (confused) {
+      shuffleArray(alivePlayers)
+    }
      
-    //This Code Is Seperate To Pervent Overiding The Event Listener
+    //This Code Is Seperate To Prevent Overiding The Event Listener
     alivePlayers.forEach(function(player) 
     {
       if (!(!includePlayer && player.name == thisPlayer)) {
         getById("shootButtons").innerHTML += `<button style='margin-right: 5px' class="playerOption" id='${player.id}Button'>${player.name}</button>`
+      }
+
+      if (confused && !(!includePlayer && player.name == thisPlayer)) {
+        getById(`${player.id}Button`).innerText = "?"
       }
     })
     
@@ -195,6 +248,15 @@ async function basicTurnDisplay(turnFunc, addAlcohol = true) {
 
   if (result === undefined) {
     return
+  }
+
+  if (result == "Skip Turn") {
+    eventText.innerText = `Turn Skipped`
+    return new Promise(function(resolve) {
+      setTimeout(function() {
+        resolve(turn)
+      }, 3600)
+    })
   }
 
   let playerDamagedName = playerDamaged.name
