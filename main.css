@@ -18,7 +18,7 @@
 
 .startButton {color: black;}
 
-@media screen and (max-width: 750px) {
+@media screen and (max-width: 700px) {
   #game {
     flex-direction: column;
     justify-content: space-evenly;

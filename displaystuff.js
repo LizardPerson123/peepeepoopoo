@@ -413,7 +413,7 @@ function handlePhoneDisplays() {
   }
 
   function manage() {
-    if (window.innerWidth < 750) {
+    if (window.innerWidth < 700) {
       getById("game").style.display = "flex"
       gameDisplay = "flex"
 
