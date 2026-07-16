@@ -10,7 +10,7 @@ function waitForPlayerInput() {
     let confused = false
 
     function resetButton() {
-      getById("alcoholButton").removeEventListener("click", clickEvents[0])
+      getById("alcoholButton").removeEventListener("click", alcoholButtonClick)
 
       getById("shootButton").innerHTML = `<img src="images/itsagun.png" style="margin-right: 3px; image-rendering: pixelated; cursor: pointer; background-color: transparent;">
       Shoot Someone`
@@ -18,7 +18,7 @@ function waitForPlayerInput() {
       getById("alcoholButton").innerHTML = `<img src="images/alcohol.png" style="margin-right: 2px; image-rendering: pixelated; background-color: transparent;">
       Alcohol`
 
-      getById("shootButton").removeEventListener("click", clickEvents[1])
+      getById("shootButton").removeEventListener("click", shootButtonClick)
 
       clickEvents = []
     }
@@ -122,6 +122,13 @@ function choseAlcohol(useAlcohol = false, multiplayerContext = undefined) {
           //This Is For Multiplayer
           //This Info Is Sent To The Host
           AlcoholTypes.forEach(async function(alcohol2) {
+            if (alcohol2.name == alcohol.name || alcohol2.name == alcohol.oname) {
+              let effect = await new alcohol2().useEffect(this, multiplayerContext)
+              resolve([this.activeAlcohol.indexOf(alcohol), effect[0], effect[1]])
+            }
+          }.bind(this))
+
+          AlcopAlcoholTypes.forEach(async function(alcohol2) {
             if (alcohol2.name == alcohol.name || alcohol2.name == alcohol.oname) {
               let effect = await new alcohol2().useEffect(this, multiplayerContext)
               resolve([this.activeAlcohol.indexOf(alcohol), effect[0], effect[1]])
@@ -321,7 +328,7 @@ async function basicTurnDisplay(turnFunc, addAlcohol = true) {
   return new Promise(function(resolve) {
     setTimeout(function() {
       resolve(turn)
-    }, 3600)
+    }, textSpeed)
   })
 }
 
@@ -335,7 +342,7 @@ function turnWheel() {
       async function wheelturn() {
         setTimeout(async function() {
           if (!dontTurnWheel) {
-            turn += 1.5;
+            turn += turnSpeed;
 
             if (turn == 360) {
               turn = 0
@@ -348,7 +355,7 @@ function turnWheel() {
           }
 
           requestAnimationFrame(wheelturn)
-        }, 25)
+        }, wheelSpeed)
       }
 
       requestAnimationFrame(wheelturn)
@@ -378,6 +385,18 @@ function goBackHelp() {
 function howToPlay() {
   getById("startGame").style.display = "none"
   getById("aboutGame").style.display = "block"
+}
+
+function settings() {
+  getById("buttonSet1").style.display = "none"
+  getById("buttonSet4").style.display = "block"
+  showTextSpeed()
+  showWheelSpeed()
+}
+
+function goBackSettings() {
+  getById("buttonSet1").style.display = "block"
+  getById("buttonSet4").style.display = "none"
 }
 
 function displayMessage(msg, playerName) {

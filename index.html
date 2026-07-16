@@ -9,12 +9,26 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bree+Serif&family=Dancing+Script:wght@400..700&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Playwrite+HU:wght@100..400&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Comic+Relief:wght@400;700&display=swap" rel="stylesheet">
   <link rel="icon" type="image/icon-x" href="favicon.ico">
 
   <style>
     * { font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; text-align: center;}
 
     .startGameButton, #whatDoing, #new, #join, #startMultiplayer {color: black;}
+
+    .startGameButton {
+      justify-items: center; 
+      border: solid; 
+      width: 10em; 
+      font-size: 2em; 
+      font-family: "Comic Relief", "Lucida Sans", "Arial"; 
+      background-color: rgba(0, 0, 0, 0.0); 
+      margin-bottom: 8px; 
+      display: block;
+    }
     
     .playerOption {
       border: none;
@@ -74,6 +88,8 @@
       achi.register("Play Rotting Roulette", "bronze")
 
       turnWheel()
+      getTextSpeed()
+      getWheelSpeed()
 
       getById("game").style.display = "grid"
       getById("startGame").style.display = "none"
@@ -105,7 +121,7 @@
 
       for (let i = 1; i <= 3; i++) {
         if (localMultiplayer) {
-          addAlcoholLocalMultiplayer()
+          addAlcoholMultiplayer()
           continue
         }
 
@@ -116,13 +132,12 @@
 
       bulletList.generateNew(100)
 
-      if (localMultiplayer) {await firstAlcoholLocalMultiplayer()
-      }
+      if (localMultiplayer) {await firstAlcoholLocalMultiplayer()}
       else {await firstAlcoholSingleplayer()}
 
       for (let i = 1; i <= 2; i++) {
         if (localMultiplayer) {
-          addAlcoholLocalMultiplayer()
+          addAlcoholMultiplayer()
           continue
         }
         
@@ -259,6 +274,66 @@
 
     }
 
+    function getTextSpeed() {
+      let rrTextSpeed = (localStorage.getItem("rrTextSpeed") || "slow")
+
+      switch (rrTextSpeed) {
+        case ("slow"): textSpeed = 3600; break
+        case ("normal"): textSpeed = 2400; break
+        case ("fast"): textSpeed = 1200; break
+      }
+    }
+
+    function getWheelSpeed() {
+      let rrWheelSpeed = (localStorage.getItem("rrWheelSpeed") || "40")
+
+      switch (rrWheelSpeed) {
+        case ("20"): wheelSpeed = 50; turnSpeed = 3; break
+        case ("40"): wheelSpeed = 25; turnSpeed = 1.5; break
+        case ("60"): wheelSpeed = 17; turnSpeed = 1; break
+      }
+    }
+
+    function setTextSpeed() {
+      let rrTextSpeed = (localStorage.getItem("rrTextSpeed") || "slow")
+
+      switch (rrTextSpeed) {
+        case ("slow"): localStorage.setItem("rrTextSpeed", "normal"); getById("textSpeed").innerHTML = "Text Speed: Normal"; break
+        case ("normal"): localStorage.setItem("rrTextSpeed", "fast"); getById("textSpeed").innerHTML = "Text Speed: Fast"; break
+        case ("fast"): localStorage.setItem("rrTextSpeed", "slow"); getById("textSpeed").innerHTML = "Text Speed: Slow"; break
+      }
+    }
+
+    function showTextSpeed() {
+      let rrTextSpeed = (localStorage.getItem("rrTextSpeed") || "slow")
+
+      switch (rrTextSpeed) {
+        case ("slow"): getById("textSpeed").innerHTML = "Text Speed: Slow"; break
+        case ("normal"): getById("textSpeed").innerHTML = "Text Speed: Normal"; break
+        case ("fast"): getById("textSpeed").innerHTML = "Text Speed: Fast"; break
+      }
+    }
+
+    function setWheelSpeed() {
+      let rrWheelSpeed = (localStorage.getItem("rrWheelSpeed") || "40")
+
+      switch (rrWheelSpeed) {
+        case ("20"): localStorage.setItem("rrWheelSpeed", "40"); getById("wheelSpeed").innerHTML = "Wheel Speed: 40 FPS"; break
+        case ("40"): localStorage.setItem("rrWheelSpeed", "60"); getById("wheelSpeed").innerHTML = "Wheel Speed: 60 FPS"; break
+        case ("60"): localStorage.setItem("rrWheelSpeed", "20"); getById("wheelSpeed").innerHTML = "Wheel Speed: 20 FPS"; break
+      }
+    }
+
+    function showWheelSpeed() {
+      let rrWheelSpeed = (localStorage.getItem("rrWheelSpeed") || "40")
+
+      switch (rrWheelSpeed) {
+        case ("20"): getById("wheelSpeed").innerHTML = "Wheel Speed: 20 FPS"; break
+        case ("40"): getById("wheelSpeed").innerHTML = "Wheel Speed: 40 FPS"; break
+        case ("60"): getById("wheelSpeed").innerHTML = "Wheel Speed: 60 FPS"; break
+      }
+    }
+
     function addAlcoholSinglePlayer() {
       let alcoholNum = getRndInt(0, SinglePlayerAlcoholTypes.length)
 
@@ -269,14 +344,32 @@
       removeItem(SinglePlayerAlcoholTypes, alcohol)
     }
 
-    function addAlcoholLocalMultiplayer() {
-      let alcoholNum = getRndInt(0, SinglePlayerAlcoholTypes.length)
+    function addAlcoholSinglePlayer() {
+      if (gameMode == "alcop" && getRndInt(0, 2) == 0) {
+        let alcoholNum = getRndInt(0, SingleplayerAlcopAlcoholTypes.length && SingleplayerAlcopAlcoholTypes.length > 0)
+        let alcohol = SingleplayerAlcopAlcoholTypes[alcoholNum]
+        gameAlcohol.push(alcohol)
+        removeItem(SingleplayerAlcopAlcoholTypes, alcohol)
+      }
 
-      let alcohol = SinglePlayerAlcoholTypes[alcoholNum]
-
+      let alcoholNum = getRndInt(0, AlcoholTypes.length)
+      let alcohol = AlcoholTypes[alcoholNum]
       gameAlcohol.push(alcohol)
+      removeItem(AlcoholTypes, alcohol)
+    }
 
-      removeItem(SinglePlayerAlcoholTypes, alcohol)
+    function addAlcoholMultiplayer() {
+      if (gameMode == "alcop" && getRndInt(0, 2) == 0 && AlcopAlcoholTypes.length > 0) {
+        let alcoholNum = getRndInt(0, AlcopAlcoholTypes.length)
+        let alcohol = AlcopAlcoholTypes[alcoholNum]
+        gameAlcohol.push(alcohol)
+        removeItem(AlcopAlcoholTypes, alcohol)
+      }
+
+      let alcoholNum = getRndInt(0, AlcoholTypes.length)
+      let alcohol = AlcoholTypes[alcoholNum]
+      gameAlcohol.push(alcohol)
+      removeItem(AlcoholTypes, alcohol)
     }
     
     //recursive
@@ -331,7 +424,7 @@
 
           getById("op" + num).innerText = alcohol.name
           getById("op" + num + "Img").src = "images/" + alcohol.img
-          getById("op" + num + "Desc").innerText = alcohol.description
+          getById("op" + num + "Desc").innerText = alcohol.shortDescription || alcohol.description
           getById("op" + num + "Div").addEventListener("click", function a() {
             getById("statusEffects").innerHTML +=  `<p onclick='displayAlcoholInfo("${alcohol.name}", "${alcohol.description}", "${alcohol.img}")' id='alcohol${alcohol.id}' style="font-size: 2em; margin-top: 1px; margin-bottom: 0px; cursor: pointer">${alcohol.name}</p>`
             getById("firstAlcohol").style.display = "none"
@@ -602,21 +695,34 @@
    </div>
 
    <div id="buttonSet1">
-     <button style="justify-items: center; border: solid; width: 10em; font-size: 2em; font-family: cursive; background-color: rgba(0, 0, 0, 0.0); margin-bottom: 8px; display: block;" onclick="getById('buttonSet1').style.display = 'none'; getById('buttonSet2').style.display = 'block'" class="startGameButton">Singleplayer</button>
-     <button style="justify-items: center; border: solid; width: 10em; font-size: 2em; font-family: cursive; background-color: rgba(0, 0, 0, 0.0); margin-top: 0px; margin-bottom: 8px;" onclick="getById('buttonSet1').style.display = 'none'; getById('buttonSet3').style.display = 'block'" class="startGameButton">Multiplayer</button>
-     <button style="justify-items: center; border: solid; width: 10em; font-size: 2em; font-family: cursive; background-color: rgba(0, 0, 0, 0.0); margin-top: 0px; display: block; margin-bottom: 8px;" onclick="howToPlay()" class="startGameButton">How To Play</button>
+     <button onclick="getById('buttonSet1').style.display = 'none'; getById('buttonSet2').style.display = 'block'" class="startGameButton">Singleplayer</button>
+     <button onclick="getById('buttonSet1').style.display = 'none'; getById('buttonSet3').style.display = 'block'" class="startGameButton">Multiplayer</button>
+     <button onclick="howToPlay()" class="startGameButton">How To Play</button>
+     <button onclick="settings()" class="startGameButton">Settings</button>
    </div>
 
    <div id="buttonSet2" style="display: none;">
-     <button style="justify-items: center; border: solid; width: 10em; font-size: 2em; font-family: cursive; background-color: rgba(0, 0, 0, 0.0); margin-bottom: 8px; display: block;" onclick="startGame()" class="startGameButton">Normal Mode</button>
-     <button style="justify-items: center; border: solid; width: 10em; font-size: 2em; font-family: cursive; background-color: rgba(0, 0, 0, 0.0); color: #FF073A; margin-top: 0px; margin-bottom: 8px; display: block;" onclick="gameMode = 'insane'; startGame()" class="startGameButton">Insane Mode</button>
-     <button id="5p" style="justify-items: center; border: solid; width: 10em; font-size: 2em; font-family: cursive; background-color: rgba(0, 0, 0, 0.0); margin-top: 0px; margin-bottom: 8px; display: block; color: blue;" onclick="gameMode = '5players'; startGame()" class="startGameButton">5 Players</button>
-     <button style="justify-items: center; border: solid; width: 10em; font-size: 2em; font-family: cursive; background-color: rgba(0, 0, 0, 0.0); margin-top: 0px; margin-bottom: 8px; display: block; color: orange;" onclick="gameMode = 'survival'; startGame()" class="startGameButton">Survival</button>
+     <button onclick="getById('buttonSet2').style.display = 'none'; getById('buttonSet5').style.display = 'block'" class="startGameButton">Normal Mode</button>
+     <button onclick="gameMode = 'insane'; getById('buttonSet2').style.display = 'none'; getById('buttonSet5').style.display = 'block'" class="startGameButton">Insane Mode</button>
+     <button id="5p" onclick="gameMode = '5players'; getById('buttonSet2').style.display = 'none'; getById('buttonSet5').style.display = 'block'" class="startGameButton">5 Players</button>
+     <button onclick="gameMode = 'alcop'; getById('buttonSet2').style.display = 'none'; getById('buttonSet5').style.display = 'block'" class="startGameButton">Alcohol Galore</button>
    </div>
 
    <div id="buttonSet3" style="display: none;">
-     <button style="justify-items: center; border: solid; width: 10em; font-size: 2em; font-family: cursive; background-color: rgba(0, 0, 0, 0.0); margin-bottom: 8px; display: block;" onclick="getById('buttonSet3').style.display = 'none'; getById('buttonSet2').style.display = 'block'; getById('5p').style.display = 'none'; localMultiplayer = true" class="startGameButton">Local</button>
-     <button style="justify-items: center; border: solid; width: 10em; font-size: 2em; font-family: cursive; background-color: rgba(0, 0, 0, 0.0); margin-top: 0px; margin-bottom: 8px;" onclick="multiplayer()" class="startGameButton">Online</button>
+     <button onclick="getById('buttonSet3').style.display = 'none'; getById('buttonSet2').style.display = 'block'; getById('5p').style.display = 'none'; localMultiplayer = true" class="startGameButton">Local</button>
+     <button onclick="multiplayer()" class="startGameButton">Online</button>
+   </div>
+
+   <div id="buttonSet4" style="display: none;">
+     <button style="width: 15em;" onclick="goBackSettings()" class="startGameButton">Back</button>
+     <button style="width: 15em;" onclick="setTextSpeed()" id="textSpeed" class="startGameButton">Text Speed: Slow</button>
+     <button style="width: 15em;" onclick="setWheelSpeed()" id="wheelSpeed" class="startGameButton">Wheel Speed: 40 FPS</button>
+   </div>
+
+   <div id="buttonSet5" style="display: none;">
+     <button onclick="difficulty = 'easy'; startGame()" class="startGameButton">Easy</button>
+     <button onclick="difficulty = 'normal'; startGame()" class="startGameButton">Normal</button>
+     <button onclick="difficulty = 'hard'; startGame()" class="startGameButton">Hard</button>
    </div>
 
    <img id="imgMode" src="moon.svg" style="position: absolute; right: 10px;" width="100px" onclick="changeMode();">
@@ -659,8 +765,8 @@
     <h2 style="margin-top: 3em;">5 Players</h2>
     <p style="font-size: 1.5em; margin-bottom: 5px;">In 5 Players, There Are 5 Players (You And 4 CPUs)</p>
 
-    <h2 style="margin-top: 3em;">Survival</h2>
-    <p style="font-size: 1.5em; margin-bottom: 5px;">In Survival, You Have To Go As Long As Possible Without Anyone Dying</p>
+    <h2 style="margin-top: 3em;">Alcohol Galore</h2>
+    <p style="font-size: 1.5em; margin-bottom: 5px;">Alcohol Galore Adds Four Chaos Focused Alcohols</p>
   </div>
 
   <div id="multiplayerMenu" style="display: none; flex-direction: column; width: 100%; align-items: center;">
@@ -687,7 +793,7 @@
     <button style="margin-bottom: 20px; display: none;" class="playerOption" onclick="getById('beginGameButton').style.display = 'none'; getById('multiplayerButton2').style.display = 'inline-block'; getById('multiplayerButton3').style.display = 'inline-block'; getById('multiplayerButton4').style.display = 'inline-block'" id="beginGameButton">Start Game</button>
     <button style="margin-bottom: 20px; display: none;" class="playerOption" onclick="beginGameHost()" id="multiplayerButton2">Normal Mode</button>
     <button style="margin-bottom: 20px; display: none; color: rgb(255, 0, 0);" class="playerOption" onclick="gameMode = 'insane'; beginGameHost()" id="multiplayerButton3">Insane Mode</button>
-    <button style="margin-bottom: 20px; display: none; color: orange;" class="playerOption" onclick="gameMode = 'survival'; beginGameHost()" id="multiplayerButton4">Survival</button>
+    <button style="margin-bottom: 20px; display: none; color: orange;" class="playerOption" onclick="gameMode = 'alcop'; beginGameHost()" id="multiplayerButton4">Alcohol Galore</button>
     <div style="padding-top: 0.5em; padding-bottom: 1em; border: solid;" id="usernames">
       <h2 style="font-size: 1.7em;">Players</h2>
     </div>
