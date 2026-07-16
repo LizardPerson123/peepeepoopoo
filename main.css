@@ -18,7 +18,7 @@
 
 .startButton {color: black;}
 
-@media screen and (max-width: 900px) {
+@media screen and (max-width: 900px) and (min-width: 650px)  {
   #statusEffects h1, #players h1, #lives {display: none;}
   #statusEffects {grid-area: 1/1/5/1 !important}
   #events {height: 45vh !important;}
@@ -71,15 +71,39 @@
   #statusEffects, #players, #events, #centerThing, #lives, #messages {border: none; border-top: solid; border-bottom: solid;}
 }
 
-@media screen and (max-height: 850px) {
+@media screen and (max-height: 850px) and (min-width: 650px) and (max-width: 900px) {
   #events {
     height: 30vh;
   }
 }
 
-@media screen and (max-height: 640px) {
+@media screen and (max-height: 640px) and (min-width: 650px) and (max-width: 900px)  {
   #events {
     height: 35vh;
+  }
+}
+
+@media screen and (max-height: 350px) and (min-width: 650px) and (max-width: 900px) {
+  #events {
+    height: 55vh !important;
+  }
+}
+
+@media screen and (max-height: 300px) and (min-width: 650px) and (max-width: 900px) {
+  #events {
+    height: 60vh !important;
+  }
+}
+
+@media screen and (max-height: 260px) and (min-width: 650px) and (max-width: 900px) {
+  #events {
+    height: 70vh !important;
+  }
+}
+
+@media screen and (max-height: 230px) and (min-width: 650px) and (max-width: 900px) {
+  #events {
+    height: 75vh !important;
   }
 }
 
