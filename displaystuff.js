@@ -24,6 +24,11 @@ function waitForPlayerInput() {
     }
 
     let alcoholButtonClick = function() {
+      let confused = false
+      players.forEach(function(player) {
+        if (player.confused == true && player.name == thisPlayer) confused = true
+      })
+
       if (confused && getRndInt(0, 2) == 0) {
         resolveFunc("shoot")
       }
@@ -34,6 +39,11 @@ function waitForPlayerInput() {
     }
 
     let shootButtonClick = function() {
+      let confused = false
+      players.forEach(function(player) {
+        if (player.confused == true && player.name == thisPlayer) confused = true
+      })
+
       if (confused && getRndInt(0, 2) == 0 && this.activeAlcohol.length > 0) {
         resolveFunc("alcohol")
       }
@@ -407,13 +417,13 @@ function keyPressSendMessage() {
 
 function handlePhoneDisplays() {
   //This Can, (And Should), Be Converted To A Css Media Query
-  if (window.innerWidth < 750) {
+  if (window.innerWidth < 650) {
     getById("game").style.display = "flex"
     gameDisplay = "flex"
   }
 
   function manage() {
-    if (window.innerWidth < 700) {
+    if (window.innerWidth < 650) {
       getById("game").style.display = "flex"
       gameDisplay = "flex"
 
