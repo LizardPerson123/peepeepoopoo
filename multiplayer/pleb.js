@@ -77,6 +77,8 @@ async function beginGamePleb() {
   inGame = true
   keyPressSendMessage()
   handlePhoneDisplays()
+  getWheelSpeed()
+  getTextSpeed()
 
   getById("multiplayerJoin").style.display = "none"
   getById("game").style.display = gameDisplay
@@ -156,6 +158,8 @@ async function beginGamePleb() {
         }
       }
 
+      getById("buttons").style.display = "none"
+
       players.forEach(function(player) {
         //This Just Updates All The Stats Of The Game
         if (player.hp != msg.hp[player.name]) {
@@ -234,7 +238,7 @@ async function beginGamePleb() {
       //This Code Manages The NextTurn Part Of The Message
       getById("eventHeader").innerText = `${msg.nextTurn}'s Turn`
 
-      if (msg.nextTurn == thisPlayer) {
+      if (msg.nextTurn == thisPlayer && !msg.skipTurn) {
         players.forEach(async function(player) {
           if (player.name == thisPlayer) {
             sendTo(host, JSON.stringify({code: 2, response: await player.whatToDo(true, "pleb")}))

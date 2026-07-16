@@ -85,6 +85,8 @@ async function beginGameHost(turns) {
   getById("showMsgButton").style.display = "block"
   keyPressSendMessage()
   handlePhoneDisplays()
+  getWheelSpeed()
+  getTextSpeed()
 
   inGameBegin = true
   await endJoiningApi()
@@ -111,10 +113,7 @@ async function beginGameHost(turns) {
 
   //Randomly Select Game Alcohol
   for (let i = 1; i <= 3; i++) {
-    let alcoholNum = getRndInt(0, AlcoholTypes.length)
-    let alcohol = AlcoholTypes[alcoholNum]
-    removeItem(AlcoholTypes, alcohol)
-    gameAlcohol.push(alcohol)
+    addAlcoholMultiplayer()
   }
 
   gameAlcohol.forEach(function(alcohol) {
@@ -125,7 +124,7 @@ async function beginGameHost(turns) {
 
   for (let i = 0; i <= 2; i++) {
     let alcohol = new gameAlcohol[i]()
-    gameAlcoholToSend.push({name: alcohol.name, id: alcohol.id, description: alcohol.description, img: alcohol.img})
+    gameAlcoholToSend.push({name: alcohol.name, id: alcohol.id, description: alcohol.shortDescription || alcohol.description, img: alcohol.img})
   }
 
   await broadcast(JSON.stringify({
