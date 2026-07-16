@@ -21,6 +21,7 @@
 @media screen and (max-width: 900px) {
   #statusEffects h1, #players h1, #lives {display: none;}
   #statusEffects {grid-area: 1/1/5/1 !important}
+  #events {height: 45vh !important;}
 }
 
 @media screen and (max-width: 650px) {
