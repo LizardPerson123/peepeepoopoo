@@ -38,7 +38,7 @@
   }
 
   #events {
-    height: 25vh;
+    height: 30vh;
   }
 
   #centerThing {
@@ -73,13 +73,13 @@
 
 @media screen and (max-height: 850px) and (min-width: 650px) and (max-width: 900px) {
   #events {
-    height: 30vh;
+    height: 35vh;
   }
 }
 
 @media screen and (max-height: 640px) and (min-width: 650px) and (max-width: 900px)  {
   #events {
-    height: 35vh;
+    height: 40vh;
   }
 }
 
