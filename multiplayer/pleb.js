@@ -78,7 +78,6 @@ async function beginGamePleb() {
   keyPressSendMessage()
   handlePhoneDisplays()
   getWheelSpeed()
-  getTextSpeed()
 
   getById("multiplayerJoin").style.display = "none"
   getById("game").style.display = gameDisplay
