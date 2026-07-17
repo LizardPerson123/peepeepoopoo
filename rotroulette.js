@@ -230,7 +230,12 @@ class Vodka extends Alcohol {
         }
         else if (!(multiplayerContext == undefined) && multiplayerContext != "pleb") {
           //This Is For Host To Apply Pleb Choice In Multiplayer (multiplayerContext is who pleb is stealing from)
-          stealFrom = players[multiplayerContext]
+          let playerUsingAlcoholOnSelf
+          do {
+            stealFrom = players[multiplayerContext]
+            playerUsingAlcoholOnSelf = applyEffectTo.name == player.name
+          }
+          while (playerUsingAlcoholOnSelf && difficulty != "easy")
         }
         else {
           stealFrom = getRndInt(0, players.getAlivePlayers().length)
@@ -289,7 +294,7 @@ class Brandy extends Alcohol {
           do {
             applyEffectTo = getRndInt(0, players.getAlivePlayers().length)
             applyEffectTo = players.getAlivePlayers()[applyEffectTo]
-            playerUsingAlcoholOnSelf = applyEffectTo == player
+            playerUsingAlcoholOnSelf = applyEffectTo.name == player.name
           }
           while (playerUsingAlcoholOnSelf && difficulty != "easy")
         }
@@ -646,7 +651,7 @@ class Mead extends Alcohol {
           do {
             applyEffectTo = getRndInt(0, players.getAlivePlayers().length)
             applyEffectTo = players.getAlivePlayers()[applyEffectTo]
-            playerUsingAlcoholOnSelf = applyEffectTo == player
+            playerUsingAlcoholOnSelf = applyEffectTo.name == player.name
           }
           while (playerUsingAlcoholOnSelf && difficulty != "easy")
         }
@@ -1135,7 +1140,7 @@ function normalReject(proposedAction, player) {
   // Tried To Use Seltzer With No Effects
   else if (!hasEffects && chosenAction == "alcohol" && (player.activeAlcohol[chosenTarget].name == "Seltzer")) return true
   // Tried To Shoot Self At One Heart
-  else if (player.hp < 2 && players[chosenTarget].name == player.name) return true
+  else if (chosenAction == "shoot" && player.hp < 2 && players[chosenTarget].name == player.name) return true
 }
 
 function cheatReject(proposedAction, player) {
@@ -1167,7 +1172,7 @@ function rejectAlgorithim(proposedAction, player, playerBiasRejectUse=true) {
   if (difficulty == "easy") return false
   let useCheatReject = true
   let firstReject = false
-  if (difficulty == "normal") useCheatReject = getRndInt(0, 3) == 0
+  if (difficulty == "normal") useCheatReject = false
   if (useCheatReject) firstReject = cheatReject(proposedAction, player)
   
   if (firstReject == "END") return false
