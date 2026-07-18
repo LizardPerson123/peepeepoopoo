@@ -436,17 +436,23 @@ function keyPressSendMessage() {
 
 function handlePhoneDisplays() {
   //This Can, (And Should), Be Converted To A Css Media Query
-  if (window.innerWidth < 600) {
+  if (window.innerWidth <= 600) {
     getById("game").style.display = "flex"
     gameDisplay = "flex"
   }
 
   function manage() {
-    if (window.innerWidth < 600) {
+    if (window.innerWidth <= 600) {
       getById("game").style.display = "flex"
       gameDisplay = "flex"
 
       getById("showMsgButton").setAttribute("onclick", "getById('players').style.display = 'none'; getById('game').style.display = 'none'; getById('messages2').style.display = 'flex'")
+    }
+    else if (window.innerWidth <= 900) {
+      getById("showMsgButton").setAttribute("onclick", "getById('players').style.display = 'none'; getById('game').style.display = 'none'; getById('messages2').style.display = 'flex'")
+      getById("game").style.display = "grid"
+      gameDisplay = "grid"
+      getById("showMsgButton").innerText = "MSG"
     }
     else {
       getById("game").style.display = "grid"

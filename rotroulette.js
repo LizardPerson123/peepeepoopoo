@@ -12,8 +12,9 @@ let turnSpeed = 1.5
 let difficulty = "normal"
 
 let currentBlankChance = 13
-let currentLiveChance = 4
+let currentLiveChance = 5
 let currentAlcoholChance = 3
+let lastAlcoholGiven = {}
 
 //This will have a resolve func for whatToDo function
 let multiplayerResolveFunc
@@ -40,11 +41,18 @@ bulletList.generateNew = function(num) {
       continue
     }
 
-    let bullet = getRndInt(1, 21)
+    let bullet = getRndInt(1, 22)
 
     if (bullet <= currentAlcoholChance) {
-      let type = getRndInt(0, gameAlcohol.length)
+      let type
+      do {
+        type = getRndInt(0, gameAlcohol.length)
+        currentAlcohol = gameAlcohol[type]
+      }
+      while (currentAlcohol.name == lastAlcoholGiven.name)
+      
       bulletList.push(new gameAlcohol[type])
+      lastAlcoholGiven = gameAlcohol[type]
     }
     else if (bullet <= currentLiveChance + currentAlcoholChance) {
       bulletList.push(true)
@@ -183,23 +191,13 @@ class Whiskey extends Alcohol {
             }
           })
 
-          let pronoun = "They"
-          if (thisPlayer == player.name) {
-            pronoun = "You"
-          }
-
           setTimeout(function() {
-            const msg = pronoun + " Saw The Next Shots"
+            const msg = "Saw The Next Shots"
             resolve([turns, msg])
           }, 5000)
         }
         else {
-          let pronoun = "They"
-          if (thisPlayer == player.name) {
-            pronoun = "You"
-          }
-          
-          const msg = pronoun + " Saw The Next Shots"
+          const msg = "Saw The Next Shots"
           resolve([turns, msg])
         }
       })
@@ -394,7 +392,7 @@ class Gin extends Alcohol {
       return new Promise(async function(resolve) {
         if (player instanceof Human) {achi.register("One Of The Alcohols", "bronze")}
         turns--
-        const msg = "Attacks On Them Can Now Damage The Attacker"
+        const msg = "Attacks; Can Now Damage The Attacker"
         resolve([turns, msg, this.AlcoholEffect])
       }.bind(this))
     })
@@ -416,7 +414,7 @@ class Gin extends Alcohol {
 
     this.name = "Gin"
     this.description = "Places A Shield Around You; Bullets Have A Chance To Bounce Off You And Hit The Attacker; Lasts 3 Turns"
-    this.shortDescription = "Bullets Have A Chance To Bounce Off You And Hit The Attacker"
+    this.shortDescription = "Bullets Have A Chance To Bounce Off You"
     this.img = "gin.png"
   }
 }
@@ -523,6 +521,7 @@ class IPA extends Alcohol {
 
     this.name = "IPA"
     this.description = "Summons A Person With One Heart To Fight With You; They Cannot Shoot You"
+    this.shortDescription = "Summons An Ally"
     this.img = "ipa.png"
   }
 
@@ -1181,6 +1180,6 @@ function rejectAlgorithim(proposedAction, player, playerBiasRejectUse=true) {
   else if (playerBiasRejectUse && playerBiasReject(proposedAction, player)) return true
 }
 
-let AlcoholTypes = [Beer, Vodka, Whiskey, Gin, Red_Wine, White_Wine, Tequila, Brandy, Seltzer, Mead, Mocktail]
-let AlcopAlcoholTypes = [MoonShine, IPA, EnergyBeer, Rum]
+let AlcoholTypes = [Beer, Vodka, Whiskey, Gin, Red_Wine, White_Wine, Tequila, Brandy, Mead]
+let AlcopAlcoholTypes = [MoonShine, IPA, EnergyBeer, Rum, Seltzer, Mocktail]
 let SingleplayerAlcopAlcoholTypes = [MoonShine, IPA, EnergyBeer]

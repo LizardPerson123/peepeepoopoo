@@ -12,6 +12,8 @@
   display: flex;
 }
 
+body {overscroll-behavior: none;}
+
 #imgMode {top: 0px;}
 
 #statusEffects, #players, #events, #centerThing, #lives, #messages {overflow: scroll; border: solid;}
@@ -20,11 +22,14 @@
 
 #bestPlayed {display: none;}
 
+.largeButton {width: 15em !important;}
+
 @media screen and (max-width: 900px) and (min-width: 600px)  {
   #statusEffects h1, #players h1, #lives {display: none;}
   #statusEffects {grid-area: 1/1/5/1 !important}
   #events {height: 45vh !important;}
   #bestPlayed {display: none;}
+  #playerText, #msgPreview {display: none;}
 }
 
 @media screen and (max-width: 600px) {
@@ -32,7 +37,6 @@
     flex-direction: column;
     justify-content: space-evenly;
   }
-  
 
   #chooseAlcohol {display: none;}
 
@@ -53,7 +57,9 @@
     height: 50vh;
   }
 
-  #players {height: 15vh;}
+  #showMsgButton {margin-top: 1em;}
+
+  #players {height: 18vh;}
 
   #players {order: 1;}
 
@@ -68,7 +74,7 @@
     gap: 10px;
   }
 
-  #playerText {
+  #playerText, #msgPreview {
     display: none;
   }
 
@@ -84,6 +90,8 @@
     height: 40vh;
   }
 
+  #players {height: 23vh;}
+
   #statusEffects {
     height: 30vh;
   }
@@ -93,6 +101,8 @@
   #events {
     height: 45vh;
   }
+
+  #players {height: 28vh;}
 
   #statusEffects {
     height: 35vh;
@@ -115,6 +125,8 @@
   #events {
     height: 70vh !important;
   }
+
+  #players, #centerThing, #statusEffects {height: 95vh;}
 }
 
 @media screen and (max-height: 230px) and (min-width: 600px) and (max-width: 900px) {
@@ -128,6 +140,8 @@
     bottom: 0px;
     top: auto;
   }
+
+  .largeButton {width: 10em !important;}
 }
 
 @media (hover: hover) {

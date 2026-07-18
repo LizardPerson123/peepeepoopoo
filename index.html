@@ -354,6 +354,10 @@
 
       let alcoholNum = getRndInt(0, AlcoholTypes.length)
       let alcohol = AlcoholTypes[alcoholNum]
+      
+      //Less Good Alcohols Are Given Less Frequently
+      if ((alcohol.name == "Tequila" || alcohol.name == "Red Wine" || alcohol.name == "Mead" || alcohol.name == "Seltzer") && getRndInt(0, 2) == 0) {addAlcoholSinglePlayer(); return}
+
       gameAlcohol.push(alcohol)
       removeItem(AlcoholTypes, alcohol)
     }
@@ -368,6 +372,7 @@
 
       let alcoholNum = getRndInt(0, AlcoholTypes.length)
       let alcohol = AlcoholTypes[alcoholNum]
+      if ((alcohol.name == "Tequila" || alcohol.name == "Red Wine" || alcohol.name == "Mead" || alcohol.name == "Seltzer") && getRndInt(0, 2) == 0) {addAlcoholSinglePlayer(); return}
       gameAlcohol.push(alcohol)
       removeItem(AlcoholTypes, alcohol)
     }
@@ -579,6 +584,11 @@
           </div>
         `
     }
+
+    function localMultiplayerStart() {
+      if (localMultiplayer) {startGame(); return}
+      getById("buttonSet5").style.display = "block"
+    }
   </script>
 
   <script>
@@ -702,10 +712,10 @@
    </div>
 
    <div id="buttonSet2" style="display: none;">
-     <button onclick="getById('buttonSet2').style.display = 'none'; getById('buttonSet5').style.display = 'block'" class="startGameButton">Normal Mode</button>
-     <button onclick="gameMode = 'insane'; getById('buttonSet2').style.display = 'none'; getById('buttonSet5').style.display = 'block'" class="startGameButton">Insane Mode</button>
-     <button id="5p" onclick="gameMode = '5players'; getById('buttonSet2').style.display = 'none'; getById('buttonSet5').style.display = 'block'" class="startGameButton">5 Players</button>
-     <button onclick="gameMode = 'alcop'; getById('buttonSet2').style.display = 'none'; getById('buttonSet5').style.display = 'block'" class="startGameButton">Alcohol Galore</button>
+     <button onclick="getById('buttonSet2').style.display = 'none'; localMultiplayerStart()" class="startGameButton">Normal Mode</button>
+     <button onclick="gameMode = 'insane'; getById('buttonSet2').style.display = 'none'; localMultiplayerStart()" class="startGameButton">Insane Mode</button>
+     <button id="5p" onclick="gameMode = '5players'; getById('buttonSet2').style.display = 'none'; localMultiplayerStart()" class="startGameButton">5 Players</button>
+     <button onclick="gameMode = 'alcop'; getById('buttonSet2').style.display = 'none'; localMultiplayerStart()" class="startGameButton">Alcohol Galore</button>
    </div>
 
    <div id="buttonSet3" style="display: none;">
@@ -714,9 +724,9 @@
    </div>
 
    <div id="buttonSet4" style="display: none;">
-     <button style="width: 15em;" onclick="goBackSettings()" class="startGameButton">Back</button>
-     <button style="width: 15em;" onclick="setTextSpeed()" id="textSpeed" class="startGameButton">Text Speed: Slow</button>
-     <button style="width: 15em;" onclick="setWheelSpeed()" id="wheelSpeed" class="startGameButton">Wheel Speed: 40 FPS</button>
+     <button onclick="goBackSettings()" class="startGameButton largeButton">Back</button>
+     <button onclick="setTextSpeed()" id="textSpeed" class="startGameButton largeButton">Text Speed: Slow</button>
+     <button onclick="setWheelSpeed()" id="wheelSpeed" class="startGameButton largeButton">Wheel Speed: 40 FPS</button>
    </div>
 
    <div id="buttonSet5" style="display: none;">
