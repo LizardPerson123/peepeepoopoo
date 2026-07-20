@@ -30,12 +30,19 @@ bulletList.nextItem = function() {
 
 bulletList.generateNew = function(num) {
   for (let i = 1; i <= num; i++) {
+    let currentAlcohol = {}
     if (gameMode == "insane") {
       let bullet = getRndInt(1, 3)
 
       if (bullet == 1) {bulletList.push(true)}
       else {
-        let type = getRndInt(0, gameAlcohol.length)
+        let type
+        do {
+          type = getRndInt(0, gameAlcohol.length)
+          currentAlcohol = gameAlcohol[type]
+        }
+        while (currentAlcohol.name == lastAlcoholGiven.name)
+
         bulletList.push(new gameAlcohol[type])
       }
       continue
@@ -45,6 +52,10 @@ bulletList.generateNew = function(num) {
 
     if (bullet <= currentAlcoholChance) {
       let type
+      if (getRndInt(0, 7) == 0 && gameMode == "alcop") {
+        bulletList.push(new Mocktail())
+        continue
+      }
       do {
         type = getRndInt(0, gameAlcohol.length)
         currentAlcohol = gameAlcohol[type]
@@ -198,10 +209,18 @@ class Whiskey extends Alcohol {
         }
         else {
           const msg = "Saw The Next Shots"
-          resolve([turns, msg])
+          resolve([turns, msg, this.AlcoholEffect])
         }
-      })
+      }.bind(this))
     })
+    
+    const name = ""
+    const effectTurns = 5
+    const onDamage = undefined
+    const onShoot = undefined
+    const onEnd = undefined
+    this.AlcoholEffect = new Effect(name, effectTurns, onDamage, onShoot, onEnd)
+    this.AlcoholEffect.hiddenName = "Whiskey"
 
     this.name = "Whiskey"
     this.description = "Lets You See The Next 5 Shots"
@@ -228,16 +247,17 @@ class Vodka extends Alcohol {
         }
         else if (!(multiplayerContext == undefined) && multiplayerContext != "pleb") {
           //This Is For Host To Apply Pleb Choice In Multiplayer (multiplayerContext is who pleb is stealing from)
-          let playerUsingAlcoholOnSelf
-          do {
-            stealFrom = players[multiplayerContext]
-            playerUsingAlcoholOnSelf = applyEffectTo.name == player.name
-          }
-          while (playerUsingAlcoholOnSelf && difficulty != "easy")
+          stealFrom = players[multiplayerContext]
+          playerUsingAlcoholOnSelf = stealFrom.name == player.name
         }
         else {
-          stealFrom = getRndInt(0, players.getAlivePlayers().length)
-          stealFrom = players.getAlivePlayers()[stealFrom]
+          let playerUsingAlcoholOnSelf
+          do {
+            stealFrom = getRndInt(0, players.getAlivePlayers().length)
+            stealFrom = players.getAlivePlayers()[stealFrom]
+            playerUsingAlcoholOnSelf = stealFrom.name == player.name
+          }
+          while (playerUsingAlcoholOnSelf && difficulty != "easy")
         }
 
         stealFrom.activeAlcohol.forEach(function(alcohol) {
@@ -361,8 +381,11 @@ class Tequila extends Alcohol {
           removeEffectFrom = players[multiplayerContext]
         }
         else {
-          removeEffectFrom = getRndInt(0, players.getAlivePlayers().length)
-          removeEffectFrom = players.getAlivePlayers()[removeEffectFrom]
+          do {
+            removeEffectFrom = getRndInt(0, players.getAlivePlayers().length)
+            removeEffectFrom = players.getAlivePlayers()[removeEffectFrom]
+          }
+          while (removeEffectFrom.name == player.name)
         }
 
         removeEffectFrom.alcoholEffects = []
@@ -437,7 +460,7 @@ class MoonShine extends Alcohol {
           do {
             heartsToWager = getRndInt(1, player.hp + 1)
           }
-          while (heartsToWager == 1 && difficulty != "easy")
+          while (heartsToWager == 1 && difficulty != "easy" && player.hp > 1)
         }
 
         this.AlcoholEffect.health = heartsToWager
@@ -678,7 +701,7 @@ class Mead extends Alcohol {
 
     this.name = "Mead"
     this.description = "Skip A Selected Player's Turn"
-    this.img = "brandy.png"
+    this.img = "mead.png"
   }
 }
 
@@ -727,7 +750,7 @@ class Mocktail extends Alcohol {
 
     this.name = "Mocktail"
     this.description = "Fake Having An Effect Chosen At Random"
-    this.img = "brandy.png"
+    this.img = "mocktail.png"
   }
 }
 
@@ -1171,7 +1194,15 @@ function rejectAlgorithim(proposedAction, player, playerBiasRejectUse=true) {
   if (difficulty == "easy") return false
   let useCheatReject = true
   let firstReject = false
-  if (difficulty == "normal") useCheatReject = false
+
+  let hasWhiskey = false
+  player.alcoholEffects.forEach(function(effect) {
+    if (effect.hiddenName == "Whiskey") hasWhiskey = true
+  })
+
+  if (difficulty == "normal" && hasWhiskey == false) useCheatReject = false
+  if (difficulty == "hard" && hasWhiskey == false && getRndInt(0, 2) == 0) useCheatReject = false
+
   if (useCheatReject) firstReject = cheatReject(proposedAction, player)
   
   if (firstReject == "END") return false
@@ -1181,5 +1212,5 @@ function rejectAlgorithim(proposedAction, player, playerBiasRejectUse=true) {
 }
 
 let AlcoholTypes = [Beer, Vodka, Whiskey, Gin, Red_Wine, White_Wine, Tequila, Brandy, Mead]
-let AlcopAlcoholTypes = [MoonShine, IPA, EnergyBeer, Rum, Seltzer, Mocktail]
-let SingleplayerAlcopAlcoholTypes = [MoonShine, IPA, EnergyBeer]
+let AlcopAlcoholTypes = [MoonShine, IPA, EnergyBeer, Rum, Seltzer]
+let SingleplayerAlcopAlcoholTypes = [MoonShine, IPA, EnergyBeer, Seltzer]

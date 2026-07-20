@@ -83,8 +83,9 @@
     let localMultiplayer = false
     let peopleNum
     let alcoholUsed = []
+    let autoplay = false
 
-    async function startGame() {
+    async function startGame(localMultiplayerPlayers) {
       achi.register("Play Rotting Roulette", "bronze")
 
       turnWheel()
@@ -101,7 +102,7 @@
       players.push(new Human("Player"))
 
       if (localMultiplayer) {
-        let num = numberOfPeoplePlaying()
+        let num = (localMultiplayerPlayers || numberOfPeoplePlaying())
         peopleNum = num
 
         for (let i = 2; i <= num; i++) {
@@ -183,7 +184,9 @@
             if (length == peopleNum - 1) {
               players.forEach(function(player) {
                 if (player.hp > 0) {
-                  alert(player.name + " Wins")
+                  if (!autoplay) {
+                    alert(player.name + " Wins")
+                  }
                   reload()
                 }
               })
@@ -209,7 +212,9 @@
             if (allUsed == "None Used") {achi.laterRegi("Sober", "silver")}
             else if (allUsed) {achi.laterRegi("Alcoholic", "silver")}
  
-            alert("You Lose")
+            if (!autoplay) {
+              alert("You Lose")
+            }
 
             achi.laterRegi("Lose Rotting Roulette", "bronze")
 
@@ -236,7 +241,10 @@
           }
 
           else if (playersAlive == 1) {
-            alert("You Win")
+            if (!autoplay) {
+              alert("You Win")
+            }
+          
             achi.laterRegi("Win Rotting Roulette", "bronze")
 
             if (i < 10) {achi.laterRegi("Accelerated Alcoholism", "gold")}
@@ -272,6 +280,21 @@
         }
       }
 
+    }
+
+    function startGameLink() {
+      if (!getAutoplay()) {startGame(); return}
+      let localMultiplayerPlayers = 0
+      if (localMultiplayer) {
+        localMultiplayerPlayers = numberOfPeoplePlaying()
+      }
+
+      historyPush(localMultiplayerPlayers, difficulty, gameMode)
+      window.location.reload()
+    }
+
+    function historyPush(localMultiplayerPlayers, difficulty, gameMode) {
+      history.pushState("", "", `?origin=autoplay&d=${difficulty}&m=${localMultiplayerPlayers}&g=${gameMode}`)
     }
 
     function getTextSpeed() {
@@ -331,6 +354,33 @@
         case ("20"): getById("wheelSpeed").innerHTML = "Wheel Speed: 20 FPS"; break
         case ("40"): getById("wheelSpeed").innerHTML = "Wheel Speed: 40 FPS"; break
         case ("60"): getById("wheelSpeed").innerHTML = "Wheel Speed: 60 FPS"; break
+      }
+    }
+
+    function getAutoplay() {
+      let rrAutoplay = (localStorage.getItem("rrAutoplay") || "false")
+
+      switch (rrAutoplay) {
+        case ("true"): return true
+        case ("false"): return false
+      }
+    }
+
+    function setAutoplay() {
+      let rrAutoplay = (localStorage.getItem("rrAutoplay") || "false")
+
+      switch (rrAutoplay) {
+        case ("false"): localStorage.setItem("rrAutoplay", "true"); getById("autoplay").innerHTML = "Autoplay: On"; break
+        case ("true"): localStorage.setItem("rrAutoplay", "false"); getById("autoplay").innerHTML = "Autoplay: Off"; break
+      }
+    }
+
+    function showAutoplay() {
+      let rrAutoplay = (localStorage.getItem("rrAutoplay") || "false")
+
+      switch (rrAutoplay) {
+        case ("false"): getById("autoplay").innerHTML = "Autoplay: Off"; break
+        case ("true"): getById("autoplay").innerHTML = "Autoplay: On"; break
       }
     }
 
@@ -592,13 +642,25 @@
   </script>
 
   <script>
-    window.addEventListener("pageshow", function() {
+    window.addEventListener("DOMContentLoaded", function() {
       const urlParams = new URLSearchParams(window.location.search)
       const origin = urlParams.get('origin')
 
       if (origin == "rotpear") {howToPlay(); getById("back").onclick = () => {window.location.href = "../index.html"}}
       else if (origin == "about") {howToPlay(); getById("back").onclick = () => {window.location.href = "../about.html"}}
+      else if (origin == "autoplay") {
+        autoplay = true
+        difficulty = urlParams.get('d')
+        gameMode = urlParams.get('g')
+        const localMultiplayerPlayers = urlParams.get('m')
+        
+        if (Number(localMultiplayerPlayers) > 0) localMultiplayer = true
+        startGame(Number(localMultiplayerPlayers))
+      }
+      else {getById("startGame").style.display = "flex"}
     })
+
+    window.addEventListener("popstate", window.location.reload.bind(window.location))
   </script>
 </head>
 <body>
@@ -698,15 +760,15 @@
     </div>
   </div>
 
-  <div id="startGame" style="display: flex; flex-direction: column; align-items: center; height: 40vh; justify-content: space-between;">
+  <div id="startGame" style="display: none; flex-direction: column; align-items: center; height: 40vh; justify-content: space-between;">
    <div>
     <h1 style="margin-bottom: 0px; font-size: 5em; margin-top: 0px; font-family: 'Papyrus';">Rotting</h1>
     <h1 style="font-size: 4em; margin-top: -15px; font-family: 'Playwrite HU';">Roulette</h1>
    </div>
 
    <div id="buttonSet1">
-     <button onclick="getById('buttonSet1').style.display = 'none'; getById('buttonSet2').style.display = 'block'" class="startGameButton">Singleplayer</button>
-     <button onclick="getById('buttonSet1').style.display = 'none'; getById('buttonSet3').style.display = 'block'" class="startGameButton">Multiplayer</button>
+     <button onclick="getById('buttonSet1').style.display = 'none'; getById('buttonSet2').style.display = 'block';" class="startGameButton">Singleplayer</button>
+     <button onclick="getById('buttonSet1').style.display = 'none'; getById('buttonSet3').style.display = 'block';" class="startGameButton">Multiplayer</button>
      <button onclick="howToPlay()" class="startGameButton">How To Play</button>
      <button onclick="settings()" class="startGameButton">Settings</button>
    </div>
@@ -719,7 +781,7 @@
    </div>
 
    <div id="buttonSet3" style="display: none;">
-     <button onclick="getById('buttonSet3').style.display = 'none'; getById('buttonSet2').style.display = 'block'; getById('5p').style.display = 'none'; localMultiplayer = true" class="startGameButton">Local</button>
+     <button onclick="getById('buttonSet3').style.display = 'none'; getById('buttonSet2').style.display = 'block'; getById('5p').style.display = 'none'; localMultiplayer = true;" class="startGameButton">Local</button>
      <button onclick="multiplayer()" class="startGameButton">Online</button>
    </div>
 
@@ -727,12 +789,13 @@
      <button onclick="goBackSettings()" class="startGameButton largeButton">Back</button>
      <button onclick="setTextSpeed()" id="textSpeed" class="startGameButton largeButton">Text Speed: Slow</button>
      <button onclick="setWheelSpeed()" id="wheelSpeed" class="startGameButton largeButton">Wheel Speed: 40 FPS</button>
+     <button onclick="setAutoplay()" id="autoplay" class="startGameButton largeButton">Autoplay: Off</button>
    </div>
 
    <div id="buttonSet5" style="display: none;">
-     <button onclick="difficulty = 'easy'; startGame()" style="color: green;" class="startGameButton">Easy</button>
-     <button onclick="difficulty = 'normal'; startGame()" style="color:  #ff8c00;" class="startGameButton">Normal</button>
-     <button onclick="difficulty = 'hard'; startGame()" style="color: rgb(255, 0, 0)" class="startGameButton">Hard</button>
+     <button onclick="difficulty = 'easy'; startGameLink()" style="color: green;" class="startGameButton">Easy</button>
+     <button onclick="difficulty = 'normal'; startGameLink()" style="color:  #ff8c00;" class="startGameButton">Normal</button>
+     <button onclick="difficulty = 'hard'; startGameLink()" style="color: rgb(255, 0, 0)" class="startGameButton">Hard</button>
    </div>
 
    <img id="imgMode" src="moon.svg" style="position: absolute; right: 10px;" width="100px" onclick="changeMode();">
@@ -755,29 +818,29 @@
 
     <h2>Basics</h2>
 
-    <p style="font-size: 1.5em; margin-bottom: 5px;">Rotting Roulette Is A Game Where The Players Try To Kill All Other Players By Shooting Them</p>
-    <p style="font-size: 1.5em; margin-top: 0em;">Each Player Has 3 HP</p>
+    <p style="font-size: 1.5em; margin-bottom: 5px;">Rotting Roulette is a game where the players try to kill all other players by shooting them.</p>
+    <p style="font-size: 1.5em; margin-top: 0em;">Each player has 3 HP.</p>
 
-    <p style="margin-top: 3em; font-size: 1.5em; margin-bottom: 5px;">During Your Turn You Choose Who To Shoot</p>
-    <p style="font-size: 1.5em; margin-top: 0em;">When You Choose Who To Shoot, There Will Be Three Outcomes</p>
+    <p style="margin-top: 3em; font-size: 1.5em; margin-bottom: 5px;">During your turn you choose who to shoot.</p>
+    <p style="font-size: 1.5em; margin-top: 0em;">When you choose who to shoot, there will be three outcomes.</p>
 
-    <p style="font-size: 1.5em; margin-top: 2em; margin-bottom: 5px;">Blank - Nothing Happens</p>
-    <p style="font-size: 1.5em; margin-top: 0em; margin-bottom: 5px;">Live - They Lose 1 HP</p>
-    <p style="font-size: 1.5em; margin-top: 0em;">Alcohol - They Get An Alcohol</p>
+    <p style="font-size: 1.5em; margin-top: 2em; margin-bottom: 5px;">Blank - Nothing happens.</p>
+    <p style="font-size: 1.5em; margin-top: 0em; margin-bottom: 5px;">Live - They lose 1 HP.</p>
+    <p style="font-size: 1.5em; margin-top: 0em;">Alcohol - They get an alcohol.</p>
 
     <h2 style="margin-top: 3em;">Alcohol</h2>
     
-    <p style="font-size: 1.5em; margin-bottom: 5px;">When A Bullet Is Shot By You Or An Opponent It Has A Chance Of Being Alcohol, This Applies To Shooting Yourself Too.</p>
-    <p style="font-size: 1.5em; margin-top: 0em; margin-bottom: 5px;">For Information On A Type Of Alcohol, Click On The Alcohol In Your Inventory</p>
+    <p style="font-size: 1.5em; margin-bottom: 5px;">When a bullet is shot by you or an opponent it has a chance of being alcohol, this applies to shooting yourself too.</p>
+    <p style="font-size: 1.5em; margin-top: 0em; margin-bottom: 5px;">For information on a type of alcohol, click on the alcohol in your inventory.</p>
 
     <h2 style="margin-top: 3em;">Insane Mode</h2>
-    <p style="font-size: 1.5em; margin-bottom: 5px;">In Insane Mode, Every Bullet Has A 50/50 Chance Of Being Live Or Alcohol</p>
+    <p style="font-size: 1.5em; margin-bottom: 5px;">In Insane Mode, every bullet has a 50/50 chance of being live or alcohol.</p>
 
     <h2 style="margin-top: 3em;">5 Players</h2>
-    <p style="font-size: 1.5em; margin-bottom: 5px;">In 5 Players, There Are 5 Players (You And 4 CPUs)</p>
+    <p style="font-size: 1.5em; margin-bottom: 5px;">In 5 Players, there are 5 players (You and 4 CPUs).</p>
 
     <h2 style="margin-top: 3em;">Alcohol Galore</h2>
-    <p style="font-size: 1.5em; margin-bottom: 5px;">Alcohol Galore Adds Four Chaos Focused Alcohols</p>
+    <p style="font-size: 1.5em; margin-bottom: 5px;">Alcohol Galore adds four chaos focused alcohols.</p>
   </div>
 
   <div id="multiplayerMenu" style="display: none; flex-direction: column; width: 100%; align-items: center;">

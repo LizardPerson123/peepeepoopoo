@@ -392,6 +392,7 @@ function settings() {
   getById("buttonSet4").style.display = "block"
   showTextSpeed()
   showWheelSpeed()
+  showAutoplay()
 }
 
 function goBackSettings() {
