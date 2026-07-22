@@ -138,101 +138,13 @@ async function beginGamePleb() {
       if (msg.code == 9) {
         whiskeyResolveFunc(msg.msg)
         whiskeyResolveFunc = undefined
-      }
-
-      for (const [key, value] of Object.entries(msg.hp)) {
-        let existsInPlayer = false
-        players.forEach(function (player) {
-          if (player.name == key) {
-            existsInPlayer = true
-          }
-        })
-
-        if (!existsInPlayer) {
-          let player = {id: msg.id[key], name: key}
-          addPlayer(player)
-          let newHuman = new Human(key)
-          newHuman.id = msg.id[key]
-          players.push(newHuman)
-        }
+        return
       }
 
       getById("buttons").style.display = "none"
-
-      players.forEach(function(player) {
-        //This Just Updates All The Stats Of The Game
-        if (player.hp != msg.hp[player.name]) {
-          players[players.indexOf(player)].hp = msg.hp[player.name]
-
-          getById(`${player.id}LifeImages`).innerHTML = ""
-
-          for (let i = 1; i <= player.hp; i++) {
-            getById(`${player.id}LifeImages`).innerHTML += '<img src="images/life.png" style="image-rendering: pixelated"/>'
-          } 
-
-          if (player.name == thisPlayer) {
-            getById("lifeImage").innerHTML = ""
-
-            for (let i = 1; i <= player.hp; i++) {
-              getById("lifeImage").innerHTML += '<img width="50em" src="images/life.png">'
-            }
-          }
-        }
-        
-        if (player.alcoholEffects.sort().join(",") != msg.effects[player.name].sort().join(",")) {
-          player.removeEffects()
-          players[players.indexOf(player)].confused = false
-          players[players.indexOf(player)].alcoholEffects = msg.effects[player.name]
-          
-          player.alcoholEffects.forEach(function(alcoholEffect) {
-            players[players.indexOf(player)].alcoholEffects.push(alcoholEffect)
-            getById(`${player.id}Effects`).innerHTML += `<p style='margin-top: 0px; margin-bottom: 2px' id='${alcoholEffect.id}Effect'>${alcoholEffect.name}</p>`
-
-            if (player.name == thisPlayer && alcoholEffect.name == "Confusion") {
-              players[players.indexOf(player)].confused = true
-            }
-          })
-        }
-
-        if (player.name == thisPlayer) {
-          player.activeAlcohol.forEach(function(alcohol) {
-            getById("alcohol" + alcohol.id).remove()
-          })
-
-          let index = players.indexOf(player)
-          players[index].activeAlcohol = msg.activeAlcohol[player.name]
-          players[index].activeAlcohol.forEach(function(alcohol) {
-            getById("statusEffects").innerHTML += `<p onclick='displayAlcoholInfo("${alcohol.name}", "${alcohol.description}", "${alcohol.img}")' id='alcohol${alcohol.id}' style="font-size: 2em; margin-top: 1px; margin-bottom: 0px; cursor: pointer">${alcohol.name}</p>`
-          })
-        }
-      })
       
-      //This States What Happened In The Game
-      await basicTurnDisplay.bind(msg.player)(() => {return [msg.result, msg.playerDamaged, msg.msg]}, false)
-      
-      //If Alcohol Used By This Pleb, Remove It Visually
-      if (msg.result == "alcoholUsed" && msg.player.name == thisPlayer) {
-        try {getById("alcohol" + msg.playerDamaged.id).remove(); }
-        catch(e) {}
-      }
-      
-      getById("wheel").src = "images/wheel.png"
-      dontTurnWheel = false
-      getById("event").innerText = ``
-
-      players.forEach(function(player) {
-        //If The NextTurn Is Dead, Skip Ahead
-        if (player.name == msg.nextTurn && player.hp < 1) {
-          let next = player
-
-          do {next = players[players.indexOf(next) + 1]
-            if (next == undefined) {next = players[0]}
-          }
-          while (next.hp < 1)
-
-          msg.nextTurn = next.name
-        }
-      })
+      //This Just Updates All The Stats Of The Game
+      updateGame(msg)
       
       //This Code Manages The NextTurn Part Of The Message
       getById("eventHeader").innerText = `${msg.nextTurn}'s Turn`
@@ -260,4 +172,100 @@ function waitForWhiskeyCallback() {
     whiskeyResolveFunc = resolve
     sendTo(host, JSON.stringify({code: 8}))
   })
+}
+
+function updateGame(msg) {
+  updatePlayers()
+  players.forEach(function(player) {
+    if (player.hp != msg.hp[player.name]) {
+      players[players.indexOf(player)].hp = msg.hp[player.name]
+
+      getById(`${player.id}LifeImages`).innerHTML = ""
+
+      for (let i = 1; i <= player.hp; i++) {
+        getById(`${player.id}LifeImages`).innerHTML += '<img src="images/life.png" style="image-rendering: pixelated"/>'
+      } 
+
+      if (player.name == thisPlayer) {
+        getById("lifeImage").innerHTML = ""
+
+        for (let i = 1; i <= player.hp; i++) {
+          getById("lifeImage").innerHTML += '<img width="50em" src="images/life.png">'
+        }
+      }
+    }
+    
+    if (player.alcoholEffects.sort().join(",") != msg.effects[player.name].sort().join(",")) {
+      player.removeEffects()
+      players[players.indexOf(player)].confused = false
+      players[players.indexOf(player)].alcoholEffects = msg.effects[player.name]
+      
+      player.alcoholEffects.forEach(function(alcoholEffect) {
+        players[players.indexOf(player)].alcoholEffects.push(alcoholEffect)
+        getById(`${player.id}Effects`).innerHTML += `<p style='margin-top: 0px; margin-bottom: 2px' id='${alcoholEffect.id}Effect'>${alcoholEffect.name}</p>`
+
+        if (player.name == thisPlayer && alcoholEffect.name == "Confusion") {
+          players[players.indexOf(player)].confused = true
+        }
+      })
+    }
+
+    if (player.name == thisPlayer) {
+      player.activeAlcohol.forEach(function(alcohol) {
+        getById("alcohol" + alcohol.id).remove()
+      })
+
+      let index = players.indexOf(player)
+      players[index].activeAlcohol = msg.activeAlcohol[player.name]
+      players[index].activeAlcohol.forEach(function(alcohol) {
+        getById("statusEffects").innerHTML += `<p onclick='displayAlcoholInfo("${alcohol.name}", "${alcohol.description}", "${alcohol.img}")' id='alcohol${alcohol.id}' style="font-size: 2em; margin-top: 1px; margin-bottom: 0px; cursor: pointer">${alcohol.name}</p>`
+      })
+    }
+  })
+  
+  //This States What Happened In The Game
+  await basicTurnDisplay.bind(msg.player)(() => {return [msg.result, msg.playerDamaged, msg.msg]}, false)
+  
+  //If Alcohol Used By This Pleb, Remove It Visually
+  if (msg.result == "alcoholUsed" && msg.player.name == thisPlayer) {
+    try {getById("alcohol" + msg.playerDamaged.id).remove(); }
+    catch(e) {}
+  }
+  
+  getById("wheel").src = "images/wheel.png"
+  dontTurnWheel = false
+  getById("event").innerText = ``
+
+  players.forEach(function(player) {
+    //If The NextTurn Is Dead, Skip Ahead
+    if (player.name == msg.nextTurn && player.hp < 1) {
+      let next = player
+
+      do {next = players[players.indexOf(next) + 1]
+        if (next == undefined) {next = players[0]}
+      }
+      while (next.hp < 1)
+
+      msg.nextTurn = next.name
+    }
+  })
+}
+
+function updatePlayers(msg) {
+  for (const [key, value] of Object.entries(msg.hp)) {
+    let existsInPlayer = false
+    players.forEach(function (player) {
+      if (player.name == key) {
+        existsInPlayer = true
+      }
+    })
+
+    if (!existsInPlayer) {
+      let player = {id: msg.id[key], name: key}
+      addPlayer(player)
+      let newHuman = new Human(key)
+      newHuman.id = msg.id[key]
+      players.push(newHuman)
+    }
+  }
 }
