@@ -144,7 +144,7 @@ async function beginGamePleb() {
       getById("buttons").style.display = "none"
       
       //This Just Updates All The Stats Of The Game
-      updateGame(msg)
+      await updateGame(msg)
       
       //This Code Manages The NextTurn Part Of The Message
       getById("eventHeader").innerText = `${msg.nextTurn}'s Turn`
@@ -174,8 +174,10 @@ function waitForWhiskeyCallback() {
   })
 }
 
-function updateGame(msg) {
-  updatePlayers()
+async function updateGame(msg) {
+  // Message Does Not Update Game State
+  if (!msg.hp) {return}
+  updatePlayersPleb(msg)
   players.forEach(function(player) {
     if (player.hp != msg.hp[player.name]) {
       players[players.indexOf(player)].hp = msg.hp[player.name]
@@ -251,7 +253,7 @@ function updateGame(msg) {
   })
 }
 
-function updatePlayers(msg) {
+function updatePlayersPleb(msg) {
   for (const [key, value] of Object.entries(msg.hp)) {
     let existsInPlayer = false
     players.forEach(function (player) {
