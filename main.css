@@ -50,11 +50,11 @@ body {overscroll-behavior: none;}
   }
 
   #events {
-    height: 35vh;
+    height: 32vh;
   }
 
   #centerThing {
-    height: 50vh;
+    height: 47vh;
   }
 
   #showMsgButton {margin-top: 1em;}
@@ -81,8 +81,6 @@ body {overscroll-behavior: none;}
   #buttons, #alcoholButtons, #shootButtons {
     margin-bottom: 5px;
   }
-
-  #statusEffects, #players, #events, #centerThing, #lives, #messages {border: none; border-top: solid; border-bottom: solid;}
 }
 
 @media screen and (max-height: 850px) and (max-width: 600px) {

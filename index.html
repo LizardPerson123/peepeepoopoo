@@ -17,7 +17,7 @@
   <style>
     * { font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif; text-align: center;}
 
-    .startGameButton, #whatDoing, #new, #join, #startMultiplayer {color: black;}
+    .startGameButton, #whatDoing, #new, #join, #startMultiplayer, #multiplayerButton2 {color: black;}
 
     .startGameButton {
       justify-items: center; 
@@ -69,577 +69,19 @@
     #statusEffects::-webkit-scrollbar, #players::-webkit-scrollbar, #events::-webkit-scrollbar, #centerThing::-webkit-scrollbar, #lives::-webkit-scrollbar, #messages::-webkit-scrollbar {
       display: none;
     }
+
+    #p5 {
+      color: #0000cd;
+    }
+
+    #alcop, #multiplayerButton4 {
+      color: #228b22
+    }
   </style>
 
   <style id="modeStyle"></style>
   <script src="utility.js"></script>
   <script src="modesStyle.js"></script>
-
-  <script>
-    let currentMode = "new"
-    let thisPlayer
-    let gameDisplay = "grid"
-    let gameMode = "normal"
-    let localMultiplayer = false
-    let peopleNum
-    let alcoholUsed = []
-    let autoplay = false
-
-    async function startGame(localMultiplayerPlayers) {
-      achi.register("Play Rotting Roulette", "bronze")
-
-      turnWheel()
-      getTextSpeed()
-      getWheelSpeed()
-
-      getById("game").style.display = "grid"
-      getById("startGame").style.display = "none"
-
-      handlePhoneDisplays()
-
-      thisPlayer = "Player"
-
-      players.push(new Human("Player"))
-
-      if (localMultiplayer) {
-        let num = (localMultiplayerPlayers || numberOfPeoplePlaying())
-        peopleNum = num
-
-        for (let i = 2; i <= num; i++) {
-          players.push(new Human("Person " + i))
-        }
-      }
-      else if (gameMode == "5players") {
-        players.push(new Bot("CPU 1"))
-        players.push(new Bot("CPU 2"))
-        players.push(new Bot("CPU 3"))
-        players.push(new Bot("CPU 4"))
-      }
-      else {
-        players.push(new Bot("CPU 1"))
-        players.push(new Bot("CPU 2"))
-      }
-
-      for (let i = 1; i <= 3; i++) {
-        if (localMultiplayer) {
-          addAlcoholMultiplayer()
-          continue
-        }
-
-        addAlcoholSinglePlayer()
-      }
-
-      updatePlayers()
-
-      bulletList.generateNew(100)
-
-      if (localMultiplayer) {await firstAlcoholLocalMultiplayer()}
-      else {await firstAlcoholSingleplayer()}
-
-      for (let i = 1; i <= 2; i++) {
-        if (localMultiplayer) {
-          addAlcoholMultiplayer()
-          continue
-        }
-        
-        addAlcoholSinglePlayer()
-      }
-
-      let turns = 0
-
-      while (true) {
-        turns++
-        // For Achievement
-        let numberOfPeopleWithOneHeart = 0
-        players.forEach(function(player) {
-          if (player.hp == 1) {numberOfPeopleWithOneHeart++}
-        })
-
-        if (numberOfPeopleWithOneHeart == 2 && players.getAlivePlayers().length == 2 && !localMultiplayer) {achi.register("Showdown", "silver")}
-
-        for (let i = 0; i < players.length; i++) {
-          if (localMultiplayer) {
-            thisPlayer = players[i].name
-
-            let status = getById("statusEffects")
-            status.innerHTML = "<h1>Alcohol</h1>"
-
-            players[i].activeAlcohol.forEach(function(alcohol) {
-              status.innerHTML += `<p onclick='displayAlcoholInfo("${alcohol.name}", "${alcohol.description}", "${alcohol.img}")' id='alcohol${alcohol.id}' style="font-size: 2em; margin-top: 1px; margin-bottom: 0px; cursor: pointer">${alcohol.name}</p>`
-            })
-          
-            getById("lifeImage").innerHTML = ""
-            for (let x = 1; x <= players[i].hp; x++) {
-              getById("lifeImage").innerHTML += '<img width="50em" src="images/life.png">'
-            }
-          }
-
-          await players[i].turn()
-
-          if (localMultiplayer) {
-            length = players.filter(function(player){
-              return (player.hp < 1)
-            }).length
-
-            if (length == peopleNum - 1) {
-              players.forEach(function(player) {
-                if (player.hp > 0) {
-                  if (!autoplay) {
-                    alert(player.name + " Wins")
-                  }
-                  reload()
-                }
-              })
-            }
-            continue
-          }
-
-          let playersAlive = 0
-          players.forEach(function(player) {
-            if (player.hp > 0) {
-              playersAlive++
-            }
-          })
-
-          if (playersAlive == players.length - 1 && gameMode == "survival") {
-            alert("You Survived " + turns + " Turns")
-            reload()
-          }
-       
-          if (players[0].hp < 1) {
-            let allUsed = checkIfAllAlcoholUsed()
-
-            if (allUsed == "None Used") {achi.laterRegi("Sober", "silver")}
-            else if (allUsed) {achi.laterRegi("Alcoholic", "silver")}
- 
-            if (!autoplay) {
-              alert("You Lose")
-            }
-
-            achi.laterRegi("Lose Rotting Roulette", "bronze")
-
-            if (localStorage.getItem("username")) {
-              document.querySelector("body").innerText = "Please Wait..."
-
-              try {
-                await fetch("https://api.rottingpears.com/xp", {
-                  method: "POST",
-                  body: JSON.stringify({
-                    n: localStorage.getItem("username"),
-                    p: localStorage.getItem("password"),
-                    t: 0
-                  }),
-                  headers: {
-                    "Content-type": "application/json; charset=UTF-8"
-                  }
-                })
-              }
-              catch {}
-            }
-
-            reload()
-          }
-
-          else if (playersAlive == 1) {
-            if (!autoplay) {
-              alert("You Win")
-            }
-          
-            achi.laterRegi("Win Rotting Roulette", "bronze")
-
-            if (i < 10) {achi.laterRegi("Accelerated Alcoholism", "gold")}
-
-            if (gameMode == "insane") {achi.laterRegi("Beat Insane Mode", "silver")}
-
-            let allUsed = checkIfAllAlcoholUsed()
-
-            if (allUsed == "None Used") {achi.laterRegi("Sober", "silver")}
-            else if (allUsed) {achi.laterRegi("Alcoholic", "silver")}
-
-            if (localStorage.getItem("username")) {
-              document.querySelector("body").innerText = "Please Wait..."
-              
-              try {
-                await fetch("https://api.rottingpears.com/xp", {
-                  method: "POST",
-                  body: JSON.stringify({
-                    n: localStorage.getItem("username"),
-                    p: localStorage.getItem("password"),
-                    t: 1
-                  }),
-                  headers: {
-                    "Content-type": "application/json; charset=UTF-8"
-                  }
-                })
-              }
-              catch {}
-            }
-
-            reload()
-          }
-        }
-      }
-
-    }
-
-    function startGameLink() {
-      if (!getAutoplay()) {startGame(); return}
-      let localMultiplayerPlayers = 0
-      if (localMultiplayer) {
-        localMultiplayerPlayers = numberOfPeoplePlaying()
-      }
-
-      historyPush(localMultiplayerPlayers, difficulty, gameMode)
-      window.location.reload()
-    }
-
-    function historyPush(localMultiplayerPlayers, difficulty, gameMode) {
-      history.pushState("", "", `?origin=autoplay&d=${difficulty}&m=${localMultiplayerPlayers}&g=${gameMode}`)
-    }
-
-    function getTextSpeed() {
-      let rrTextSpeed = (localStorage.getItem("rrTextSpeed") || "slow")
-
-      switch (rrTextSpeed) {
-        case ("slow"): textSpeed = 3600; break
-        case ("normal"): textSpeed = 2400; break
-        case ("fast"): textSpeed = 1200; break
-      }
-    }
-
-    function getWheelSpeed() {
-      let rrWheelSpeed = (localStorage.getItem("rrWheelSpeed") || "40")
-
-      switch (rrWheelSpeed) {
-        case ("20"): wheelSpeed = 50; turnSpeed = 3; break
-        case ("40"): wheelSpeed = 25; turnSpeed = 1.5; break
-        case ("60"): wheelSpeed = 17; turnSpeed = 1; break
-      }
-    }
-
-    function setTextSpeed() {
-      let rrTextSpeed = (localStorage.getItem("rrTextSpeed") || "slow")
-
-      switch (rrTextSpeed) {
-        case ("slow"): localStorage.setItem("rrTextSpeed", "normal"); getById("textSpeed").innerHTML = "Text Speed: Normal"; break
-        case ("normal"): localStorage.setItem("rrTextSpeed", "fast"); getById("textSpeed").innerHTML = "Text Speed: Fast"; break
-        case ("fast"): localStorage.setItem("rrTextSpeed", "slow"); getById("textSpeed").innerHTML = "Text Speed: Slow"; break
-      }
-    }
-
-    function showTextSpeed() {
-      let rrTextSpeed = (localStorage.getItem("rrTextSpeed") || "slow")
-
-      switch (rrTextSpeed) {
-        case ("slow"): getById("textSpeed").innerHTML = "Text Speed: Slow"; break
-        case ("normal"): getById("textSpeed").innerHTML = "Text Speed: Normal"; break
-        case ("fast"): getById("textSpeed").innerHTML = "Text Speed: Fast"; break
-      }
-    }
-
-    function setWheelSpeed() {
-      let rrWheelSpeed = (localStorage.getItem("rrWheelSpeed") || "40")
-
-      switch (rrWheelSpeed) {
-        case ("20"): localStorage.setItem("rrWheelSpeed", "40"); getById("wheelSpeed").innerHTML = "Wheel Speed: 40 FPS"; break
-        case ("40"): localStorage.setItem("rrWheelSpeed", "60"); getById("wheelSpeed").innerHTML = "Wheel Speed: 60 FPS"; break
-        case ("60"): localStorage.setItem("rrWheelSpeed", "20"); getById("wheelSpeed").innerHTML = "Wheel Speed: 20 FPS"; break
-      }
-    }
-
-    function showWheelSpeed() {
-      let rrWheelSpeed = (localStorage.getItem("rrWheelSpeed") || "40")
-
-      switch (rrWheelSpeed) {
-        case ("20"): getById("wheelSpeed").innerHTML = "Wheel Speed: 20 FPS"; break
-        case ("40"): getById("wheelSpeed").innerHTML = "Wheel Speed: 40 FPS"; break
-        case ("60"): getById("wheelSpeed").innerHTML = "Wheel Speed: 60 FPS"; break
-      }
-    }
-
-    function getAutoplay() {
-      let rrAutoplay = (localStorage.getItem("rrAutoplay") || "false")
-
-      switch (rrAutoplay) {
-        case ("true"): return true
-        case ("false"): return false
-      }
-    }
-
-    function setAutoplay() {
-      let rrAutoplay = (localStorage.getItem("rrAutoplay") || "false")
-
-      switch (rrAutoplay) {
-        case ("false"): localStorage.setItem("rrAutoplay", "true"); getById("autoplay").innerHTML = "Autoplay: On"; break
-        case ("true"): localStorage.setItem("rrAutoplay", "false"); getById("autoplay").innerHTML = "Autoplay: Off"; break
-      }
-    }
-
-    function showAutoplay() {
-      let rrAutoplay = (localStorage.getItem("rrAutoplay") || "false")
-
-      switch (rrAutoplay) {
-        case ("false"): getById("autoplay").innerHTML = "Autoplay: Off"; break
-        case ("true"): getById("autoplay").innerHTML = "Autoplay: On"; break
-      }
-    }
-
-    function addAlcoholSinglePlayer() {
-      let alcoholNum = getRndInt(0, SinglePlayerAlcoholTypes.length)
-
-      let alcohol = SinglePlayerAlcoholTypes[alcoholNum]
-
-      gameAlcohol.push(alcohol)
-
-      removeItem(SinglePlayerAlcoholTypes, alcohol)
-    }
-
-    function addAlcoholSinglePlayer() {
-      if (gameMode == "alcop" && getRndInt(0, 2) == 0) {
-        let alcoholNum = getRndInt(0, SingleplayerAlcopAlcoholTypes.length && SingleplayerAlcopAlcoholTypes.length > 0)
-        let alcohol = SingleplayerAlcopAlcoholTypes[alcoholNum]
-        gameAlcohol.push(alcohol)
-        removeItem(SingleplayerAlcopAlcoholTypes, alcohol)
-      }
-
-      let alcoholNum = getRndInt(0, AlcoholTypes.length)
-      let alcohol = AlcoholTypes[alcoholNum]
-      
-      //Less Good Alcohols Are Given Less Frequently
-      if ((alcohol.name == "Tequila" || alcohol.name == "Red Wine" || alcohol.name == "Mead" || alcohol.name == "Seltzer") && getRndInt(0, 2) == 0) {addAlcoholSinglePlayer(); return}
-
-      gameAlcohol.push(alcohol)
-      removeItem(AlcoholTypes, alcohol)
-    }
-
-    function addAlcoholMultiplayer() {
-      if (gameMode == "alcop" && getRndInt(0, 2) == 0 && AlcopAlcoholTypes.length > 0) {
-        let alcoholNum = getRndInt(0, AlcopAlcoholTypes.length)
-        let alcohol = AlcopAlcoholTypes[alcoholNum]
-        gameAlcohol.push(alcohol)
-        removeItem(AlcopAlcoholTypes, alcohol)
-      }
-
-      let alcoholNum = getRndInt(0, AlcoholTypes.length)
-      let alcohol = AlcoholTypes[alcoholNum]
-      if ((alcohol.name == "Tequila" || alcohol.name == "Red Wine" || alcohol.name == "Mead" || alcohol.name == "Seltzer") && getRndInt(0, 2) == 0) {addAlcoholSinglePlayer(); return}
-      gameAlcohol.push(alcohol)
-      removeItem(AlcoholTypes, alcohol)
-    }
-    
-    //recursive
-    function numberOfPeoplePlaying() {
-      let num = prompt("How Many People Are Playing?")
-      num = Number(num)
-
-      if (!num) {
-        alert("Not A Number")
-      }
-      else if (num < 2) {
-        alert("Must Be At Least 2 People")
-      }
-      else if (num > 5) {
-        alert("Cannot Be More Than 5 People")
-      }
-      else {
-        return num
-      }
-
-      return numberOfPeoplePlaying()
-    }
-
-    function checkIfAllAlcoholUsed() {
-      // Also Checks If No Alcohol Was Used
-      // This Is For Achievements
-      let alcoholUsedNum = 0
-      gameAlcohol.forEach(function(alcohol) {
-        alcohol = new alcohol()
-        if (alcoholUsed.includes(alcohol.name)) {alcoholUsedNum++}
-      })
-
-      if (alcoholUsedNum == gameAlcohol.length) {return true}
-      else if (alcoholUsedNum == 0) {return "None Used"}
-      else {return false}
-    }
-    
-    //Code For User Selecting Starting Alcohol (Messy Code, Could Use For Loop Instead Of Function)
-    async function firstAlcohol() {
-      return new Promise(function(resolve) {
-        getById("wheelDiv").style.display = "none"
-        getById("firstAlcohol").style.display = "block"
-
-        function clickDecision(num) {
-          let alcohol
-
-          //try catch for multiplayer compatability
-          try {
-           alcohol = new gameAlcohol[num - 1]()
-          }
-          catch(e) {alcohol = gameAlcohol[num - 1]}
-
-          getById("op" + num).innerText = alcohol.name
-          getById("op" + num + "Img").src = "images/" + alcohol.img
-          getById("op" + num + "Desc").innerText = alcohol.shortDescription || alcohol.description
-          getById("op" + num + "Div").addEventListener("click", function a() {
-            getById("statusEffects").innerHTML +=  `<p onclick='displayAlcoholInfo("${alcohol.name}", "${alcohol.description}", "${alcohol.img}")' id='alcohol${alcohol.id}' style="font-size: 2em; margin-top: 1px; margin-bottom: 0px; cursor: pointer">${alcohol.name}</p>`
-            getById("firstAlcohol").style.display = "none"
-            getById("wheelDiv").style.display = "block"
-
-            resolve([alcohol, num-1])
-
-            //Cleanup
-            let n1 = getById("op" + 1 + "Div").cloneNode(true)
-            let n2 = getById("op" + 2 + "Div").cloneNode(true)
-            let n3 = getById("op" + 3 + "Div").cloneNode(true)
-
-            getById("op" + 1 + "Div").remove()
-            getById("op" + 2 + "Div").remove()
-            getById("op" + 3 + "Div").remove()
-
-            getById("alcoholSelection").appendChild(n1)
-            getById("alcoholSelection").appendChild(n2)
-            getById("alcoholSelection").appendChild(n3)
-          })
-        }
-
-        clickDecision(1)
-        clickDecision(2)
-        clickDecision(3)
-      })
-    }
-    
-    //Specifically used in singleplayer
-    async function firstAlcoholSingleplayer() {
-      let [alcohol, num] = await firstAlcohol()
-
-      players[0].activeAlcohol.push(alcohol)
-      alcohol.startEffect(this, this)
-
-      players[1].activeAlcohol.push(new gameAlcohol[getRndInt(0, 3)])
-      players[2].activeAlcohol.push(new gameAlcohol[getRndInt(0, 3)])
-    }
-
-    async function firstAlcoholLocalMultiplayer() {
-      let status = getById("statusEffects")
-      let chooseAlcohol = getById("chooseAlcohol")
-      
-      for (let i = 0; i < peopleNum; i++) {
-        chooseAlcohol.innerHTML = `Player ${i+1}, Choose Alcohol`
-        let [alcohol, num] = await firstAlcohol()
-        status.innerHTML = "<h1>Alcohol</h1>"
-
-        players[i].activeAlcohol.push(alcohol)
-        alcohol.startEffect(players[i], players[i])
-      }
-    }
-
-    function multiplayer() {
-      getById("startGame").style.display = "none"
-      getById("multiplayerMenu").style.display = "flex"
-
-      getById("username").value = localStorage.getItem("username") || ""
-      getById("password").value = localStorage.getItem("password") || ""
-      getById("sessionCode").value = ""
-
-      getById("new").addEventListener("click", function a() {
-        currentMode = "new"
-        getById("sessionCode").style.display = "none"
-        getById("sessionCodeText").style.display = "none"
-        getById("whatDoing").innerText = "Creating New Session"
-
-        getById("new").style.display = "none"
-        getById("join").style.display = "inline"
-      })
-
-      getById("join").addEventListener("click", function b() {
-        currentMode = "join"
-        getById("sessionCode").style.display = "block"
-        getById("sessionCodeText").style.display = "block"
-        getById("whatDoing").innerText = "Joining Session"
-
-        getById("join").style.display = "none"
-        getById("new").style.display = "inline"
-      })
-
-      getById("startMultiplayer").addEventListener("click", function() {
-        ws = new WebSocket("wss://api.rottingpears.com/")
-
-        ws.onmessage = function () {
-          let username = getById("username").value
-          thisPlayer = username
-          let password = getById("password").value
-          let sessionCode = getById("sessionCode").value
-
-          if (username.length < 1 || password.length < 1) {
-            alert("Username And Password Must Not Be Blank")
-          }
-          else if (currentMode == "join") {
-            if (sessionCode.length < 5) {
-              alert("Session Code Must Be 5 Characters Long")
-            }
-            else {
-              joinSession(username, password, sessionCode)
-            }
-          }
-          else {
-            newSession(username, password)
-          }
-
-          localStorage.setItem("username", username)
-          localStorage.setItem("password", password)
-        }
-
-        ws.onclose = function() {
-          alert("Connection Disrupted")
-          reload()
-        }
-      })
-    }
-
-    function updatePlayers() {
-      getById("innerPlayers").innerHTML = ""
-      players.forEach(player => {
-        getById("innerPlayers").innerHTML += `
-          <div id='${player.id}Div'>
-            <p style='margin-bottom: 3px' id='${player.id}Name'>${player.name}</p>
-
-            <div id='${player.id}Effects'>
-
-            </div>
-
-            <div style='margin-bottom: 0px' id='${player.id}LifeImages'>
-              <img src='images/life.png' style='image-rendering: pixelated;'>
-              <img src='images/life.png' style='image-rendering: pixelated;'>
-              <img src='images/life.png' style='image-rendering: pixelated;'>
-            </div>
-          </div>
-        `
-      });
-    }
-
-    function addPlayer(player) {
-      getById("innerPlayers").innerHTML += `
-          <div id='${player.id}Div'>
-            <p style='margin-bottom: 3px' id='${player.id}Name'>${player.name}</p>
-
-            <div id='${player.id}Effects'>
-
-            </div>
-
-            <div style='margin-bottom: 0px' id='${player.id}LifeImages'>
-              <img src='images/life.png' style='image-rendering: pixelated;'>
-              <img src='images/life.png' style='image-rendering: pixelated;'>
-              <img src='images/life.png' style='image-rendering: pixelated;'>
-            </div>
-          </div>
-        `
-    }
-
-    function localMultiplayerStart() {
-      if (localMultiplayer) {startGame(); return}
-      getById("buttonSet5").style.display = "block"
-    }
-  </script>
 
   <script>
     window.addEventListener("DOMContentLoaded", function() {
@@ -775,13 +217,13 @@
 
    <div id="buttonSet2" style="display: none;">
      <button onclick="getById('buttonSet2').style.display = 'none'; localMultiplayerStart()" class="startGameButton">Normal Mode</button>
-     <button onclick="gameMode = 'insane'; getById('buttonSet2').style.display = 'none'; localMultiplayerStart()" class="startGameButton">Insane Mode</button>
-     <button id="5p" onclick="gameMode = '5players'; getById('buttonSet2').style.display = 'none'; localMultiplayerStart()" class="startGameButton">5 Players</button>
-     <button onclick="gameMode = 'alcop'; getById('buttonSet2').style.display = 'none'; localMultiplayerStart()" class="startGameButton">Alcohol Galore</button>
+     <button style="color: rgb(255, 0, 0);" onclick="gameMode = 'insane'; getById('buttonSet2').style.display = 'none'; localMultiplayerStart()" class="startGameButton">Insane Mode</button>
+     <button id="p5" onclick="gameMode = '5players'; getById('buttonSet2').style.display = 'none'; localMultiplayerStart()" class="startGameButton">5 Players</button>
+     <button id="alcop" onclick="gameMode = 'alcop'; getById('buttonSet2').style.display = 'none'; localMultiplayerStart()" class="startGameButton">Alcohol Galore</button>
    </div>
 
    <div id="buttonSet3" style="display: none;">
-     <button onclick="getById('buttonSet3').style.display = 'none'; getById('buttonSet2').style.display = 'block'; getById('5p').style.display = 'none'; localMultiplayer = true;" class="startGameButton">Local</button>
+     <button onclick="getById('buttonSet3').style.display = 'none'; getById('buttonSet2').style.display = 'block'; getById('p5').style.display = 'none'; localMultiplayer = true;" class="startGameButton">Local</button>
      <button onclick="multiplayer()" class="startGameButton">Online</button>
    </div>
 
@@ -865,9 +307,9 @@
     <h1>Multiplayer</h1>
     <h2 id="status"></h2>
     <button style="margin-bottom: 20px; display: none;" class="playerOption" onclick="getById('beginGameButton').style.display = 'none'; getById('multiplayerButton2').style.display = 'inline-block'; getById('multiplayerButton3').style.display = 'inline-block'; getById('multiplayerButton4').style.display = 'inline-block'" id="beginGameButton">Start Game</button>
-    <button style="margin-bottom: 20px; display: none;" class="playerOption" onclick="beginGameHost()" id="multiplayerButton2">Normal Mode</button>
-    <button style="margin-bottom: 20px; display: none; color: rgb(255, 0, 0);" class="playerOption" onclick="gameMode = 'insane'; beginGameHost()" id="multiplayerButton3">Insane Mode</button>
-    <button style="margin-bottom: 20px; display: none; color: orange;" class="playerOption" onclick="gameMode = 'alcop'; beginGameHost()" id="multiplayerButton4">Alcohol Galore</button>
+    <button style="margin-bottom: 20px; display: none; background: none; border: solid;" class="playerOption" onclick="beginGameHost()" id="multiplayerButton2">Normal Mode</button>
+    <button style="margin-bottom: 20px; display: none; background: none; border: solid; color: rgb(255, 0, 0);" class="playerOption" onclick="gameMode = 'insane'; beginGameHost()" id="multiplayerButton3">Insane Mode</button>
+    <button style="margin-bottom: 20px; display: none; background: none; border: solid" class="playerOption" onclick="gameMode = 'alcop'; beginGameHost()" id="multiplayerButton4">Alcohol Galore</button>
     <div style="padding-top: 0.5em; padding-bottom: 1em; border: solid;" id="usernames">
       <h2 style="font-size: 1.7em;">Players</h2>
     </div>
@@ -895,12 +337,15 @@
       </div>
     </div>
   </div>
-
+  
+  <script src="alcohols.js"></script>
   <script src="rotroulette.js"></script>
+  <script src="game.js"></script>
   <script src="displaystuff.js"></script>
   <script src="rottingextensions.js"></script>
   <script src="multiplayer/host.js"></script>
   <script src="multiplayer/pleb.js"></script>
   <script src="multiplayer/pearnet.js"></script>
+  <script src="alcohols.js"></script>
 </body>
 </html>

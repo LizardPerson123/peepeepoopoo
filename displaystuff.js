@@ -160,7 +160,7 @@ function choseShoot(includePlayer = true) {
     let confused = false
 
     if (includePlayer) {
-      getById("shootButtons").innerHTML += `<button class="playerOption" style='margin-right: 5px;' id='goBackButton'>
+      getById("shootButtons").innerHTML += `<button class="playerOption" style='margin-right: 5px; margin-bottom: 8px' id='goBackButton'>
       Go Back</button>`
     }
 
@@ -176,7 +176,7 @@ function choseShoot(includePlayer = true) {
     alivePlayers.forEach(function(player) 
     {
       if (!(!includePlayer && player.name == thisPlayer)) {
-        getById("shootButtons").innerHTML += `<button style='margin-right: 5px' class="playerOption" id='${player.id}Button'>${player.name}</button>`
+        getById("shootButtons").innerHTML += `<button style='margin-right: 5px; margin-bottom: 8px' class="playerOption" id='${player.id}Button'>${player.name}</button>`
       }
 
       if (confused && !(!includePlayer && player.name == thisPlayer)) {

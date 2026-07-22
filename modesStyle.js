@@ -10,7 +10,15 @@ function letThereBeDark() {
       color: black;
     }
 
-    .startButton, #showMsgButton, .startGameButton, #whatDoing, #new, #join, #startMultiplayer {color: white}
+    .startButton, #showMsgButton, .startGameButton, #whatDoing, #new, #join, #startMultiplayer, #multiplayerButton2 {color: white}
+
+    #p5 {
+      color: #00bfff
+    }
+
+    #alcop, #multiplayerButton4 {
+      color: #00ff00
+    }
   `
 
   localStorage.setItem("mode", "dark")
