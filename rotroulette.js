@@ -213,7 +213,10 @@ class Player {
     let playerDamaged = players[playerDamagedIndex]
     let msg = ""
 
-    this.runEffectsShoot()
+    let effectResult = this.runEffectsShoot(resultThing, playerDamaged, msg)
+    resultThing = effectResult[0]
+    playerDamaged = effectResult[1]
+    msg = effectResult[2]
     
     // Alcohol
     if (resultThing instanceof Alcohol) {
@@ -241,7 +244,7 @@ class Player {
     return [resultThing, playerDamaged, msg]
   }
 
-  runEffectsShoot() {
+  runEffectsShoot(resultThing, playerDamaged, msg) {
     this.alcoholEffects.forEach(function(effect) {
       if (effect.shoot) {
         let shootEffect = effect.shoot(this, resultThing, playerDamaged)
@@ -255,9 +258,12 @@ class Player {
         }
       }
     }.bind(this))
+
+    return [resultThing, playerDamaged, msg]
   }
 
-  runEffectsDamage() {
+  runEffectsDamage(attacker) {
+    let msg = ""
     this.alcoholEffects.forEach(function(effect) {
       if (effect.damage) {
         let effectDamage = effect.damage(this, attacker)
@@ -267,6 +273,8 @@ class Player {
         msg = effectDamage[1]
       }
     }.bind(this))
+
+    return msg
   }
 
   //Used here so that host and plebs can display results at the same time, this is for host
@@ -342,9 +350,8 @@ class Player {
 
   damage(hp, attacker) {
     this.hp -= hp
-    let msg = ""
 
-    this.runEffectsDamage()
+    let msg = this.runEffectsDamage(attacker)
 
     getById(`${this.id}LifeImages`).innerHTML = ""
 

@@ -38,6 +38,7 @@ class Beer extends Alcohol {
 
     this.name = "Beer"
     this.description = "Gives A Guranteed Live Next Turn"
+    this.shortDescription = "Gives A Guranteed Live"
     this.img = "beer.png"
   }
 }
@@ -68,6 +69,7 @@ class Red_Wine extends Alcohol {
 
     this.name = "Red Wine"
     this.description = "Makes You Invincible For 1 Turn"
+    this.shortDescription = "Makes You Invincible"
     this.img = "red_wine.png"
   }
 
@@ -130,6 +132,7 @@ class Whiskey extends Alcohol {
 
     this.name = "Whiskey"
     this.description = "Lets You See The Next 5 Shots"
+    this.shortDescription = "Lets You See The Next Shots"
     this.img = "whiskey.png"
   }
 }
@@ -199,6 +202,7 @@ class Brandy extends Alcohol {
 
     this.name = "Brandy"
     this.description = "Give A Selected Player Forced Blanks For 2 Turns"
+    this.shortDescription = "Give A Selected Player Forced Blanks"
     this.img = "brandy.png"
   }
 }
@@ -278,7 +282,7 @@ class Gin extends Alcohol {
 
     this.name = "Gin"
     this.description = "Places A Shield Around You; Bullets Have A Chance To Bounce Off You And Hit The Attacker; Lasts 3 Turns"
-    this.shortDescription = "Bullets Have A Chance To Bounce Off You"
+    this.shortDescription = "Bullets Can Bounce Off You"
     this.img = "gin.png"
   }
 }
@@ -342,7 +346,7 @@ class MoonShine extends Alcohol {
 
     this.name = "Moon Shine"
     this.description = "Choose To Sacrifice An Amount Of Hearts; If Your Next Turn Is Live, That Damage Is Dealt, If It Is Blank, You Lose Those Hearts"
-    this.shortDescription = "Choose To Gamble An Amount Of Hearts"
+    this.shortDescription = "Gamble Health"
     this.img = "moonshine.png"
   }
 
