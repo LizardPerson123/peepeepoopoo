@@ -537,7 +537,8 @@ class Mocktail extends Alcohol {
           resolve([--turns, msg, this.AlcoholEffect])
           return
         }
-
+        
+        alert("no")
         resolve([--turns, undefined, undefined])
       }.bind(this))
     })

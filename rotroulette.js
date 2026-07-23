@@ -27,6 +27,12 @@ async function giveEffectTo(player, turns, multiplayerContext) {
   const giveEffectMsg = `Who To Give ${this.AlcoholEffect.name} To?`
   const applyEffectTo = await choosePlayer.bind(this)(player, turns, multiplayerContext, giveEffectMsg)
 
+  if (multiplayerContext == "pleb") {
+    //Multiplayer And This Player Is A Pleb
+    const attackedPlayer = players.indexOf(applyEffectTo)
+    return [turns, attackedPlayer, undefined]
+  }
+
   applyEffectTo.alcoholEffects.push(this.AlcoholEffect)
   getById(`${applyEffectTo.id}Effects`).innerHTML += `<p style='margin-top: 0px; margin-bottom: 2px' id='${this.AlcoholEffect.id}Effect'>${this.AlcoholEffect.name}</p>`
 

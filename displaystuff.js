@@ -116,8 +116,8 @@ function choseAlcohol(useAlcohol = false, multiplayerContext = undefined) {
       resolve("goBack")
     })
 
-    activeAlcohol.forEach(function(alcohol) {
-      getById(`${alcohol.id}Button`).addEventListener("click", function() {
+    activeAlcohol.forEach(async function(alcohol) {
+      getById(`${alcohol.id}Button`).addEventListener("click", async function() {
         if (useAlcohol) {
           //This Is For Multiplayer
           //This Info Is Sent To The Host
@@ -134,6 +134,11 @@ function choseAlcohol(useAlcohol = false, multiplayerContext = undefined) {
               resolve([this.activeAlcohol.indexOf(alcohol), effect[0], effect[1]])
             }
           }.bind(this))
+
+          if (Mocktail.name == alcohol.name || Mocktail.name == alcohol.oname) {
+            let effect = await new Mocktail().useEffect(this, multiplayerContext)
+            resolve([this.activeAlcohol.indexOf(alcohol), effect[0], effect[1]])
+          }
         }
         else {
           //Resolve Alcohol Index
