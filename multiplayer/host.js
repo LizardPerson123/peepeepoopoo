@@ -74,7 +74,8 @@ function newSession(username, password) {
       }
 
       getById("multiplayerMenu").style.display = "flex"
-      getById("multiplayerNewMenu").style.display = "none"  
+      getById("multiplayerNewMenu").style.display = "none"
+      multiplayer()
     }
     
   })
@@ -142,7 +143,6 @@ async function beginGameHost(turns) {
     }
     else if (eventData.code == 2) {
       currentPlayer = undefined
-      console.log(eventData.response)
       multiplayerResolveFunc(eventData.response)
     }
     else if (eventData.code == 3) {

@@ -66,6 +66,7 @@ function joinSession(username, password, sessionID) {
 
       getById("multiplayerMenu").style.display = "flex"
       getById("multiplayerJoin").style.display = "none"  
+      multiplayer()
       resolve()
     }
 
