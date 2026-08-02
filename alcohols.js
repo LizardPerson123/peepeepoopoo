@@ -191,7 +191,7 @@ class Brandy extends Alcohol {
       }.bind(this))
     })
     
-    const effectMsg = "Forced Blank"
+    const effectMsg = "Forced Blanks"
     const effectTurns = 2
     const onDamage = undefined
     this.AlcoholEffect = new Effect(effectMsg, effectTurns, onDamage, function onShoot(player, result) {
@@ -374,15 +374,14 @@ class IPA extends Alcohol {
   constructor() {
     const turns = 1
     super(turns, async function(player, turns, multiplayerContext) {
-      let bro = new FratBro(player.name, multiplayerContext)
+       if (multiplayerContext == "pleb") {
+        return [--turns]
+      }
+
+      let bro = new FratBro(player.name)
       players.push(bro)
       addPlayer(bro)
       bro.damage(2)
-
-      if (multiplayerContext == "pleb") {
-        const name = bro.name
-        return [turns, name, undefined]
-      }
 
       return [--turns, bro.name + " Has Joined The Battle", undefined]
     })
@@ -442,7 +441,7 @@ class Rum extends Alcohol {
     const turns = 1
     super(turns, function(player, turns, multiplayerContext) {
       return new Promise(async function(resolve) {
-        const effectResult = await giveEffectTo.bind(this)(player, turns, multiplayerContext)
+        const effectResult = await giveEffectTo.bind(this)(player, turns, multiplayerContext, (applyEffectTo) => {applyEffectTo.confused = true})
         resolve(effectResult)
       }.bind(this))
     })
@@ -538,7 +537,6 @@ class Mocktail extends Alcohol {
           return
         }
         
-        alert("no")
         resolve([--turns, undefined, undefined])
       }.bind(this))
     })
@@ -552,6 +550,32 @@ class Mocktail extends Alcohol {
     this.name = "Mocktail"
     this.description = "Fake Having An Effect Chosen At Random"
     this.img = "mocktail.png"
+  }
+}
+
+class Cider extends Alcohol {
+  constructor() {
+    const turns = 1
+    super(turns, function(player, turns, multiplayerContext) {
+      return new Promise(async function(resolve) {
+        const effectGiveTo = await giveEffectTo.bind(this)(player, turns, multiplayerContext)
+        resolve(effectGiveTo)
+      }.bind(this))
+    })
+    
+    const effectMsg = "Weakness"
+    const effectTurns = 2
+    const onShoot = undefined
+    this.AlcoholEffect = new Effect(effectMsg, effectTurns, function onDamage(player, attacker=player) {
+      const newHP = --player.hp
+      const msg = "Double Damage From Weakness"
+      return [newHP, msg]
+    }, onShoot)
+
+    this.name = "Cider"
+    this.description = "Give A Selected Player Weakness For 2 Turns; They Take Double Damage"
+    this.shortDescription = "Give A Selected Player Weakness"
+    this.img = "cider.png"
   }
 }
 

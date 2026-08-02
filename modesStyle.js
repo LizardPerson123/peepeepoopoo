@@ -10,7 +10,7 @@ function letThereBeDark() {
       color: black;
     }
 
-    .startButton, #showMsgButton, .startGameButton, #whatDoing, #new, #join, #startMultiplayer, #multiplayerButton2 {color: white}
+    .startButton, #showMsgButton, .startGameButton, #whatDoing, #new, #join, #startMultiplayer, #multiplayerButton2, #buttonSet1 button p {color: white}
 
     #p5 {
       color: #00bfff

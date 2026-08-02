@@ -23,7 +23,7 @@ let multiplayerResolveFunc
 //Only used in multiplayer for security purposes; Cross Check When Packet Sent
 let currentPlayer
 
-async function giveEffectTo(player, turns, multiplayerContext) {
+async function giveEffectTo(player, turns, multiplayerContext, extraThingsToApply) {
   const giveEffectMsg = `Who To Give ${this.AlcoholEffect.name} To?`
   const applyEffectTo = await choosePlayer.bind(this)(player, turns, multiplayerContext, giveEffectMsg)
 
@@ -37,6 +37,9 @@ async function giveEffectTo(player, turns, multiplayerContext) {
   getById(`${applyEffectTo.id}Effects`).innerHTML += `<p style='margin-top: 0px; margin-bottom: 2px' id='${this.AlcoholEffect.id}Effect'>${this.AlcoholEffect.name}</p>`
 
   const msg = `Gave ${this.AlcoholEffect.name} To ${applyEffectTo.name} For ${this.AlcoholEffect.turns} Turns`
+
+  if (extraThingsToApply) {extraThingsToApply(applyEffectTo)}
+
   return [--turns, msg, undefined]
 }
 
@@ -337,7 +340,8 @@ class Player {
   }
 
   clearEffects() {
-    this.alcoholEffects.forEach(function(effect) {
+    const tempNewAlcoholEffects = this.alcoholEffects.slice(0)
+    tempNewAlcoholEffects.forEach(function(effect) {
       effect.turns--
       if (effect.turns < 1) {
         removeItem(this.alcoholEffects, effect)
@@ -348,7 +352,8 @@ class Player {
   }
 
   removeEffects() {
-    this.alcoholEffects.forEach(function(effect) {
+    const tempNewAlcoholEffects = this.alcoholEffects.slice(0)
+    tempNewAlcoholEffects.forEach(function(effect) {
       removeItem(this.alcoholEffects, effect)
       getById(`${effect.id}Effect`).remove()
     }.bind(this))
@@ -499,10 +504,11 @@ class MultiplayerHuman extends Player {
 class FratBro extends Player {
   constructor(playerToNotAttack, name) {
     let chosenName = getRndInt(0, names.length)
-
-    if (name == "pleb") {name = undefined}
   
-    super((name || "Frat Bro " + names[chosenName]))
+    super("Frat Bro " + names[chosenName])
+
+    if (name != "pleb") {names[chosenName] = names[chosenName] + " Again"}
+
     this.type = "FratBro"
     this.playerToNotAttack = playerToNotAttack
   }
@@ -621,5 +627,5 @@ function rejectAlgorithim(proposedAction, player, playerBiasRejectUse=true) {
 }
 
 let AlcoholTypes = [Beer, Vodka, Whiskey, Gin, Red_Wine, White_Wine, Tequila, Brandy, Mead]
-let AlcopAlcoholTypes = [MoonShine, IPA, EnergyBeer, Rum, Seltzer]
-let SingleplayerAlcopAlcoholTypes = [MoonShine, IPA, EnergyBeer, Seltzer]
+let AlcopAlcoholTypes = [MoonShine, IPA, EnergyBeer, Rum, Seltzer, Cider]
+let SingleplayerAlcopAlcoholTypes = [MoonShine, IPA, EnergyBeer, Seltzer, Cider]

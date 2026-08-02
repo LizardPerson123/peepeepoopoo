@@ -2,6 +2,8 @@ let wheelFunc = 0
 let dontTurnWheel = false
 let alreadySpinningWheel = false
 let alreadySetKey = false
+let displayGame = true
+let globalManage
 
 function waitForPlayerInput() {
   getById("buttons").style.display = "flex"
@@ -369,17 +371,19 @@ function turnWheel() {
 }
 
 function displayAlcoholInfo(name, desc, img) {
+  displayGame = false
   getById("game").style.display = "none"
   getById("alcoholInfo").style.display = "block"
   getById("alcoholImg").src = "images/" + img
-
   getById("name").innerText = name
   getById("description").innerText = desc
 }
 
 function goBack() {
+  displayGame = true
   getById("game").style.display = gameDisplay
   getById("alcoholInfo").style.display = "none"
+  globalManage()
 }
 
 function goBackHelp() {
@@ -401,7 +405,7 @@ function settings() {
 }
 
 function goBackSettings() {
-  getById("buttonSet1").style.display = "block"
+  getById("buttonSet1").style.display = "grid"
   getById("buttonSet4").style.display = "none"
 }
 
@@ -448,6 +452,8 @@ function handlePhoneDisplays() {
   }
 
   function manage() {
+    if (!displayGame) return
+
     if (window.innerWidth <= 600) {
       getById("game").style.display = "flex"
       gameDisplay = "flex"
@@ -469,10 +475,67 @@ function handlePhoneDisplays() {
     }
   }
 
+  globalManage = manage
+
   addEventListener("resize", manage)
 
   manage()
 }
+
+//DISCLAIMER: THIS FUNCTION WAS (partially) WRITTEN BY AI (Google)
+//VERY MESSY BECAUSE IT'S HODGED TOGETHER
+function fixVerticalStackOverlap() {
+  const buttons = document.querySelectorAll('#buttonSet1 button')
+  const buttonSetOne = [buttons[0]]
+  const buttonSetTwo = [buttons[1], buttons[2]]
+  const buttonSetThree = [buttons[3], buttons[4]]
+
+  buttons.forEach(button => {
+    const text = button.querySelector('p')
+    const img = button.querySelector('img')
+    if (!text || !img) return
+
+    img.style.transform = 'scale(1)'
+    img.style.display = "block"
+
+    const buttonRect = button.getBoundingClientRect()
+    const textRect = text.getBoundingClientRect()
+    const imgRect = img.getBoundingClientRect()
+
+    const textBottomAbsolute = textRect.bottom
+    const imgTopAbsolute = imgRect.top
+    const buttonTopAbsolute = buttonRect.top
+
+    if (imgTopAbsolute < textBottomAbsolute && buttonSetOne.includes(button)) {
+      const availableHeightForImg = buttonRect.bottom - textBottomAbsolute
+
+      let targetScale = availableHeightForImg / imgRect.height
+
+      targetScale = Math.max(0.25, targetScale)
+
+      img.style.transform = `scale(${targetScale})`
+      img.style.transformOrigin = 'center bottom'
+    }
+    else if (imgTopAbsolute < textBottomAbsolute && buttonSetThree.includes(button)) {
+      img.style.display = "none"
+    }
+    else if (buttonRect.top > imgRect.top && buttonSetTwo.includes(button)) {
+      const availableHeightForImg = buttonRect.bottom - buttonRect.top - 20
+
+      let targetScale = availableHeightForImg / imgRect.height
+
+      targetScale = Math.max(0.3, targetScale)
+
+      img.style.transform = `scale(${targetScale})`
+      img.style.transformOrigin = 'center bottom'
+    }
+
+  });
+}
+
+//THESE TWO LINES ARE ALSO AI
+window.addEventListener('DOMContentLoaded', fixVerticalStackOverlap)
+window.addEventListener('resize', fixVerticalStackOverlap)
 
 function credits() {
   console.log(
@@ -481,7 +544,8 @@ function credits() {
       Art Designed By: John Blake
       Title Screen Developed By: John Doe
       Original Idea By: John Doe
+      Mocktail Design: John Doe
       
-    Version 1.3`
+    Version 2.0`
   )
 }

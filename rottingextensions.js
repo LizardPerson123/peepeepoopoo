@@ -104,10 +104,13 @@ let achi = new RottingExtension({
     
     // This Just Updates The Internal Count Of Achievements Users Have
     achi = localStorage.getItem("achi")
+
     if (achi == "" || !achi) {achi = {}}
     else {achi = JSON.parse(achi)}
+
     if (!achi[username]) {achi[username] = []}
     achi[username].push(acheName)
+    
     achi = JSON.stringify(achi)
     localStorage.setItem("achi", achi)
   },

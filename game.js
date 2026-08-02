@@ -482,8 +482,18 @@ async function firstAlcoholLocalMultiplayer() {
   }
 }
 
+function multiplayerStart() {
+  if (!localStorage.getItem("username")) {
+    multiplayer()
+    return
+  }
+  
+  getById("buttonSet3").style.display = "none"
+  getById("buttonSet6").style.display = "block"
+}
+
 function multiplayer() {
-  getById("startGame").style.display = "none"
+  getById("startGame").style.display = "none" 
   getById("multiplayerMenu").style.display = "flex"
 
   getById("username").value = localStorage.getItem("username") || ""
@@ -510,45 +520,81 @@ function multiplayer() {
     getById("new").style.display = "inline"
   })
 
-  getById("startMultiplayer").addEventListener("click", function() {
-    ws = new WebSocket("wss://api.rottingpears.com/")
-
-    ws.onmessage = function () {
-      const username = getById("username").value
-      const password = getById("password").value
-      const sessionCode = getById("sessionCode").value
-
-      if (username.length < 1 || password.length < 1) {
-        alert("Username And Password Must Not Be Blank")
-        return
-      }
-
-      if (currentMode === "new") {
-        newSession(username, password)
-        thisPlayer = username
-        updateUsernameAndPassword(username, password)
-        return
-      }
-
-      if (sessionCode.length < 5) {
-        alert("Session Code Must Be 5 Characters Long")
-        return
-      }
-
-      joinSession(username, password, sessionCode)
-      thisPlayer = username
-      updateUsernameAndPassword(username, password)
-    }
-
-    ws.onclose = function() {
-      alert("Connection Disrupted")
-      reload()
-    }
+  getById("startMultiplayer").addEventListener("click", function c() {
+    const username = getById("username").value
+    const password = getById("password").value
+    const sessionCode = getById("sessionCode").value
+    const decidedAction = currentMode
+    connectToMultiplayerServer(username, password, decidedAction, sessionCode)
+    getById("startMultiplayer").removeEventListener("click", c)
   })
 }
 
 function getPlayersAlive(player) {
   return players.filter(player => player.hp > 0).length
+}
+
+function connectToMultiplayerServer(username, password, decidedAction, sessionCode) {
+  ws = new WebSocket("wss://api.rottingpears.com/")
+
+  ws.onmessage = function () {
+    if (username.length < 1 || password.length < 1) {
+      alert("Username And Password Must Not Be Blank")
+      return
+    }
+
+    if (decidedAction === "new") {
+      newSession(username, password)
+      thisPlayer = username
+      updateUsernameAndPassword(username, password)
+      return
+    }
+
+    if (sessionCode.length < 5) {
+      alert("Session Code Must Be 5 Characters Long")
+      return
+    }
+
+    joinSession(username, password, sessionCode)
+    thisPlayer = username
+    updateUsernameAndPassword(username, password)
+  }
+
+  ws.onclose = function() {
+    alert("Connection Disrupted")
+    reload()
+  }
+}
+
+function connectToMultiplayerNewSession() {
+  const username = localStorage.getItem("username")
+  const password = localStorage.getItem("password")
+  const decidedAction = "new"
+  getById("startGame").style.display = "none"
+  connectToMultiplayerServer(username, password, decidedAction)
+}
+
+function connectToMultiplayerJoinSession() {
+  const username = localStorage.getItem("username")
+  const password = localStorage.getItem("password")
+  const decidedAction = "join"
+  const sessionCode = getById("sessionCode2").value
+  getById("joinSession").style.display = "none"
+  connectToMultiplayerServer(username, password, decidedAction, sessionCode2)
+}
+
+function joinSessionMenu() {
+  getById("startGame").style.display = "none"
+  getById("joinSession").style.display = "block"
+}
+
+function changeAccount() {
+  alert("Changed!")
+  const username = getById("username2").value
+  const password = getById("password2").value
+  updateUsernameAndPassword(username, password)
+  getById("changeAccount").style.display = "none"
+  getById("startGame").style.display = "flex"
 }
 
 function updateUsernameAndPassword(username, password) {

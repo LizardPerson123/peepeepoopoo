@@ -24,6 +24,14 @@ body {overscroll-behavior: none;}
 
 .largeButton {width: 15em !important;}
 
+#buttonSet1Grid {
+  display: grid; 
+}
+
+#buttonSet1Alt {
+  display: none;
+}
+
 @media screen and (max-width: 900px) and (min-width: 600px)  {
   #statusEffects h1, #players h1, #lives {display: none;}
   #statusEffects {grid-area: 1/1/5/1 !important}
@@ -140,6 +148,44 @@ body {overscroll-behavior: none;}
   }
 
   .largeButton {width: 10em !important;}
+}
+
+@media screen and (max-height: 800px) {
+  #events {
+    height: 22vh;
+  }
+}
+
+@media screen and (max-height: 650px) {
+  #events {
+    height: 25vh;
+  }
+}
+
+@media screen and (max-height: 550px) {
+  #events {
+    height: 28vh;
+  }
+}
+
+@media screen and (max-height: 720px) {
+  #buttonSet1Grid {
+    display: none;
+  }
+
+  #buttonSet1Alt {
+    display: flex;
+  }
+}
+
+@media screen and (max-width: 720px) {
+  #buttonSet1Grid {
+    display: none;
+  }
+
+  #buttonSet1Alt {
+    display: flex;
+  }
 }
 
 @media (hover: hover) {
