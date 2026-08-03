@@ -1,5 +1,6 @@
 let hash
 let whiskeyResolveFunc
+let doDisplayButtonsInGame = true
 
 function joinSession(username, password, sessionID) {
   return new Promise(async function (resolve, reject) {
@@ -17,7 +18,7 @@ function joinSession(username, password, sessionID) {
 
       users.forEach(username => {
         getById("usernames2").innerHTML += `<p id="${username}" style="font-size: 1.3em; margin-top: 0px;">${username}</p>`
-      });
+      })
 
       onNewUser = function(eventData) {
         getById("usernames2").innerHTML += `<p id="${eventData.username}" style="font-size: 1.3em; margin-top: 0px;">${eventData.username}</p>`
@@ -76,6 +77,7 @@ function joinSession(username, password, sessionID) {
 async function beginGamePleb() {
   achi.register("Play Rotting Roulette Multiplayer", "bronze")
   inGame = true
+
   keyPressSendMessage()
   handlePhoneDisplays()
   getWheelSpeed()
@@ -101,6 +103,7 @@ async function beginGamePleb() {
   
   let [alcohol, num] = await firstAlcoholPleb()
   getById("firstAlcohol").style.display = "none"
+  doDisplayButtonsInGame = true
 
   sendTo(host, JSON.stringify({
     code: -1,
@@ -132,6 +135,7 @@ async function beginGamePleb() {
       if (msg.code == -2) {
         resetGame(false)
         gameAlcohol = msg.gameAlcohol
+        doDisplayButtonsInGame = false
         await beginGamePleb()
         return
       }
@@ -148,11 +152,13 @@ async function beginGamePleb() {
       await updateGame(msg)
       
       //This Code Manages The NextTurn Part Of The Message
-      getById("eventHeader").innerText = `${msg.nextTurn}'s Turn`
+      if (doDisplayButtonsInGame) {
+        getById("eventHeader").innerText = `${msg.nextTurn}'s Turn`
+      }
 
       if (msg.nextTurn == thisPlayer && !msg.skipTurn) {
         players.forEach(async function(player) {
-          if (player.name == thisPlayer) {
+          if (player.name == thisPlayer && doDisplayButtonsInGame) {
             sendTo(host, JSON.stringify({code: 2, response: await player.whatToDo(true, "pleb")}))
           }
         })
@@ -176,7 +182,7 @@ function waitForWhiskeyCallback() {
 }
 
 async function updateGame(msg) {
-  // Message Does Not Update Game State
+  // If Message Does Not Update Game State Then Return
   if (!msg.hp) {return}
   updatePlayersPleb(msg)
   players.forEach(function(player) {
@@ -204,7 +210,6 @@ async function updateGame(msg) {
       players[players.indexOf(player)].alcoholEffects = msg.effects[player.name]
       
       player.alcoholEffects.forEach(function(alcoholEffect) {
-        players[players.indexOf(player)].alcoholEffects.push(alcoholEffect)
         getById(`${player.id}Effects`).innerHTML += `<p style='margin-top: 0px; margin-bottom: 2px' id='${alcoholEffect.id}Effect'>${alcoholEffect.name}</p>`
 
         if (player.name == thisPlayer && alcoholEffect.name == "Confusion") {

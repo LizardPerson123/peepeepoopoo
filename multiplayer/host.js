@@ -117,6 +117,8 @@ async function beginGameHost(turns) {
   }
 
   gameAlcohol.forEach(function(alcohol) {
+    if (AlcoholTypes.includes(alcohol)) return
+
     AlcoholTypes.push(alcohol)
   })
 
