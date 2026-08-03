@@ -23,12 +23,14 @@ function letThereBeDark() {
 
   localStorage.setItem("mode", "dark")
 
-  getById('imgMode').src = 'sun.svg';
+  getById('imgMode').src = 'sun.svg'
+  getById("modeButton").innerHTML = "Mode: Dark"
 }
 
 function letThereBeLight() {
   getById("modeStyle").innerHTML = ""
-  getById('imgMode').src = 'moon.svg';
+  getById('imgMode').src = 'moon.svg'
+  getById("modeButton").innerHTML = "Mode: Light"
   localStorage.setItem("mode", "light")
 }
 

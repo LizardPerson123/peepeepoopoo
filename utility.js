@@ -28,6 +28,7 @@ function isNumberKey(evt) {
 }
 
 function reload() {
+  alreadyReloading = true
   document.querySelector("body").innerHTML = ""
   window.location.reload()
   throw "This Is Intentional"

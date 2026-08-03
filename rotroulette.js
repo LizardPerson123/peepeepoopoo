@@ -60,7 +60,7 @@ async function choosePlayer(player, turns, multiplayerContext, msg) {
       applyEffectTo = players.getAlivePlayers()[applyEffectTo]
       playerUsingAlcoholOnSelf = applyEffectTo.name == player.name
     }
-    while (playerUsingAlcoholOnSelf && difficulty != "easy")
+    while (playerUsingAlcoholOnSelf)
   }
 
   return applyEffectTo
@@ -74,7 +74,7 @@ bulletList.nextItem = function() {
 
 bulletList.generateNew = function(num) {
   for (let i = 1; i <= num; i++) {
-    if (gameMode == gameModes.insane) {
+    if (gameMode == gameModes.insane || gameMode == gameModes.everything) {
       bulletList.generateBulletInsane()
       continue
     }
@@ -519,17 +519,18 @@ class FratBro extends Player {
 
   whatToDo() {
     let whatToDo = super.whatToDo
-    return new Promise(function(resolve) {
-      setTimeout(function() {
+    return new Promise(async function(resolve) {
+      async function whatToDoLocal() {
         let whatToDoBind = whatToDo.bind(this)
-        let whatToDoResult
-        do {
-          whatToDoResult = whatToDoBind()
+        let chosenAction = whatToDoBind()
+        if ((chosenAction[0] == "shoot" && players[chosenAction[1]].name == this.playerToNotAttack)) {
+          return await whatToDoLocal.bind(this)()
         }
-        while (whatToDoResult[0] == "shoot" && players[whatToDoResult[1]].name == this.playerToNotAttack)
 
-        resolve(whatToDoResult)
-      }.bind(this), 2000)
+        return chosenAction
+      }
+
+      setTimeout(async function() {resolve(await whatToDoLocal.bind(this)())}.bind(this), 2000)
     }.bind(this))
   }
 

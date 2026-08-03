@@ -162,7 +162,7 @@ function choseShoot(includePlayer = true) {
     //This Function Not Only Allows For Choosing Who To Shoot, But Is Used By Some Alcohol
 
     getById("buttons").style.display = "none"
-    getById("shootButtons").style.display = "inline-block"
+    getById("shootButtons").style.display = "flex"
     let alivePlayers = players.getAlivePlayers()
     let confused = false
 
@@ -279,7 +279,7 @@ async function basicTurnDisplay(turnFunc, addAlcohol = true) {
     return new Promise(function(resolve) {
       setTimeout(function() {
         resolve(turn)
-      }, 3600)
+      }, textSpeed)
     })
   }
 
@@ -414,8 +414,9 @@ function displayMessage(msg, playerName) {
   //I did not enjoy having to type these words
   listOfBadWords = ["nigger", "nigga", "fag", "faggot", "retard", "cunt", "kike", "gimp"]
   let containsSlur = listOfBadWords.some(name => msg.toLowerCase().includes(name.toLowerCase()))
+
+  if (msg.length >= 20) {msg = "Blocked For Length"}
   if (containsSlur) {msg = "Blocked For Profanity"}
-  if (msg.length > 99) {msg = "Blocked For Length"}
 
   getById("messageDiv").innerHTML += `<p><span style="color: gray;">${playerName}</span> ${msg || "(empty message)"}</p>`
   getById("messageDiv2").innerHTML += `<p><span style="color: gray;">${playerName}</span> ${msg || "(empty message)"}</p>`

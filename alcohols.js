@@ -231,6 +231,7 @@ class Tequila extends Alcohol {
     super(turns, function(player, turns, multiplayerContext) {
       return new Promise(async function(resolve) {
         const removeEffectMsg = "Who To Clear Effects From?"
+        
         const removeEffectFrom = await choosePlayer.bind(this)(player, turns, multiplayerContext, removeEffectMsg)
 
         removeEffectFrom.alcoholEffects = []
@@ -429,7 +430,7 @@ class EnergyBeer extends Alcohol {
 
     this.name = "Energy Beer"
     this.description = "Gives A Guranteed Live For The Next Two Turns; But With A Risk Of Getting A Heart Attack And Losing A Lot Of Health"
-    this.shortDescription = "Gives A Guranteed Live For The Next Two Turns; But With A Risk"
+    this.shortDescription = "Double Lives With A Risk"
     this.img = "energybeer.png"
   }
 

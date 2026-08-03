@@ -6,11 +6,13 @@ let localMultiplayer = false
 let peopleNum
 let alcoholUsed = []
 let autoplay = false
+let alreadyReloading = false
 
 const gameModes = {
   fivePlayers: "5players",
   alcoholGalore: "alcop",
   insane: "insane",
+  everything: "everything"
 }
 
 async function startGame(localMultiplayerPlayers) {
@@ -32,7 +34,7 @@ async function startGame(localMultiplayerPlayers) {
 async function startGameSingleplayer() {
   players.push(new Human("Player"))
 
-  let botCount = (gameMode === gameModes.fivePlayers) ? 4 : 2
+  let botCount = (gameMode === gameModes.fivePlayers || gameMode == gameModes.everything) ? 4 : 2
 
   for (let i = 1; i <= botCount; i++) {
     players.push(new Bot(`CPU ${i}`))
@@ -319,7 +321,7 @@ function showAutoplay() {
 }
 
 function addAlcoholSinglePlayer() {
-  if (gameMode === gameModes.alcoholGalore && SingleplayerAlcopAlcoholTypes.length > 0 && getRndInt(0, 2) === 0) {
+  if ((gameMode === gameModes.alcoholGalore || gameMode === gameModes.everything) && SingleplayerAlcopAlcoholTypes.length > 0 && getRndInt(0, 2) === 0) {
     const alcoholNum = getRndInt(0, SingleplayerAlcopAlcoholTypes.length)
     const alcohol = SingleplayerAlcopAlcoholTypes[alcoholNum]
     gameAlcohol.push(alcohol)
@@ -348,7 +350,7 @@ function addAlcoholSinglePlayer() {
 }
 
 function addAlcoholMultiplayer() {
-  if (gameMode === gameModes.alcoholGalore && AlcopAlcoholTypes.length > 0 && getRndInt(0, 2) === 0) {
+  if ((gameMode === gameModes.alcoholGalore || gameMode === gameModes.everything) && AlcopAlcoholTypes.length > 0 && getRndInt(0, 2) === 0) {
     const alcoholNum = getRndInt(0, AlcopAlcoholTypes.length)
     const alcohol = AlcopAlcoholTypes[alcoholNum]
     gameAlcohol.push(alcohol)
@@ -561,6 +563,8 @@ function connectToMultiplayerServer(username, password, decidedAction, sessionCo
   }
 
   ws.onclose = function() {
+    if (alreadyReloading) return
+
     alert("Connection Disrupted")
     reload()
   }
