@@ -87,6 +87,7 @@ async function beginGameHost(turns) {
   keyPressSendMessage()
   handlePhoneDisplays()
   getWheelSpeed()
+  getShowWheel()
 
   inGameBegin = true
   await endJoiningApi()
