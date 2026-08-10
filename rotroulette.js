@@ -229,11 +229,19 @@ class Player {
     
     // Alcohol
     if (resultThing instanceof Alcohol) {
-      if (addAlcohol) {
+      // If Alcohol Is Full (5), Then Don't Give The Alcohol And Pretend It's Blank
+
+      if (addAlcohol && playerDamaged.activeAlcohol.length < 5) {
         playerDamaged.activeAlcohol.push(resultThing)
       }
 
-      resultThing.startEffect(this, playerDamaged)
+      if (playerDamaged.activeAlcohol.length < 5) {
+        resultThing.startEffect(this, playerDamaged)
+      }
+      else {
+        // Just Pretend It's Blank
+        resultThing = false
+      }
     }
 
     // Live

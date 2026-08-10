@@ -223,7 +223,8 @@
     </div>
 
     <div id="centerThing" style="grid-area: 1/2/5/5; display: flex; align-items: center; justify-content: center; position: relative;" >
-      <div id="wheelDiv" style="width: 80%; height: 80%; display: none; overflow: hidden;" onclick="hideWheelPrompt()">
+      <div id="wheelDiv" style="width: 80%; height: 80%; display: none; overflow: hidden; position: relative;" onclick="hideWheelPrompt()">
+        <p id="clickToHideWheelText" style="position: absolute; z-index: 5; color: white; left: 0; right: 0; bottom: 0; top: 50%;">Click to hide wheel</p>
         <img width="100%" height="100%" src="images/wheel.png" style="object-fit: contain; image-rendering: pixelated" id="wheel">
       </div>
 
@@ -267,11 +268,11 @@
         </button>
       </div>
 
-      <div id="alcoholButtons" style="flex-wrap: wrap;">
+      <div id="alcoholButtons" style="flex-wrap: wrap; justify-content: center;">
         
       </div>
 
-      <div id="shootButtons" style="flex-wrap: wrap;">
+      <div id="shootButtons" style="flex-wrap: wrap; justify-content: center;">
         
       </div>
     </div>
@@ -388,9 +389,14 @@
    <div id="buttonSet4" style="display: none; flex-grow: 1;">
      <button onclick="goBackSettings()" class="startGameButton largeButton">Back</button>
      <button onclick="setTextSpeed()" id="textSpeed" class="startGameButton largeButton">Text Speed: Slow</button>
-     <button onclick="setWheelSpeed()" id="wheelSpeed" class="startGameButton largeButton">Wheel Speed: 40 FPS</button>
      <button onclick="setAutoplay()" id="autoplay" class="startGameButton largeButton">Autoplay: Off</button>
      <button onclick="changeMode()" id="modeButton" class="startGameButton largeButton">Mode: Light</button>
+     <button onclick="getById('buttonSet4').style.display = 'none'; getById('buttonSet6').style.display = 'block'; " class="startGameButton largeButton">More</button>
+   </div>
+
+   <div id="buttonSet6" style="display: none; flex-grow: 1;">
+     <button onclick="getById('buttonSet4').style.display = 'block'; getById('buttonSet6').style.display = 'none';" class="startGameButton largeButton">Back</button>
+     <button onclick="setWheelSpeed()" id="wheelSpeed" class="startGameButton largeButton">Wheel Speed: 40 FPS</button>
      <button onclick="setShowWheel()" id="showWheel" class="startGameButton largeButton">Show Wheel</button>
    </div>
 

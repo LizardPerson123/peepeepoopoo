@@ -363,7 +363,8 @@ async function firstAlcohol() {
           getById("op" + i + "Div").remove()
           getById("alcoholSelection").appendChild(alcoholOption)
         }
-
+        
+        clickWheelTextTimeout()
         resolve([alcohol, num-1])
       })
     }
@@ -372,6 +373,12 @@ async function firstAlcohol() {
       createOption(i)
     }
   })
+}
+
+function clickWheelTextTimeout() {
+  setTimeout(function() {
+    getById("clickToHideWheelText").style.display = "none"
+  }, 3000)
 }
 
 async function firstAlcoholSingleplayer() {

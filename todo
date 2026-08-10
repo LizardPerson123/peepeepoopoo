@@ -1,5 +1,19 @@
-Create Mocktail (postponed)
-Create Rum
-Create Mead
-Get Working On Mobile All Screena
-Get Working On Landscape
+FIXED: Fix Bug With Multiplayer Button Showing
+FIXED: Energy Beer Short Desc Is Too Long
+FIXED: Prevent Tequila Use On Self
+LFIXED: "Connection Disrupted" Can Appear During Reload
+FIXED: Settings Must Be Silver
+FIXED: Fucked Up Title Screen Rendering On Mobile (Probably Remove Sun/Moon On Mobile)
+FIXED: Add Change Mode To Settings
+DISREGARD: Allow Changing Game Mode In Multiplayer
+FIXED: Add How To Play Logo In How To Play Section
+FIXED: Reduce Message Length To 20 Characters
+FIXED: MSG Box On Mobile Grid Display Stuck At Top
+FIXED: Enum Rewrites
+FIXED: Fix Turn Skipped Timing
+FIXED: Fix Frat Bro Timing Issue
+DISREGARD: Add IQ To Frat Bro
+MFIXED: Fix Host Name Showing After Dead Frat Bro In Multiplayer
+FIXED: Alcop Can Show Up Twice
+FIXED: Alcohols.js imported twice
+LFIXED: Alcohol Does Not Have Flex Wrap
