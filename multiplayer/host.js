@@ -33,11 +33,11 @@ function newSession(username, password) {
         }
           
         players.forEach(function(player) {
-          if (player.name == removedUser) {
+          if (player.name === removedUser) {
             getById(player.id + "Div").style.display = "none"
             players[players.indexOf(player)].hp = 0
 
-            if (player.name == currentPlayer) {
+            if (player.name === currentPlayer) {
               multiplayerResolveFunc(["shoot", players.indexOf(player)])
             }
           }
@@ -94,14 +94,14 @@ async function beginGameHost(turns) {
   getById("multiplayerNewMenu").style.display = "none"
   getById("game").style.display = gameDisplay
 
-  if (gameDisplay == "grid") {
+  if (gameDisplay === "grid") {
     getById("msgPreview").style.display = "block"
   }
 
   users = await getMembersApi()
 
   users.forEach(function(item) {
-    if (item == thisPlayer) {
+    if (item === thisPlayer) {
       players.push(new Human(item))
     }
     else {
@@ -136,24 +136,24 @@ async function beginGameHost(turns) {
 
   onMessageFrom = async function daGame(eventData, from) {
     //Whiskey Manager (Whiskey Is Very Special And Needs Additional Code To Work In Multiplayer)
-    if (eventData.code == 8 && from == currentPlayer) {
-      let hasWhiskey = players.find(function(player) {return (player.name == from && player.activeAlcohol.find((alcohol) => {return alcohol.name == "Whiskey"}))})
+    if (eventData.code === 8 && from === currentPlayer) {
+      let hasWhiskey = players.find(function(player) {return (player.name === from && player.activeAlcohol.find((alcohol) => {return alcohol.name === "Whiskey"}))})
 
       if (hasWhiskey) {
         sendTo(from, JSON.stringify({code: 9, msg: bulletList.slice(0, 5)}))
       }
     }
-    else if (eventData.code == 2) {
+    else if (eventData.code === 2) {
       currentPlayer = undefined
       multiplayerResolveFunc(eventData.response)
     }
-    else if (eventData.code == 3) {
+    else if (eventData.code === 3) {
       displayMessage(eventData.msg, from)
     }
     else {
       //This Manages Adding Alcohol At Beginning Of Game
       players.forEach(function(player) {
-        if (player.name == from && !(takenAlcoholFrom.includes(player.name))) {
+        if (player.name === from && !(takenAlcoholFrom.includes(player.name))) {
           let newAlcohol = new gameAlcohol[eventData.alcohol]()
           newAlcohol.id = eventData.id
           player.activeAlcohol.push(newAlcohol)
@@ -187,7 +187,7 @@ async function firstAlcoholHost() {
 
 async function multiplayerGame() {
   let users = await getMembersApi()
-  if (takenAlcoholFrom.sort().join(",") == users.sort().join(",")) {
+  if (takenAlcoholFrom.sort().join(",") === users.sort().join(",")) {
     inGame = true
     await broadcast(JSON.stringify({
       code: 0,
@@ -203,11 +203,11 @@ async function multiplayerGame() {
         if (players[i].hp < 1) {
           continue
         }
-        else if (players.getAlivePlayers().length < players.length && gameMode == "survival") {
+        else if (players.getAlivePlayers().length < players.length && gameMode === "survival") {
           resetGame(true, turns)
           return
         }
-        else if (players.getAlivePlayers().length == 1) {
+        else if (players.getAlivePlayers().length === 1) {
           resetGame()
           return
         }
@@ -229,7 +229,7 @@ function endGamePhase() {
 
   async function checkToContinue() {
     let members = await getMembersApi()
-    if (playersPlayNext.sort().join(",") == members.sort().join(",")) {
+    if (playersPlayNext.sort().join(",") === members.sort().join(",")) {
       resetGame()
     }
   }
@@ -268,7 +268,7 @@ function resetGame(isHost = true, turns) {
   players.forEach(function(player) {
     getById(player.id + "Div").remove()
     
-    if (player.name == thisPlayer) {
+    if (player.name === thisPlayer) {
       player.activeAlcohol.forEach(function(alcohol) {
         getById("alcohol" + alcohol.id).remove()
       })
