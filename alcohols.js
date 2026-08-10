@@ -59,7 +59,7 @@ class Red_Wine extends Alcohol {
     this.AlcoholEffect = new Effect(effectMsg, effectTurns, function onDamage(player) {
       let pronoun = "They"
 
-      if (player.type == "Human") {
+      if (player.type === "Human") {
         pronoun = "You"
       }
       
@@ -83,7 +83,7 @@ class Whiskey extends Alcohol {
       return new Promise(async function(resolve) {
         turns--
       
-        if (player.type == "Human") {
+        if (player.type === "Human") {
           let nextBullet
           
           //If Multiplayer, Than Get Next Bullets From The Host
@@ -97,7 +97,7 @@ class Whiskey extends Alcohol {
           getById("event").innerHTML = "The Next Bullets Are"
 
           nextBullet.forEach(function(bullet) {
-            if (bullet == false) {
+            if (bullet === false) {
               getById("event").innerHTML += " Blank,"
             }
 
@@ -146,11 +146,11 @@ class Vodka extends Alcohol {
         const stealFrom = await choosePlayer.bind(this)(player, turns, multiplayerContext, stealFromMsg)
         let status = {}
 
-        if (stealFrom.activeAlcohol.length == 1 && stealFrom.activeAlcohol[0].name == "Vodka" && player.type == "Human") {
+        if (stealFrom.activeAlcohol.length === 1 && stealFrom.activeAlcohol[0].name === "Vodka" && player.type === "Human") {
           achi.register("Pointless", "bronze")
         }
 
-        if (player.type == "Human") {
+        if (player.type === "Human") {
           status = getById("statusEffects")
         }
 
@@ -161,12 +161,12 @@ class Vodka extends Alcohol {
 
         stealFrom.activeAlcohol = []
 
-        if (multiplayerContext == "pleb") {
+        if (multiplayerContext === "pleb") {
           // Executes If Multiplayer And This Player Is A Pleb
           const attackedPlayer = players.indexOf(stealFrom)
           resolve([turns, attackedPlayer, undefined])
         }
-        else if (stealFrom.type == "Human") {
+        else if (stealFrom.type === "Human") {
           getById("statusEffects").innerHTML = "<h1>Alcohol</h1>"
         }
         
@@ -236,7 +236,7 @@ class Tequila extends Alcohol {
 
         removeEffectFrom.alcoholEffects = []
 
-        if (multiplayerContext == "pleb") {
+        if (multiplayerContext === "pleb") {
           const attackedPlayer = players.indexOf(removeEffectFrom)
           resolve([turns, attackedPlayer, undefined])
         }
@@ -270,7 +270,7 @@ class Gin extends Alcohol {
     const effectTurns = 3
 
     this.AlcoholEffect = new Effect(effectMsg, effectTurns, function onDamage(player, attacker=player) {
-      if (getRndInt(1, 3) == 1 && !(player.id === attacker.id)) {
+      if (getRndInt(1, 3) === 1 && !(player.id === attacker.id)) {
         attacker.damage(1)
         
         const msg = `But It Bounced Off And Hit ${attacker.name}`
@@ -306,12 +306,12 @@ class MoonShine extends Alcohol {
           do {
             heartsToWager = getRndInt(1, player.hp + 1)
           }
-          while (heartsToWager == 1 && difficulty != "easy" && player.hp > 1)
+          while (heartsToWager === 1 && difficulty != "easy" && player.hp > 1)
         }
 
         this.AlcoholEffect.health = heartsToWager
 
-        if (multiplayerContext == "pleb") {
+        if (multiplayerContext === "pleb") {
           const thisPlayer = players.indexOf(player)
           resolve([turns, heartsToWager, undefined])
           return
@@ -328,7 +328,7 @@ class MoonShine extends Alcohol {
     this.AlcoholEffect = new Effect(effectMsg, effectTurns, onDamage, function onShoot(player, result, playerDamaged) {
       let heartsWagered = this.health
 
-      let isLive = getRndInt(1, 3) == 1
+      let isLive = getRndInt(1, 3) === 1
       let msg = ""
 
       if (isLive) {
@@ -375,7 +375,7 @@ class IPA extends Alcohol {
   constructor() {
     const turns = 1
     super(turns, async function(player, turns, multiplayerContext) {
-       if (multiplayerContext == "pleb") {
+       if (multiplayerContext === "pleb") {
         return [--turns]
       }
 
@@ -412,9 +412,9 @@ class EnergyBeer extends Alcohol {
     const onDamage = undefined
 
     this.AlcoholEffect = new Effect(effectMsg, effectTurns, onDamage, function onShoot(player, result) {
-      let heartAttack = getRndInt(0, 3) == 0
+      let heartAttack = getRndInt(0, 3) === 0
       if (heartAttack) {
-        if (player.hp == 1) {player.damage(1)}
+        if (player.hp === 1) {player.damage(1)}
         while (player.hp > 1) {
           player.damage(1)
         }
@@ -454,7 +454,7 @@ class Rum extends Alcohol {
     this.AlcoholEffect = new Effect(effectMsg, effectTurns, onDamage, onShoot, function onEnd(player) {
       let doRemove = true
       player.alcoholEffects.forEach(function(effect) {
-        if (effect.name == "Confusion") {doRemove = false}
+        if (effect.name === "Confusion") {doRemove = false}
       })
 
       if (doRemove) {
@@ -480,7 +480,7 @@ class Mead extends Alcohol {
 
         applyEffectTo.alcoholEffects.push(this.AlcoholEffect)
 
-        if (multiplayerContext == "pleb") {
+        if (multiplayerContext === "pleb") {
           const attackedPlayer = players.indexOf(applyEffectTo)
           resolve([turns, attackedPlayer, undefined])
         }

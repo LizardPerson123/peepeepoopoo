@@ -27,7 +27,7 @@ async function giveEffectTo(player, turns, multiplayerContext, extraThingsToAppl
   const giveEffectMsg = `Who To Give ${this.AlcoholEffect.name} To?`
   const applyEffectTo = await choosePlayer.bind(this)(player, turns, multiplayerContext, giveEffectMsg)
 
-  if (multiplayerContext == "pleb") {
+  if (multiplayerContext === "pleb") {
     //Multiplayer And This Player Is A Pleb
     const attackedPlayer = players.indexOf(applyEffectTo)
     return [turns, attackedPlayer, undefined]
@@ -46,11 +46,11 @@ async function giveEffectTo(player, turns, multiplayerContext, extraThingsToAppl
 async function choosePlayer(player, turns, multiplayerContext, msg) {
   let applyEffectTo
         
-  if (player.type == "Human") {
+  if (player.type === "Human") {
     getById("eventHeader").innerHTML = msg
     applyEffectTo = players[await choseShoot(false)]
   }
-  else if (!(multiplayerContext == undefined) && multiplayerContext != "pleb") {
+  else if (!(multiplayerContext === undefined) && multiplayerContext != "pleb") {
     applyEffectTo = players[multiplayerContext]
   }
   else {
@@ -58,7 +58,7 @@ async function choosePlayer(player, turns, multiplayerContext, msg) {
     do {
       applyEffectTo = getRndInt(0, players.getAlivePlayers().length)
       applyEffectTo = players.getAlivePlayers()[applyEffectTo]
-      playerUsingAlcoholOnSelf = applyEffectTo.name == player.name
+      playerUsingAlcoholOnSelf = applyEffectTo.name === player.name
     }
     while (playerUsingAlcoholOnSelf)
   }
@@ -74,14 +74,14 @@ bulletList.nextItem = function() {
 
 bulletList.generateNew = function(num) {
   for (let i = 1; i <= num; i++) {
-    if (gameMode == gameModes.insane || gameMode == gameModes.everything) {
+    if (gameMode === gameModes.insane || gameMode == gameModes.everything) {
       bulletList.generateBulletInsane()
       continue
     }
 
     bulletList.generateBullet()
-
-    if (currentAlcoholChance <= 5 && (i % 3 == 0 || i % 4 == 0)) {
+   
+    if (currentAlcoholChance <= 5 && (i % 3 === 0 || i % 4 === 0)) {
       currentAlcoholChance += 1
       currentLiveChance += 1
       currentBlankChance -= 2
@@ -93,7 +93,7 @@ bulletList.generateBulletInsane = function() {
   let bullet = getRndInt(1, 3)
   
   // Live
-  if (bullet == 1) {
+  if (bullet === 1) {
     bulletList.push(true)
     return
   }
@@ -104,7 +104,7 @@ bulletList.generateBulletInsane = function() {
     type = getRndInt(0, gameAlcohol.length)
     currentAlcohol = gameAlcohol[type]
   }
-  while (currentAlcohol.name == lastAlcoholGiven.name)
+  while (currentAlcohol.name === lastAlcoholGiven.name)
 
   bulletList.push(new gameAlcohol[type])
 }
@@ -117,7 +117,7 @@ bulletList.generateBullet = function() {
     let type
     let currentAlcohol = {}
 
-    if (getRndInt(0, 7) == 0 && gameMode == "alcop") {
+    if (getRndInt(0, 7) === 0 && gameMode === "alcop") {
       bulletList.push(new Mocktail())
       return
     }
@@ -125,7 +125,7 @@ bulletList.generateBullet = function() {
       type = getRndInt(0, gameAlcohol.length)
       currentAlcohol = gameAlcohol[type]
     }
-    while (currentAlcohol.name == lastAlcoholGiven.name)
+    while (currentAlcohol.name === lastAlcoholGiven.name)
     
     bulletList.push(new gameAlcohol[type])
     lastAlcoholGiven = gameAlcohol[type]
@@ -180,7 +180,7 @@ class Player {
     let use = await this.whatToDo()
     const chosenAction = use[0]
 
-    if (chosenAction == "alcohol") {
+    if (chosenAction === "alcohol") {
       let multiplayerContext
       let alcoholToUse = use[1]
 
@@ -381,7 +381,7 @@ class Player {
     let whatToDo = getRndInt(1, 3)
     let chosenAction
 
-    if (whatToDo == 1 && this.activeAlcohol.length > 0) {
+    if (whatToDo === 1 && this.activeAlcohol.length > 0) {
       chosenAction = "alcohol"
       const choseAlcohol = getRndInt(0, this.activeAlcohol.length)
       return [chosenAction, choseAlcohol]
@@ -426,10 +426,10 @@ class Human extends Player {
   async whatToDo(useAlcohol = false, multiplayerContext = undefined) {
     let whatToDo = await this.waitForPlayerInput()
 
-    if (whatToDo == "alcohol" && this.activeAlcohol.length > 0) {
+    if (whatToDo === "alcohol" && this.activeAlcohol.length > 0) {
       let alcohol = await this.choseAlcohol(useAlcohol, multiplayerContext)
 
-      if (alcohol == "goBack") {
+      if (alcohol === "goBack") {
         return this.whatToDo(useAlcohol, multiplayerContext)
       }
       
@@ -439,7 +439,7 @@ class Human extends Player {
     
     let shoot = await this.choseShoot()
 
-    if (shoot == "goBack") {
+    if (shoot === "goBack") {
       return this.whatToDo(useAlcohol, multiplayerContext)
     }
     
@@ -495,9 +495,7 @@ class MultiplayerHuman extends Player {
   async multiplayerTurn(nextTurn) {
     currentPlayer = this.name
 
-    let toReturn = await super.multiplayerTurn(nextTurn, super.turn)
-
-    return toReturn
+    return await super.multiplayerTurn(nextTurn, super.turn)
   }
 }
 
@@ -507,7 +505,7 @@ class FratBro extends Player {
   
     super("Frat Bro " + names[chosenName])
 
-    if (name != "pleb") {names[chosenName] = names[chosenName] + " Again"}
+    if (name !== "pleb") {names[chosenName] = names[chosenName] + " Again"}
 
     this.type = "FratBro"
     this.playerToNotAttack = playerToNotAttack
@@ -523,7 +521,7 @@ class FratBro extends Player {
       async function whatToDoLocal() {
         let whatToDoBind = whatToDo.bind(this)
         let chosenAction = whatToDoBind()
-        if ((chosenAction[0] == "shoot" && players[chosenAction[1]].name == this.playerToNotAttack)) {
+        if ((chosenAction[0] === "shoot" && players[chosenAction[1]].name === this.playerToNotAttack)) {
           return await whatToDoLocal.bind(this)()
         }
 
@@ -550,15 +548,15 @@ function normalReject(proposedAction, player) {
 
   let hasGuranteedLive = false
   player.alcoholEffects.forEach(function(effect) {
-    if (effect.name == "Guranteed Live") {
+    if (effect.name === "Guranteed Live") {
       hasGuranteedLive = true
     } 
   })
 
   let targetHasInvincibility = false
-  if (chosenAction == "shoot") {
+  if (chosenAction === "shoot") {
     players[chosenTarget].alcoholEffects.forEach(function(effect) {
-      if (effect.name == "Invincibile") {
+      if (effect.name === "Invincibile") {
         targetHasInvincibility = true
       } 
     })
@@ -570,15 +568,15 @@ function normalReject(proposedAction, player) {
   })
   
   // Has Guranteed Live And Chose To Use Alcohol
-  if (chosenAction == "alcohol" && hasGuranteedLive) return true
+  if (chosenAction === "alcohol" && hasGuranteedLive) return true
   // Tried To Shoot Itself With Guranteed Live
-  else if (chosenAction == "shoot" && hasGuranteedLive && players[chosenTarget].name == player.name) return true
+  else if (chosenAction === "shoot" && hasGuranteedLive && players[chosenTarget].name === player.name) return true
   // Tried To Shoot Target With Invincibility
   else if (targetHasInvincibility) return true
   // Tried To Use Seltzer With No Effects
-  else if (!hasEffects && chosenAction == "alcohol" && (player.activeAlcohol[chosenTarget].name == "Seltzer")) return true
+  else if (!hasEffects && chosenAction === "alcohol" && (player.activeAlcohol[chosenTarget].name === "Seltzer")) return true
   // Tried To Shoot Self At One Heart
-  else if (chosenAction == "shoot" && player.hp < 2 && players[chosenTarget].name == player.name) return true
+  else if (chosenAction === "shoot" && player.hp < 2 && players[chosenTarget].name === player.name) return true
 }
 
 function cheatReject(proposedAction, player) {
@@ -586,20 +584,20 @@ function cheatReject(proposedAction, player) {
   let chosenAction = proposedAction[0]
   let chosenTarget = proposedAction[1]
   
-  if (nextBullet instanceof Alcohol && (chosenAction == "alcohol" || players[chosenTarget].name != player.name)) return true
+  if (nextBullet instanceof Alcohol && (chosenAction === "alcohol" || players[chosenTarget].name !== player.name)) return true
   else if (nextBullet instanceof Alcohol) return "END"
-  else if (nextBullet && (chosenAction == "alcohol" || players[chosenTarget].name == player.name)) return true
+  else if (nextBullet && (chosenAction === "alcohol" || players[chosenTarget].name === player.name)) return true
 }
 
 function playerBiasReject(proposedAction, player) {
   let chosenAction = proposedAction[0]
   let targetedPlayer = proposedAction[1]
 
-  if (chosenAction == "alcohol") return false
+  if (chosenAction === "alcohol") return false
 
-  let biasPlayer = getRndInt(0, 3) == 0
+  let biasPlayer = getRndInt(0, 3) === 0
 
-  if (difficulty == "hard") {
+  if (difficulty === "hard") {
     biasPlayer = true
   }
   
@@ -607,21 +605,21 @@ function playerBiasReject(proposedAction, player) {
 }
 
 function rejectAlgorithim(proposedAction, player, playerBiasRejectUse=true) {
-  if (difficulty == "easy") return false
+  if (difficulty === "easy") return false
   let useCheatReject = true
   let firstReject = false
 
   let hasWhiskey = false
   player.alcoholEffects.forEach(function(effect) {
-    if (effect.hiddenName == "Whiskey") hasWhiskey = true
+    if (effect.hiddenName === "Whiskey") hasWhiskey = true
   })
 
-  if (difficulty == "normal" && hasWhiskey == false) useCheatReject = false
-  if (difficulty == "hard" && hasWhiskey == false && getRndInt(0, 2) == 0) useCheatReject = false
+  if (difficulty === "normal" && hasWhiskey === false) useCheatReject = false
+  if (difficulty === "hard" && hasWhiskey == false && getRndInt(0, 2) === 0) useCheatReject = false
 
   if (useCheatReject) firstReject = cheatReject(proposedAction, player)
   
-  if (firstReject == "END") return false
+  if (firstReject === "END") return false
   else if (firstReject) return true
   else if (normalReject(proposedAction, player)) return true
   else if (playerBiasRejectUse && playerBiasReject(proposedAction, player)) return true

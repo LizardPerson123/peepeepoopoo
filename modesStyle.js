@@ -37,7 +37,7 @@ function letThereBeLight() {
 function applyMode() {
   let mode = localStorage.getItem("mode")
 
-  if (mode == "dark") {
+  if (mode === "dark") {
     letThereBeDark()
   }
   else {
@@ -48,7 +48,7 @@ function applyMode() {
 function changeMode() {
   let mode = localStorage.getItem("mode")
 
-  if (mode == "dark") {
+  if (mode === "dark") {
     letThereBeLight()
   }
   else {

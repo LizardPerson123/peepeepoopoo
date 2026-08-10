@@ -16,7 +16,7 @@ body {overscroll-behavior: none;}
 
 #imgMode {top: 0px;}
 
-#statusEffects, #players, #events, #centerThing, #lives, #messages {overflow: scroll; border: solid;}
+#statusEffects, #players, #events, #centerThing, #lives, #messages, #collapsedCenterThing {overflow: scroll; border: solid;}
 
 .startButton {color: black;}
 
@@ -45,6 +45,7 @@ body {overscroll-behavior: none;}
   #game {
     flex-direction: column;
     justify-content: space-evenly;
+    min-height: 100vh;
   }
 
   #chooseAlcohol {display: none;}

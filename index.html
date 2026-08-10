@@ -138,6 +138,25 @@
       font-size: 5em;
     }
 
+    .inputBox {
+      width: 60%; 
+      border: solid; 
+      margin-bottom: 2em; 
+      border-radius: 1.5em; 
+      font-size: 1.5em; 
+      padding-top: 10px; 
+      padding-bottom: 10px;
+    }
+
+    #startMultiplayer {
+      font-size: 2em; 
+      padding-left: 50px; 
+      padding-right: 50px; 
+      margin-top: 1.5em; 
+      border: solid; 
+      background: none;
+    }
+
     @media screen and (max-width: 450px), (max-width: 1000px) and (max-height: 620px){
       .startGameButton {
         font-size: 2em;
@@ -151,6 +170,12 @@
         font-size: 4em;
       }
     }
+
+    @media screen and (max-height: 670px) {
+      #startMultiplayer {
+        margin-top: 0
+      }
+    }
   </style>
 
   <style id="modeStyle"></style>
@@ -162,9 +187,9 @@
       const urlParams = new URLSearchParams(window.location.search)
       const origin = urlParams.get('origin')
 
-      if (origin == "rotpear") {howToPlay(); getById("back").onclick = () => {window.location.href = "../index.html"}}
-      else if (origin == "about") {howToPlay(); getById("back").onclick = () => {window.location.href = "../about.html"}}
-      else if (origin == "autoplay") {
+      if (origin === "rotpear") {howToPlay(); getById("back").onclick = () => {window.location.href = "../index.html"}}
+      else if (origin === "about") {howToPlay(); getById("back").onclick = () => {window.location.href = "../about.html"}}
+      else if (origin === "autoplay") {
         autoplay = true
         difficulty = urlParams.get('d')
         gameMode = urlParams.get('g')
@@ -198,7 +223,7 @@
     </div>
 
     <div id="centerThing" style="grid-area: 1/2/5/5; display: flex; align-items: center; justify-content: center; position: relative;" >
-      <div id="wheelDiv" style="width: 80%; height: 80%; display: none; overflow: hidden;">
+      <div id="wheelDiv" style="width: 80%; height: 80%; display: none; overflow: hidden;" onclick="hideWheelPrompt()">
         <img width="100%" height="100%" src="images/wheel.png" style="object-fit: contain; image-rendering: pixelated" id="wheel">
       </div>
 
@@ -226,7 +251,7 @@
       </div>
     </div>
 
-    <div id="events" style="grid-area: 5/1/5/6; display: flex; flex-direction: column; align-items: center; width: 100%;">
+    <div id="events" style="grid-area: 5/1/5/6; display: flex; flex-direction: column; align-items: center;">
       <h1 style="margin-bottom: 0px;" id="eventHeader">Events</h1>
       <p id="event" style="font-size: 2em; margin-top: 1px; margin-bottom: 5px;">Waiting For Game To Start...</p>
 
@@ -366,6 +391,7 @@
      <button onclick="setWheelSpeed()" id="wheelSpeed" class="startGameButton largeButton">Wheel Speed: 40 FPS</button>
      <button onclick="setAutoplay()" id="autoplay" class="startGameButton largeButton">Autoplay: Off</button>
      <button onclick="changeMode()" id="modeButton" class="startGameButton largeButton">Mode: Light</button>
+     <button onclick="setShowWheel()" id="showWheel" class="startGameButton largeButton">Show Wheel</button>
    </div>
 
    <div id="buttonSet5" style="display: none; flex-grow: 1;">
@@ -387,7 +413,7 @@
 
    <img id="imgMode" src="moon.svg" style="position: absolute; right: 10px;" width="100px" onclick="changeMode();">
    <p id="bestPlayed">Best Played In Landscape Mode</p>
-   <p>Build a2.4</p>
+   <p>Build a2.5</p>
   </div>
 
   <div id="alcoholInfo" style="display: none;">
@@ -432,6 +458,7 @@
   </div>
 
   <div id="multiplayerMenu" style="display: none; flex-direction: column; width: 100%; align-items: center;">
+      <img src="images/manypeople.png" style="width: 5em; margin-top: 10px; image-rendering: pixelated;">
       <h1 style="margin-bottom: 10px;">Multiplayer</h1>
       <h2 style="margin-bottom: 0.7em; margin-top: 5px;" id="whatDoing">Creating New Session</h2>
       <div>
@@ -439,14 +466,14 @@
         <input type="button" id="join" name="joinOrNew" value="Join Session" style="margin-bottom: 30px; border: solid; background: none; font-size: 1.5em;"><br>
       </div>
       <label for="username" style="font-size: 1.5em; margin-bottom: 10px;">Username:</label><br>
-      <input type="text" id="username" name="username" style="width: 60%; border: solid; margin-bottom: 2em; border-radius: 1.5em; font-size: 1.5em; padding-top: 10px; padding-bottom: 10px;"><br>
+      <input type="text" id="username" class="inputBox" name="username" ><br>
       <label for="password" style="font-size: 1.5em; margin-bottom: 10px;">Password:</label><br>
-      <input type="text" id="password" name="password" style="width: 60%; border: solid; margin-bottom: 2em; border-radius: 1.5em; font-size: 1.5em; padding-top: 10px; padding-bottom: 10px;"><br>
+      <input type="text" id="password" name="password" class="inputBox"><br>
 
       <label for="sessionCode" style="font-size: 1.5em; display: none; margin-bottom: 10px;" id="sessionCodeText">Session Code:</label><br>
-      <input type="text" id="sessionCode" name="sessionCode" style="width: 60%; border: solid; margin-bottom: 2em; border-radius: 1.5em; font-size: 1.5em; display: none; padding-top: 10px; padding-bottom: 10px;" onkeypress="return isNumberKey(event)"><br>
+      <input type="text" id="sessionCode" name="sessionCode" class="inputBox" style="display: none;" onkeypress="return isNumberKey(event)"><br>
 
-      <button style="font-size: 2em; padding-left: 50px; padding-right: 50px; margin-top: 1.5em; border: solid; background: none;" id="startMultiplayer">Start</button>
+      <button id="startMultiplayer">Start</button>
   </div>
 
   <div style="display: none;" id="multiplayerNewMenu">
@@ -489,8 +516,10 @@
   <script src="game.js"></script>
   <script src="displaystuff.js"></script>
   <script src="rottingextensions.js"></script>
+  <script src="settings.js"></script>
   <script src="multiplayer/host.js"></script>
   <script src="multiplayer/pleb.js"></script>
   <script src="multiplayer/pearnet.js"></script>
+  <script src="multiplayer/multiplayer.js"></script>
 </body>
 </html>

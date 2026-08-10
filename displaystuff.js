@@ -5,6 +5,12 @@ let alreadySetKey = false
 let displayGame = true
 let globalManage
 
+const displays = {
+  mobile: "mobile",
+  mobileLandscape: "landscape",
+  desktop: "desktop"
+}
+
 function waitForPlayerInput() {
   getById("buttons").style.display = "flex"
   return new Promise(function(resolve) {
@@ -28,10 +34,10 @@ function waitForPlayerInput() {
     let alcoholButtonClick = function() {
       let confused = false
       players.forEach(function(player) {
-        if (player.confused == true && player.name == thisPlayer) confused = true
+        if (player.confused === true && player.name === thisPlayer) confused = true
       })
 
-      if (confused && getRndInt(0, 2) == 0) {
+      if (confused && getRndInt(0, 2) === 0) {
         resolveFunc("shoot")
       }
 
@@ -43,10 +49,10 @@ function waitForPlayerInput() {
     let shootButtonClick = function() {
       let confused = false
       players.forEach(function(player) {
-        if (player.confused == true && player.name == thisPlayer) confused = true
+        if (player.confused === true && player.name === thisPlayer) confused = true
       })
 
-      if (confused && getRndInt(0, 2) == 0 && this.activeAlcohol.length > 0) {
+      if (confused && getRndInt(0, 2) === 0 && this.activeAlcohol.length > 0) {
         resolveFunc("alcohol")
       }
 
@@ -55,7 +61,7 @@ function waitForPlayerInput() {
       resetButton()
     }.bind(this)
 
-    if (this.activeAlcohol.length == 0) {
+    if (this.activeAlcohol.length === 0) {
       getById("alcoholButton").style.display = "none"
     }
     else {
@@ -63,7 +69,7 @@ function waitForPlayerInput() {
     }
 
     players.forEach(function(player) {
-      if (player.confused == true && player.name == thisPlayer) confused = true
+      if (player.confused === true && player.name === thisPlayer) confused = true
     })
 
     clickEvents.push(alcoholButtonClick)
@@ -88,7 +94,7 @@ function choseAlcohol(useAlcohol = false, multiplayerContext = undefined) {
     let confused = false
 
     players.forEach(function(player) {
-      if (player.confused == true && player.name == thisPlayer) confused = true
+      if (player.confused === true && player.name === thisPlayer) confused = true
     })
 
     let activeAlcohol = this.activeAlcohol
@@ -124,20 +130,20 @@ function choseAlcohol(useAlcohol = false, multiplayerContext = undefined) {
           //This Is For Multiplayer
           //This Info Is Sent To The Host
           AlcoholTypes.forEach(async function(alcohol2) {
-            if (alcohol2.name == alcohol.name || alcohol2.name == alcohol.oname) {
+            if (alcohol2.name === alcohol.name || alcohol2.name === alcohol.oname) {
               let effect = await new alcohol2().useEffect(this, multiplayerContext)
               resolve([this.activeAlcohol.indexOf(alcohol), effect[0], effect[1]])
             }
           }.bind(this))
 
           AlcopAlcoholTypes.forEach(async function(alcohol2) {
-            if (alcohol2.name == alcohol.name || alcohol2.name == alcohol.oname) {
+            if (alcohol2.name === alcohol.name || alcohol2.name === alcohol.oname) {
               let effect = await new alcohol2().useEffect(this, multiplayerContext)
               resolve([this.activeAlcohol.indexOf(alcohol), effect[0], effect[1]])
             }
           }.bind(this))
 
-          if (Mocktail.name == alcohol.name || Mocktail.name == alcohol.oname) {
+          if (Mocktail.name === alcohol.name || Mocktail.name === alcohol.oname) {
             let effect = await new Mocktail().useEffect(this, multiplayerContext)
             resolve([this.activeAlcohol.indexOf(alcohol), effect[0], effect[1]])
           }
@@ -172,7 +178,7 @@ function choseShoot(includePlayer = true) {
     }
 
     players.forEach(function(player) {
-      if (player.confused == true && player.name == thisPlayer) confused = true
+      if (player.confused === true && player.name === thisPlayer) confused = true
     })
 
     if (confused) {
@@ -182,11 +188,11 @@ function choseShoot(includePlayer = true) {
     //This Code Is Seperate To Prevent Overiding The Event Listener
     alivePlayers.forEach(function(player) 
     {
-      if (!(!includePlayer && player.name == thisPlayer)) {
+      if (!(!includePlayer && player.name === thisPlayer)) {
         getById("shootButtons").innerHTML += `<button style='margin-right: 5px; margin-bottom: 8px' class="playerOption" id='${player.id}Button'>${player.name}</button>`
       }
 
-      if (confused && !(!includePlayer && player.name == thisPlayer)) {
+      if (confused && !(!includePlayer && player.name === thisPlayer)) {
         getById(`${player.id}Button`).innerText = "?"
       }
     })
@@ -201,7 +207,7 @@ function choseShoot(includePlayer = true) {
     }
 
     alivePlayers.forEach(function(player) {
-      if (!(!includePlayer && player.name == thisPlayer)) {
+      if (!(!includePlayer && player.name === thisPlayer)) {
         let playerID = player.id
 
         getById(`${playerID}Button`).addEventListener("click", () => {
@@ -252,7 +258,7 @@ async function basicTurnDisplay(turnFunc, addAlcohol = true) {
   let pronoun2 = "Themself"
   let status = getById("statusEffects")
 
-  if (this.name == thisPlayer) {
+  if (this.name === thisPlayer) {
     pronoun1 = "You"
     pronoun2 = "Yourself"
   }
@@ -274,7 +280,7 @@ async function basicTurnDisplay(turnFunc, addAlcohol = true) {
     return
   }
 
-  if (result == "Skip Turn") {
+  if (result === "Skip Turn") {
     eventText.innerText = `Turn Skipped`
     return new Promise(function(resolve) {
       setTimeout(function() {
@@ -285,28 +291,28 @@ async function basicTurnDisplay(turnFunc, addAlcohol = true) {
 
   let playerDamagedName = playerDamaged.name
 
-  if (playerDamagedName == this.name) {
+  if (playerDamagedName === this.name) {
     playerDamagedName = pronoun2
   }
   
-  if (result instanceof Alcohol || result.typeObj == "multiplayerAlcohol") {
+  if (result instanceof Alcohol || result.typeObj === "multiplayerAlcohol") {
     eventText.innerText = `${pronoun1} Attempted To Shoot ${playerDamagedName}, But Gave ${playerDamagedName} An Alcohol Instead`
 
-    if (playerDamaged.name == thisPlayer && addAlcohol) {
+    if (playerDamaged.name === thisPlayer && addAlcohol) {
       status.innerHTML +=  `<p onclick='displayAlcoholInfo("${result.name}", "${result.description}", "${result.img}")' id='alcohol${result.id}' style="font-size: 2em; margin-top: 1px; margin-bottom: 0px; cursor: pointer">${result.name}</p>`
     }
 
     getById("wheel").src = "images/alcoholget.png"
   }
 
-  else if (result == "alcoholUsed") {
+  else if (result === "alcoholUsed") {
     let alcohol = turn[1]
     let alcoholMessage = turn[2]
     eventText.innerText = `${pronoun1} Used ${alcohol.name}; ${alcoholMessage}`
     getById("wheel").src = "images/usealcohol.png"
   }
 
-  else if (result == true && turn[1]) {
+  else if (result === true && turn[1]) {
     eventText.innerText = `Live. Shot ${playerDamagedName}${msg}`
 
     if (this.name === playerDamaged.name) {
@@ -351,7 +357,7 @@ function turnWheel() {
           if (!dontTurnWheel) {
             turn += turnSpeed;
 
-            if (turn == 360) {
+            if (turn === 360) {
               turn = 0
             }
 
@@ -402,6 +408,7 @@ function settings() {
   showTextSpeed()
   showWheelSpeed()
   showAutoplay()
+  showShowWheel()
 }
 
 function goBackSettings() {
@@ -410,13 +417,13 @@ function goBackSettings() {
 }
 
 function displayMessage(msg, playerName) {
-  if (msg.includes(">") || msg.includes("<")) {msg = "Blocked For Security Reasons"}
   //I did not enjoy having to type these words
   listOfBadWords = ["nigger", "nigga", "fag", "faggot", "retard", "cunt", "kike", "gimp"]
   let containsSlur = listOfBadWords.some(name => msg.toLowerCase().includes(name.toLowerCase()))
 
   if (msg.length >= 20) {msg = "Blocked For Length"}
   if (containsSlur) {msg = "Blocked For Profanity"}
+  if (msg.includes(">") || msg.includes("<")) {msg = "Blocked For Security Reasons"}
 
   getById("messageDiv").innerHTML += `<p><span style="color: gray;">${playerName}</span> ${msg || "(empty message)"}</p>`
   getById("messageDiv2").innerHTML += `<p><span style="color: gray;">${playerName}</span> ${msg || "(empty message)"}</p>`
@@ -446,34 +453,41 @@ function keyPressSendMessage() {
 }
 
 function handlePhoneDisplays() {
+  const display = getDisplay()
   //This Can, (And Should), Be Converted To A Css Media Query
-  if (window.innerWidth <= 600) {
+  if (display === displays.mobile) {
     getById("game").style.display = "flex"
     gameDisplay = "flex"
   }
 
   function manage() {
+    const display = getDisplay()
+
     if (!displayGame) return
 
-    if (window.innerWidth <= 600) {
+    if (display === displays.mobile) {
       getById("game").style.display = "flex"
       gameDisplay = "flex"
 
       getById("showMsgButton").setAttribute("onclick", "getById('players').style.display = 'none'; getById('game').style.display = 'none'; getById('messages2').style.display = 'flex'")
     }
-    else if (window.innerWidth <= 900) {
+    else if (display === displays.mobileLandscape) {
       getById("showMsgButton").setAttribute("onclick", "getById('players').style.display = 'none'; getById('game').style.display = 'none'; getById('messages2').style.display = 'flex'")
       getById("game").style.display = "grid"
       gameDisplay = "grid"
       getById("showMsgButton").innerText = "MSG"
+      getById("centerThing").style.display = "flex"
     }
     else {
       getById("game").style.display = "grid"
+      getById("centerThing").style.display = "flex"
 
       getById("showMsgButton").setAttribute("onclick", "getById('players').style.display = 'none'; getById('messages').style.display = 'flex'")
 
       gameDisplay = "grid"
     }
+
+    checkToHideWheel()
   }
 
   globalManage = manage
@@ -537,6 +551,34 @@ function fixVerticalStackOverlap() {
 //THESE TWO LINES ARE ALSO AI
 window.addEventListener('DOMContentLoaded', fixVerticalStackOverlap)
 window.addEventListener('resize', fixVerticalStackOverlap)
+
+function hideWheelPrompt() {
+  const showPrompt = true
+  getDisplay() === displays.mobile && confirm("Hide Wheel?") && hideWheel(showPrompt)
+}
+
+function hideWheel(showPrompt) {
+  getById('centerThing').style.display = 'none'
+  showPrompt && alert("This Can Be Changed Back In Settings")
+  localStorage.setItem("rrShowWheel", "false")
+}
+
+function canHideWheel() {
+  return !getShowWheel() && getById("wheelDiv").style.display !== "none" && getDisplay() === displays.mobile
+}
+
+function checkToHideWheel() {
+  if (canHideWheel()) {
+    const showPrompt = false
+    hideWheel(showPrompt)
+  }
+}
+
+function getDisplay() {
+  if (window.innerWidth <= 600) {return displays.mobile}
+  else if (window.innerWidth <= 900) {return displays.mobileLandscape}
+  return displays.desktop
+}
 
 function credits() {
   console.log(

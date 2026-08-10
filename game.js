@@ -48,6 +48,7 @@ async function startGameSingleplayer() {
   bulletList.generateNew(numberOfBullets)
 
   await firstAlcoholSingleplayer()
+  checkToHideWheel()
   
   addMultipleAlcohol(2)
   
@@ -72,6 +73,8 @@ async function startGameLocalMultiplayer(localMultiplayerPlayers) {
   bulletList.generateNew(bulletCount)
 
   await firstAlcoholLocalMultiplayer()
+
+  checkToHideWheel()
 
   addMultipleAlcoholMultiplayer(2)
 
@@ -145,10 +148,10 @@ function checkIfGameOverLocalMultiplayer() {
 async function checkForShowdown(params) {
   let numberOfPeopleWithOneHeart = 0
   players.forEach(function(player) {
-    if (player.hp == 1) {numberOfPeopleWithOneHeart++}
+    if (player.hp === 1) {numberOfPeopleWithOneHeart++}
   })
 
-  if (numberOfPeopleWithOneHeart == 2 && players.getAlivePlayers().length == 2 && !localMultiplayer) {achi.register("Showdown", "silver")}
+  if (numberOfPeopleWithOneHeart === 2 && players.getAlivePlayers().length == 2 && !localMultiplayer) {achi.register("Showdown", "silver")}
 }
 
 function updatePlayerInLocalMultiplayer(player) {
@@ -200,12 +203,13 @@ async function end(won) {
     alert(wonMsg)
   }
 
-  achi.laterRegi("Lose Rotting Roulette", "bronze")
+  if (!won) {
+    achi.laterRegi("Lose Rotting Roulette", "bronze")
+  }
 
   if (localStorage.getItem("username")) {
     document.querySelector("body").innerText = "Please Wait..."
 
-    const won = false
     await sendXP(won)
     reload()
   }
@@ -229,95 +233,6 @@ async function sendXP(won) {
       }
     })
   } catch {}
-}
-
-function getTextSpeed() {
-  const rrTextSpeed = (localStorage.getItem("rrTextSpeed") || "slow")
-
-  const textSpeeds = {
-    slow: 3600,
-    normal: 2400,
-    fast: 1200
-  }
-
-  textSpeed = textSpeeds[rrTextSpeed]
-}
-
-function getWheelSpeed() {
-  let rrWheelSpeed = (localStorage.getItem("rrWheelSpeed") || "40")
-
-  switch (rrWheelSpeed) {
-    case ("20"): wheelSpeed = 50; turnSpeed = 3; break
-    case ("40"): wheelSpeed = 25; turnSpeed = 1.5; break
-    case ("60"): wheelSpeed = 17; turnSpeed = 1; break
-  }
-}
-
-function setTextSpeed() {
-  let rrTextSpeed = (localStorage.getItem("rrTextSpeed") || "slow")
-
-  switch (rrTextSpeed) {
-    case ("slow"): localStorage.setItem("rrTextSpeed", "normal"); getById("textSpeed").innerHTML = "Text Speed: Normal"; break
-    case ("normal"): localStorage.setItem("rrTextSpeed", "fast"); getById("textSpeed").innerHTML = "Text Speed: Fast"; break
-    case ("fast"): localStorage.setItem("rrTextSpeed", "slow"); getById("textSpeed").innerHTML = "Text Speed: Slow"; break
-  }
-}
-
-function showTextSpeed() {
-  let rrTextSpeed = (localStorage.getItem("rrTextSpeed") || "slow")
-
-  switch (rrTextSpeed) {
-    case ("slow"): getById("textSpeed").innerHTML = "Text Speed: Slow"; break
-    case ("normal"): getById("textSpeed").innerHTML = "Text Speed: Normal"; break
-    case ("fast"): getById("textSpeed").innerHTML = "Text Speed: Fast"; break
-  }
-}
-
-function setWheelSpeed() {
-  let rrWheelSpeed = (localStorage.getItem("rrWheelSpeed") || "40")
-
-  switch (rrWheelSpeed) {
-    case ("20"): localStorage.setItem("rrWheelSpeed", "40"); getById("wheelSpeed").innerHTML = "Wheel Speed: 40 FPS"; break
-    case ("40"): localStorage.setItem("rrWheelSpeed", "60"); getById("wheelSpeed").innerHTML = "Wheel Speed: 60 FPS"; break
-    case ("60"): localStorage.setItem("rrWheelSpeed", "20"); getById("wheelSpeed").innerHTML = "Wheel Speed: 20 FPS"; break
-  }
-}
-
-function showWheelSpeed() {
-  let rrWheelSpeed = (localStorage.getItem("rrWheelSpeed") || "40")
-
-  switch (rrWheelSpeed) {
-    case ("20"): getById("wheelSpeed").innerHTML = "Wheel Speed: 20 FPS"; break
-    case ("40"): getById("wheelSpeed").innerHTML = "Wheel Speed: 40 FPS"; break
-    case ("60"): getById("wheelSpeed").innerHTML = "Wheel Speed: 60 FPS"; break
-  }
-}
-
-function getAutoplay() {
-  let rrAutoplay = (localStorage.getItem("rrAutoplay") || "false")
-
-  switch (rrAutoplay) {
-    case ("true"): return true
-    case ("false"): return false
-  }
-}
-
-function setAutoplay() {
-  let rrAutoplay = (localStorage.getItem("rrAutoplay") || "false")
-
-  switch (rrAutoplay) {
-    case ("false"): localStorage.setItem("rrAutoplay", "true"); getById("autoplay").innerHTML = "Autoplay: On"; break
-    case ("true"): localStorage.setItem("rrAutoplay", "false"); getById("autoplay").innerHTML = "Autoplay: Off"; break
-  }
-}
-
-function showAutoplay() {
-  let rrAutoplay = (localStorage.getItem("rrAutoplay") || "false")
-
-  switch (rrAutoplay) {
-    case ("false"): getById("autoplay").innerHTML = "Autoplay: Off"; break
-    case ("true"): getById("autoplay").innerHTML = "Autoplay: On"; break
-  }
 }
 
 function addAlcoholSinglePlayer() {
@@ -408,8 +323,8 @@ function checkIfAllAlcoholUsed() {
     if (alcoholUsed.includes(alcohol.name)) {alcoholUsedNum++}
   })
 
-  if (alcoholUsedNum == gameAlcohol.length) {return true}
-  else if (alcoholUsedNum == 0) {return "None Used"}
+  if (alcoholUsedNum === gameAlcohol.length) {return true}
+  else if (alcoholUsedNum === 0) {return "None Used"}
   else {return false}
 }
 
@@ -484,112 +399,8 @@ async function firstAlcoholLocalMultiplayer() {
   }
 }
 
-function multiplayerStart() {
-  if (!localStorage.getItem("username")) {
-    multiplayer()
-    return
-  }
-  
-  getById("buttonSet3").style.display = "none"
-  getById("buttonSet6").style.display = "block"
-}
-
-function multiplayer() {
-  getById("startGame").style.display = "none" 
-  getById("multiplayerMenu").style.display = "flex"
-
-  getById("username").value = localStorage.getItem("username") || ""
-  getById("password").value = localStorage.getItem("password") || ""
-  getById("sessionCode").value = ""
-
-  getById("new").addEventListener("click", function a() {
-    currentMode = "new"
-    getById("sessionCode").style.display = "none"
-    getById("sessionCodeText").style.display = "none"
-    getById("whatDoing").innerText = "Creating New Session"
-
-    getById("new").style.display = "none"
-    getById("join").style.display = "inline"
-  })
-
-  getById("join").addEventListener("click", function b() {
-    currentMode = "join"
-    getById("sessionCode").style.display = "block"
-    getById("sessionCodeText").style.display = "block"
-    getById("whatDoing").innerText = "Joining Session"
-
-    getById("join").style.display = "none"
-    getById("new").style.display = "inline"
-  })
-
-  getById("startMultiplayer").addEventListener("click", function c() {
-    const username = getById("username").value
-    const password = getById("password").value
-    const sessionCode = getById("sessionCode").value
-    const decidedAction = currentMode
-    connectToMultiplayerServer(username, password, decidedAction, sessionCode)
-    getById("startMultiplayer").removeEventListener("click", c)
-  })
-}
-
 function getPlayersAlive(player) {
   return players.filter(player => player.hp > 0).length
-}
-
-function connectToMultiplayerServer(username, password, decidedAction, sessionCode) {
-  ws = new WebSocket("wss://api.rottingpears.com/")
-
-  ws.onmessage = function () {
-    if (username.length < 1 || password.length < 1) {
-      alert("Username And Password Must Not Be Blank")
-      return
-    }
-
-    if (decidedAction === "new") {
-      newSession(username, password)
-      thisPlayer = username
-      updateUsernameAndPassword(username, password)
-      return
-    }
-
-    if (sessionCode.length < 5) {
-      alert("Session Code Must Be 5 Characters Long")
-      return
-    }
-
-    joinSession(username, password, sessionCode)
-    thisPlayer = username
-    updateUsernameAndPassword(username, password)
-  }
-
-  ws.onclose = function() {
-    if (alreadyReloading) return
-
-    alert("Connection Disrupted")
-    reload()
-  }
-}
-
-function connectToMultiplayerNewSession() {
-  const username = localStorage.getItem("username")
-  const password = localStorage.getItem("password")
-  const decidedAction = "new"
-  getById("startGame").style.display = "none"
-  connectToMultiplayerServer(username, password, decidedAction)
-}
-
-function connectToMultiplayerJoinSession() {
-  const username = localStorage.getItem("username")
-  const password = localStorage.getItem("password")
-  const decidedAction = "join"
-  const sessionCode = getById("sessionCode2").value
-  getById("joinSession").style.display = "none"
-  connectToMultiplayerServer(username, password, decidedAction, sessionCode2)
-}
-
-function joinSessionMenu() {
-  getById("startGame").style.display = "none"
-  getById("joinSession").style.display = "block"
 }
 
 function changeAccount() {
