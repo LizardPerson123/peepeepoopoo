@@ -213,7 +213,9 @@ async function multiplayerGame() {
           return
         }
 
-        await players[i].multiplayerTurn(i)
+        let nextTurn = players.getAlivePlayers()[players.getAlivePlayers().indexOf(players[i]) + 1] || players.getAlivePlayers()[0]
+
+        await players[i].multiplayerTurn(i, nextTurn)
       }
     } 
   }
