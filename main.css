@@ -41,6 +41,7 @@ body {overscroll-behavior: none;}
   #bestPlayed {display: none;}
   #playerText, #msgPreview {display: none;}
   #showMsgButton {margin-top: 1em;}
+  #chooseAlcohol {display: none;}
 }
 
 @media screen and (max-width: 600px) {
