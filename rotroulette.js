@@ -295,7 +295,7 @@ class Player {
   }
 
   //Used here so that host and plebs can display results at the same time, this is for host
-  async multiplayerTurn(playerIndex, turn) {
+  async multiplayerTurn(playerIndex, turn, nextTurn) {
     getById("wheel").src = "images/wheel.png"
     dontTurnWheel = false
 
@@ -326,7 +326,11 @@ class Player {
       }
     }
 
-    let nextTurn = players.getAlivePlayers()[players.getAlivePlayers().indexOf(players[players.indexOf(this)]) + 1] || players.getAlivePlayers()[0]
+    const users = await getMembersApi()
+    
+    if (users.includes(this.name) || !(this instanceof MultiplayerHuman)) {
+      nextTurn = players.getAlivePlayers()[players.getAlivePlayers().indexOf(players[players.indexOf(this)]) + 1] || players.getAlivePlayers()[0]
+    }
     
     await broadcast(JSON.stringify({
       code: 1,
@@ -500,10 +504,10 @@ class MultiplayerHuman extends Player {
     }.bind(this))
   }
 
-  async multiplayerTurn(nextTurn) {
+  async multiplayerTurn(nextTurnIndex, nextTurn) {
     currentPlayer = this.name
 
-    return await super.multiplayerTurn(nextTurn, super.turn)
+    return await super.multiplayerTurn(nextTurnIndex, super.turn, nextTurn)
   }
 }
 
