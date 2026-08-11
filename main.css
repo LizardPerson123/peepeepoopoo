@@ -157,16 +157,12 @@ body {overscroll-behavior: none;}
   #events {
     height: 35vh;
   }
-
-  #players {height: 24vh;}
 }
 
 @media screen and (max-height: 550px) {
   #events {
     height: 38vh;
   }
-
-  #players {height: 28vh;}
 }
 
 @media screen and (max-height: 450px) {
@@ -174,7 +170,6 @@ body {overscroll-behavior: none;}
     height: 41vh;
   }
 
-  #players {height: 32vh;}
 }
 
 @media screen and (max-height: 720px) {
