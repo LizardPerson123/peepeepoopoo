@@ -651,6 +651,3 @@ let AlcoholTypes = [Beer, Vodka, Whiskey, Gin, Red_Wine, White_Wine, Tequila, Br
 // Currently The Same
 let AlcopAlcoholTypes = [MoonShine, IPA, EnergyBeer, Rum, Seltzer, Cider]
 let SingleplayerAlcopAlcoholTypes = [MoonShine, IPA, EnergyBeer, Seltzer, Cider, Rum]
-SingleplayerAlcopAlcoholTypes = [MoonShine, Seltzer, Rum]
-AlcopAlcoholTypes = [MoonShine, Seltzer, Rum]
-AlcoholTypes = [Beer, Vodka, Whiskey]
