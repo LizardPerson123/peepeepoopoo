@@ -149,10 +149,14 @@ async function beginGamePleb() {
 
       getById("buttons").style.display = "none"
       
-      //This Just Updates All The Stats Of The Game
-      await updateGame(msg)
+      // This Just Updates All The Stats Of The Game
+      msg = await updateGame(msg)
+
+      if (!msg) {
+        return
+      }
       
-      //This Code Manages The NextTurn Part Of The Message
+      // This Code Manages The NextTurn Part Of The Message
       if (doDisplayButtonsInGame) {
         getById("eventHeader").innerText = `${msg.nextTurn}'s Turn`
       }
@@ -185,8 +189,11 @@ function waitForWhiskeyCallback() {
 async function updateGame(msg) {
   // If Message Does Not Update Game State Then Return
   if (!msg.hp) {return}
+
   updatePlayersPleb(msg)
   players.forEach(function(player) {
+    players[players.indexOf(player)].confused = false
+
     if (player.hp != msg.hp[player.name]) {
       players[players.indexOf(player)].hp = msg.hp[player.name]
 
@@ -207,7 +214,6 @@ async function updateGame(msg) {
     
     if (player.alcoholEffects.sort().join(",") != msg.effects[player.name].sort().join(",")) {
       player.removeEffects()
-      players[players.indexOf(player)].confused = false
       players[players.indexOf(player)].alcoholEffects = msg.effects[player.name]
       
       player.alcoholEffects.forEach(function(alcoholEffect) {
@@ -245,19 +251,42 @@ async function updateGame(msg) {
   dontTurnWheel = false
   getById("event").innerText = ``
 
-  players.forEach(function(player) {
-    //If The NextTurn Is Dead, Skip Ahead
-    if (player.name == msg.nextTurn && player.hp < 1) {
+  const users = await getMembersApi()
+
+  const alivePlayers = players.filter(function(player) {
+    return player.hp > 0 && users.includes(player.name)
+  })
+
+  if (alivePlayers.length < 2) {
+    return
+  }
+
+  players.every(function(player) {
+    if (player.name !== msg.player.name) {
+      return true
+    }
+    
+    player = players[players.indexOf(player) + 1] || players[0]
+    msg.nextTurn = player.name
+
+    // If The NextTurn Is Dead (Or That Player Has Left The Game), Skip Ahead
+    const playerNotEligible = player.hp < 1 || (!users.includes(player.name) && !msg.nonHumans.includes(player.name))
+
+    if (playerNotEligible) {
       let next = player
 
-      do {next = players[players.indexOf(next) + 1]
+      do {
+        next = players[players.indexOf(next) + 1]
         if (next == undefined) {next = players[0]}
       }
-      while (next.hp < 1)
+      while (next.hp < 1 || (!users.includes(next.name) && !msg.nonHumans.includes(next.name)))
 
       msg.nextTurn = next.name
+      return false
     }
   })
+
+  return msg
 }
 
 function updatePlayersPleb(msg) {
@@ -272,7 +301,15 @@ function updatePlayersPleb(msg) {
     if (!existsInPlayer) {
       let player = {id: msg.id[key], name: key}
       addPlayer(player)
-      let newHuman = new Human(key)
+      let newHuman
+
+      if (msg.nonHumans.includes(player.name)) {
+        newHuman = new Bot(player.name)
+      }
+      else {
+        newHuman = new Human(player.name)
+      }
+
       newHuman.id = msg.id[key]
       players.push(newHuman)
     }

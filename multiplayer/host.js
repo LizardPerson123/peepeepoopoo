@@ -215,6 +215,8 @@ async function multiplayerGame() {
 
         let nextTurn = players.getAlivePlayers()[players.getAlivePlayers().indexOf(players[i]) + 1] || players.getAlivePlayers()[0]
 
+        console.log(nextTurn.name)
+
         await players[i].multiplayerTurn(i, nextTurn)
       }
     } 
@@ -265,6 +267,7 @@ function resetGame(isHost = true, turns) {
   bulletList.length = 0
 
   getById("eventHeader").innerText = "Events"
+  getById("event").style.display = "block"
   getById("event").innerText = "Waiting For Game To Start..."
   getById("buttons").style.display = "none"
 
