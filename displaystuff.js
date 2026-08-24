@@ -210,7 +210,12 @@ function choseShoot(includePlayer = true) {
       if (!(!includePlayer && player.name === thisPlayer)) {
         let playerID = player.id
 
-        getById(`${playerID}Button`).addEventListener("click", () => {
+        getById(`${playerID}Button`).addEventListener("click", async () => {
+          if (host && !(await allPlayers()).includes(player.name)) {
+            alert("That Users Has Left The Game")
+            return
+          }
+
           resolve(players.indexOf(player))
 
           getById("shootButtons").innerHTML = ""
@@ -289,6 +294,9 @@ async function basicTurnDisplay(turnFunc, addAlcohol = true) {
     })
   }
 
+  getById("wheel").style.transform = "rotate("+ 0 +"deg)"
+  dontTurnWheel = true
+
   let playerDamagedName = playerDamaged.name
 
   if (playerDamagedName === this.name) {
@@ -333,10 +341,6 @@ async function basicTurnDisplay(turnFunc, addAlcohol = true) {
       getById("wheel").src = "images/blank.png"
     }
   }
-
-  getById("wheel").style.transform = "rotate("+ 0 +"deg)"
-
-  dontTurnWheel = true
 
   return new Promise(function(resolve) {
     setTimeout(function() {
@@ -402,20 +406,6 @@ function howToPlay() {
   getById("aboutGame").style.display = "block"
 }
 
-function settings() {
-  getById("buttonSet1").style.display = "none"
-  getById("buttonSet4").style.display = "block"
-  showTextSpeed()
-  showWheelSpeed()
-  showAutoplay()
-  showShowWheel()
-}
-
-function goBackSettings() {
-  getById("buttonSet1").style.display = "grid"
-  getById("buttonSet4").style.display = "none"
-}
-
 function displayMessage(msg, playerName) {
   //I did not enjoy having to type these words
   listOfBadWords = ["nigger", "nigga", "fag", "faggot", "retard", "cunt", "kike", "gimp"]
@@ -452,18 +442,31 @@ function keyPressSendMessage() {
   }
 }
 
+// This Function Really Needs To Be Cleaned Up
 function handlePhoneDisplays() {
   const display = getDisplay()
-  //This Can, (And Should), Be Converted To A Css Media Query
-  if (display === displays.mobile) {
-    getById("game").style.display = "flex"
-    gameDisplay = "flex"
-  }
-
   function manage() {
     const display = getDisplay()
 
     if (!displayGame) return
+
+    gameDisplay = "flex"
+
+    if (display === displays.desktop || display === displays.mobileLandscape) {
+      gameDisplay = "grid"
+    }
+
+    if (getById('chooseAlcoholMobileUI').style.display !== "none" && display === displays.desktop) {
+      getById('chooseAlcoholMobileUI').style.display = "none"
+      getById('game').style.display = "grid"
+      return
+    }
+
+    if (getById('firstAlcohol').style.display !== "none" && display !== displays.desktop) {
+      getById('chooseAlcoholMobileUI').style.display = "block"
+      getById('game').style.display = "none"
+      return
+    }
 
     if (display === displays.mobile) {
       getById("game").style.display = "flex"

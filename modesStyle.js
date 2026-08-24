@@ -2,7 +2,7 @@ function letThereBeDark() {
   getById("modeStyle").innerHTML = `
     * {
       color:white;
-      background-color: #0d0e0e
+      background-color: #131313
     }
     
     .playerOption{

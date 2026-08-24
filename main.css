@@ -22,8 +22,6 @@ body {overscroll-behavior: none;}
 
 .startButton {color: black;}
 
-#bestPlayed {display: none;}
-
 .largeButton {width: 15em !important;}
 
 #buttonSet1Grid {
@@ -38,7 +36,6 @@ body {overscroll-behavior: none;}
   #statusEffects h1, #players h1, #lives {display: none;}
   #statusEffects {grid-area: 1/1/5/1 !important}
   #events {height: 45vh !important;}
-  #bestPlayed {display: none;}
   #playerText, #msgPreview {display: none;}
   #showMsgButton {margin-top: 1em;}
   #chooseAlcohol {display: none;}
@@ -54,8 +51,6 @@ body {overscroll-behavior: none;}
   #chooseAlcohol {display: none;}
 
   #lives {display: none;}
-
-  #bestPlayed {display: block;}
 
   #clickToHideWheelText {display: block;}
 
@@ -170,20 +165,9 @@ body {overscroll-behavior: none;}
   #events {
     height: 41vh;
   }
-
 }
 
-@media screen and (max-height: 720px) {
-  #buttonSet1Grid {
-    display: none;
-  }
-
-  #buttonSet1Alt {
-    display: flex;
-  }
-}
-
-@media screen and (max-width: 720px) {
+@media screen and (max-width: 720px), (max-height: 650px) {
   #buttonSet1Grid {
     display: none;
   }

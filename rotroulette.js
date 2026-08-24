@@ -230,12 +230,13 @@ class Player {
     // Alcohol
     if (resultThing instanceof Alcohol) {
       // If Alcohol Is Full (5), Then Don't Give The Alcohol And Pretend It's Blank
+      const alcoholLength = playerDamaged.activeAlcohol.length
 
-      if (addAlcohol && playerDamaged.activeAlcohol.length < 5) {
+      if (addAlcohol && alcoholLength < 5) {
         playerDamaged.activeAlcohol.push(resultThing)
       }
-
-      if (playerDamaged.activeAlcohol.length < 5) {
+    
+      if (alcoholLength < 5) {
         resultThing.startEffect(this, playerDamaged)
       }
       else {
@@ -331,6 +332,14 @@ class Player {
     if (users.includes(this.name) || !(this instanceof MultiplayerHuman)) {
       nextTurn = players.getAlivePlayers()[players.getAlivePlayers().indexOf(players[players.indexOf(this)]) + 1] || players.getAlivePlayers()[0]
     }
+
+    const nonHumans = []
+
+    players.forEach(function(player) {
+      if (!(player instanceof Human) && !(player instanceof MultiplayerHuman)) {
+        nonHumans.push(player.name)
+      }
+    })
     
     await broadcast(JSON.stringify({
       code: 1,
@@ -338,12 +347,12 @@ class Player {
       result: result,
       playerDamaged: playerDamaged,
       msg: msg,
-      nextTurn: nextTurn.name,
       hp: hp,
       effects: effects,
       activeAlcohol: activeAlcohol,
       id: id,
-      skipTurn: nextTurn.skipTurn
+      skipTurn: nextTurn.skipTurn,
+      nonHumans: nonHumans
     }))
 
     await basicTurnDisplay.bind(this)(() => {
@@ -638,5 +647,10 @@ function rejectAlgorithim(proposedAction, player, playerBiasRejectUse=true) {
 }
 
 let AlcoholTypes = [Beer, Vodka, Whiskey, Gin, Red_Wine, White_Wine, Tequila, Brandy, Mead]
+
+// Currently The Same
 let AlcopAlcoholTypes = [MoonShine, IPA, EnergyBeer, Rum, Seltzer, Cider]
-let SingleplayerAlcopAlcoholTypes = [MoonShine, IPA, EnergyBeer, Seltzer, Cider]
+let SingleplayerAlcopAlcoholTypes = [MoonShine, IPA, EnergyBeer, Seltzer, Cider, Rum]
+SingleplayerAlcopAlcoholTypes = [MoonShine, Seltzer, Rum]
+AlcopAlcoholTypes = [MoonShine, Seltzer, Rum]
+AlcoholTypes = [Beer, Vodka, Whiskey]

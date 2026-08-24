@@ -234,6 +234,11 @@ class Tequila extends Alcohol {
         
         const removeEffectFrom = await choosePlayer.bind(this)(player, turns, multiplayerContext, removeEffectMsg)
 
+        removeEffectFrom.alcoholEffects.forEach(function(effect) {
+          // Remove Overide Is True (Remove Even If Other Effects Are In Place)
+          multiplayerContext !== "pleb" && effect.end(player, true)
+        })
+
         removeEffectFrom.alcoholEffects = []
 
         if (multiplayerContext === "pleb") {
@@ -358,6 +363,11 @@ class Seltzer extends Alcohol {
   constructor() {
     const turns = 1
     super(turns, async function(player, turns, multiplayerContext) {
+      player.alcoholEffects.forEach(function(effect) {
+        // Remove Overide Is True (Remove Even If Other Effects Are In Place)
+        multiplayerContext !== "pleb" && effect.end(player, true)
+      })
+      
       player.alcoholEffects.length = 0
       getById(`${player.id}Effects`).innerHTML = ''
       return [--turns, "Cleared All Effects", undefined]
@@ -451,10 +461,10 @@ class Rum extends Alcohol {
     const effectTurns = 3
     const onDamage = undefined
     const onShoot = undefined
-    this.AlcoholEffect = new Effect(effectMsg, effectTurns, onDamage, onShoot, function onEnd(player) {
+    this.AlcoholEffect = new Effect(effectMsg, effectTurns, onDamage, onShoot, function onEnd(player, removeOveride=false) {
       let doRemove = true
       player.alcoholEffects.forEach(function(effect) {
-        if (effect.name === "Confusion") {doRemove = false}
+        if (effect.name === "Confusion" && !removeOveride) {doRemove = false}
       })
 
       if (doRemove) {

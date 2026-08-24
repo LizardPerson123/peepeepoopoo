@@ -201,13 +201,16 @@
       else {getById("startGame").style.display = "flex"}
     })
 
-    window.addEventListener("popstate", window.location.reload.bind(window.location))
+    window.addEventListener("popstate", function(event) {
+      window.location.reload()
+    })
   </script>
 </head>
 <body>
   <div id="achiLists" style="position: absolute; top: 20px; right: 0px; display: flex; flex-direction: column; gap: 20px">
 
   </div>
+
   <div id="game" style="grid-template-columns: 19vw 19vw 19vw 19vw 19vw; grid-template-rows: 19vh 19vh 19vh 19vh 19vh; align-content: center;">
     <div id="lives" style="grid-area: 1/1/1/1; align-items: center; justify-content: center;">
       <div id="lifeImage" style="display: flex; justify-content: center; image-rendering: pixelated; align-items: center;">
@@ -316,12 +319,12 @@
       <p>Campaign</p>
      </button>
 
-     <button onclick="getById('buttonSet1').style.display = 'none'; getById('buttonSet2').style.display = 'block';"  style="grid-area: 1/3/1/6; color: #00a2e8;">
+     <button onclick="goToSingleplayer()"  style="grid-area: 1/3/1/6; color: #00a2e8;">
       <img src="images/singleperson.png" style="margin-right: 6px; image-rendering: pixelated; cursor: pointer; background-color: transparent; width: 10cqw;">
       <p class="putEntirelyInLeft">Singleplayer</p>
      </button>
 
-     <button onclick="getById('buttonSet1').style.display = 'none'; getById('buttonSet3').style.display = 'block';" style="grid-area: 2/3/2/6; color: #3f48cc;">
+     <button onclick="goToMultiplayer()" style="grid-area: 2/3/2/6; color: #3f48cc;">
       <img src="images/manypeople.png" style="margin-right: 6px; image-rendering: pixelated; cursor: pointer; background-color: transparent; width: 10cqw;">
       <p class="putEntirelyInLeft">Multiplayer</p>
      </button>
@@ -338,12 +341,12 @@
    </div>
 
    <div id="buttonSet1Alt" style="flex-direction: column; justify-content: center; align-items: center;">
-     <button onclick="getById('buttonSet1').style.display = 'none'; getById('buttonSet2').style.display = 'block';" class="startGameButton" style="color: #00a2e8;">
+     <button onclick="goToSingleplayer()" class="startGameButton" style="color: #00a2e8;">
       <img src="images/singleperson.png" style="margin-right: 6px; image-rendering: pixelated; cursor: pointer; background-color: transparent; width: 1.2em;">
       Singleplayer
      </button>
 
-     <button onclick="getById('buttonSet1').style.display = 'none'; getById('buttonSet3').style.display = 'block';" class="startGameButton" style="color: #3f48cc;">
+     <button onclick="goToMultiplayer()" class="startGameButton" style="color: #3f48cc;">
       <img src="images/manypeople.png" style="margin-right: 6px; image-rendering: pixelated; cursor: pointer; background-color: transparent; width: 1.2em;">
       Multiplayer
      </button>
@@ -362,22 +365,30 @@
    </div>
 
    <div id="buttonSet2" style="display: none; flex-grow: 1;">
-     <button onclick="getById('buttonSet2').style.display = 'none'; localMultiplayerStart()" class="startGameButton">
+     <button onclick="backFromGameMode()"  style="color: gray;" class="startGameButton">
+       Back
+     </button>
+
+     <button onclick="normalMode()" class="startGameButton">
       Normal
      </button>
-     <button style="color: rgb(255, 0, 0);" onclick="gameMode = gameModes.insane; getById('buttonSet2').style.display = 'none'; localMultiplayerStart()" class="startGameButton">
+     <button style="color: rgb(255, 0, 0);" onclick="insaneMode()" class="startGameButton">
       Insane Mode
      </button>
-     <button id="p5" onclick="gameMode = gameModes.fivePlayers; getById('buttonSet2').style.display = 'none'; localMultiplayerStart()" class="startGameButton">
+     <button id="p5" onclick="fivePlayers()" class="startGameButton">
       5 Players
      </button>
-     <button id="alcop" onclick="gameMode = gameModes.alcoholGalore; getById('buttonSet2').style.display = 'none'; localMultiplayerStart()" class="startGameButton">
+     <button id="alcop" onclick="alcoholGalore()" class="startGameButton">
       Alcohol Galore
      </button>
    </div>
 
    <div id="buttonSet3" style="display: none; flex-grow: 1;">
-     <button onclick="getById('buttonSet3').style.display = 'none'; getById('buttonSet2').style.display = 'block'; getById('p5').style.display = 'none'; localMultiplayer = true;" class="startGameButton">
+     <button onclick="backFromMultiplayer()"  style="color: gray;" class="startGameButton">
+       Back
+     </button>
+
+     <button onclick="enterLocalMultiplayer()" class="startGameButton">
       Local
      </button>
 
@@ -401,6 +412,10 @@
    </div>
 
    <div id="buttonSet5" style="display: none; flex-grow: 1;">
+     <button onclick="backFromDifficulty()"  style="color: gray;" class="startGameButton">
+       Back
+     </button>
+
      <button onclick="difficulty = 'easy'; startGameLink()" style="color: green;" class="startGameButton">
       <img src="images/beer.png" style="margin-right: 6px; image-rendering: pixelated; cursor: pointer; background-color: transparent; width: 1.2em;">
       Easy
@@ -418,8 +433,6 @@
    </div>
 
    <img id="imgMode" src="moon.svg" style="position: absolute; right: 10px;" width="100px" onclick="changeMode();">
-   <p id="bestPlayed">Best Played In Landscape Mode</p>
-   <p>Build a2.5</p>
   </div>
 
   <div id="alcoholInfo" style="display: none;">
@@ -485,7 +498,7 @@
   <div style="display: none;" id="multiplayerNewMenu">
     <h1>Multiplayer</h1>
     <h2 id="status"></h2>
-    <button style="margin-bottom: 20px; display: none;" class="playerOption" onclick="getById('beginGameButton').style.display = 'none'; getById('multiplayerButton2').style.display = 'inline-block'; getById('multiplayerButton3').style.display = 'inline-block'; getById('multiplayerButton4').style.display = 'inline-block'" id="beginGameButton">Start Game</button>
+    <button style="margin-bottom: 20px; display: none;" class="playerOption" onclick="getById('beginGameButton').style.display = 'none'; getById('multiplayerButton2').style.display = 'inline-block'; getById('multiplayerButton3').style.display = 'inline-block'; getById('multiplayerButton4').style.display = 'inline-block'; endJoiningApi()" id="beginGameButton">Start Game</button>
     <button style="margin-bottom: 20px; display: none; background: none; border: solid;" class="playerOption" onclick="beginGameHost()" id="multiplayerButton2">Normal Mode</button>
     <button style="margin-bottom: 20px; display: none; background: none; border: solid; color: rgb(255, 0, 0);" class="playerOption" onclick="gameMode = 'insane'; beginGameHost()" id="multiplayerButton3">Insane Mode</button>
     <button style="margin-bottom: 20px; display: none; background: none; border: solid" class="playerOption" onclick="gameMode = 'alcop'; beginGameHost()" id="multiplayerButton4">Alcohol Galore</button>
@@ -516,13 +529,36 @@
       </div>
     </div>
   </div>
+
+  <div style="width: 100%; display: none;" id="chooseAlcoholMobileUI">
+        <h1 style="margin-bottom: 2em;">Choose Alcohol</h1>
+        <div style="display: flex; flex-wrap: wrap; justify-content: space-evenly; width: 100%; align-items: center; gap: 20px">
+          <div class="hoverTransparent" id="op4Div" style="width: 30%;">
+            <img id="op4Img" width="100%" class="startImage" style="image-rendering: pixelated;" src="images/alcohol.png">
+            <p id="op4" style="font-size: 1.5em;">One</p>
+            <p id="op4Desc"></p>
+          </div>
+
+          <div class="hoverTransparent" id="op5Div" style="width: 30%;">
+            <img id="op5Img" class="startImage" width="100%" style="image-rendering: pixelated;" src="images/alcohol.png">
+            <p id="op5" style="font-size: 1.5em;">Two</p>
+            <p id="op5Desc"></p>
+          </div>
+
+          <div class="hoverTransparent" id="op6Div" style="width: 30%;">
+            <img id="op6Img" class="startImage" width="100%" style="image-rendering: pixelated;" src="images/alcohol.png">
+            <p id="op6" style="font-size: 1.5em;">Three</p>
+            <p id="op6Desc"></p>
+          </div>
+        </div>
+    </div>
   
   <script src="alcohols.js"></script>
   <script src="rotroulette.js"></script>
   <script src="game.js"></script>
   <script src="displaystuff.js"></script>
   <script src="rottingextensions.js"></script>
-  <script src="settings.js"></script>
+  <script src="menu.js"></script>
   <script src="multiplayer/host.js"></script>
   <script src="multiplayer/pleb.js"></script>
   <script src="multiplayer/pearnet.js"></script>

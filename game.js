@@ -110,7 +110,7 @@ async function rottingRoulette() {
         continue
       }
 
-      const playersAlive = getPlayersAlive(players[i])
+      const playersAlive = players.getAlivePlayers().length
       const mainPlayer = players[0]
     
       if (mainPlayer.hp <= 0) {
@@ -131,7 +131,7 @@ function checkIfGameOverLocalMultiplayer() {
     return (player.hp < 1)
   }).length
 
-  if (deadPlayers !== peopleNum - 1) return
+  if (deadPlayers !== players.length - 1) return
 
   const winner = players.find(player => player.hp > 0)
 
@@ -328,20 +328,26 @@ function checkIfAllAlcoholUsed() {
   else {return false}
 }
 
-//Code For User Selecting Starting Alcohol (Messy Code, Could Use For Loop Instead Of Function)
+//Code For User Selecting Starting Alcohol
 async function firstAlcohol() {
   return new Promise(function(resolve) {
     getById("wheelDiv").style.display = "none"
     getById("firstAlcohol").style.display = "block"
+    
+    // Adjust To Mobile UI For First Alcohol
+    if (getDisplay() !== displays.desktop) {
+      getById("game").style.display = "none"
+      getById("chooseAlcoholMobileUI").style.display = "block"
+    }
 
-    function createOption(num) {
+    function createOption(num, gameAlcoholIndex=num) {
       let alcohol
 
       // In Multiplayer, Plebs Will Have Objects Instead Of Classes, So Both Are Tried
       try {
-        alcohol = new gameAlcohol[num - 1]()
+        alcohol = new gameAlcohol[gameAlcoholIndex - 1]()
       }
-      catch {alcohol = gameAlcohol[num - 1]}
+      catch {alcohol = gameAlcohol[gameAlcoholIndex - 1]}
       
       const optionText = getById("op" + num)
       const optionImg = getById("op" + num + "Img")
@@ -365,12 +371,21 @@ async function firstAlcohol() {
         }
         
         clickWheelTextTimeout()
-        resolve([alcohol, num-1])
+
+        // Change It Back On Mobile
+        getById("chooseAlcoholMobileUI").style.display = "none"
+        getById("game").style.display = gameDisplay
+
+        resolve([alcohol, gameAlcoholIndex-1])
       })
     }
     
     for (let i = 1; i <= 3; i++) {
       createOption(i)
+    }
+
+    for (let i = 1; i <= 3; i++) {
+      createOption(i + 3, i)
     }
   })
 }
@@ -404,10 +419,6 @@ async function firstAlcoholLocalMultiplayer() {
     players[i].activeAlcohol.push(alcohol)
     alcohol.startEffect(players[i], players[i])
   }
-}
-
-function getPlayersAlive(player) {
-  return players.filter(player => player.hp > 0).length
 }
 
 function changeAccount() {
@@ -451,6 +462,10 @@ function addPlayer(player) {
 }
 
 function localMultiplayerStart() {
-  if (localMultiplayer) {startGame(); return}
+  if (localMultiplayer) {
+    startGameLink()
+    return
+  }
+  
   getById("buttonSet5").style.display = "block"
 }
