@@ -8,7 +8,7 @@ function settings() {
 }
 
 function goBackSettings() {
-  getById("buttonSet1").style.display = "grid"
+  getById("buttonSet1").style.display = "block"
   getById("buttonSet4").style.display = "none"
 }
 
