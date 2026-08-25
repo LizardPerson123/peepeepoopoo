@@ -109,6 +109,10 @@ class Whiskey extends Alcohol {
               getById("event").innerHTML += " Alcohol,"
             }
           })
+          
+          // Remove Last Comma
+          const event = document.getElementById("event");
+          event.innerHTML = event.innerHTML.slice(0, -1);
 
           setTimeout(function() {
             const msg = "Saw The Next Shots"
