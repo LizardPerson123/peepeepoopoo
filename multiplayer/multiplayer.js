@@ -103,3 +103,17 @@ function joinSessionMenu() {
   getById("startGame").style.display = "none"
   getById("joinSession").style.display = "block"
 }
+
+async function allPlayers() {
+  const users = await getMembersApi()
+
+  players.forEach(function(player) {
+    if (player instanceof Human || player instanceof MultiplayerHuman) {
+      return
+    }
+
+    users.push(player.name)
+  })
+
+  return users
+}
