@@ -583,10 +583,10 @@ function getDisplay() {
   return displays.desktop
 }
 
-function preLoadImage(image) {
-  if (!image) {return}
-  image = new Image()
-  image.src = `../images/` + image
+function preLoadImage(imageName) {
+  if (!imageName) {return}
+  const image = new Image()
+  image.src = `../images/` + imageName
 }
 
 const observer = new MutationObserver(specialGameDisplay)
