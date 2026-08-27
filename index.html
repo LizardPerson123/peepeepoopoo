@@ -182,6 +182,9 @@
   <script src="utility.js"></script>
   <script src="modesStyle.js"></script>
 
+  <style id="specialGameStyle">
+  </style>
+
   <script>
     window.addEventListener("DOMContentLoaded", function() {
       const urlParams = new URLSearchParams(window.location.search)
@@ -211,7 +214,7 @@
 
   </div>
 
-  <div id="game" style="grid-template-columns: 19vw 19vw 19vw 19vw 19vw; grid-template-rows: 19vh 19vh 19vh 19vh 19vh; align-content: center;">
+  <div id="game" style="grid-template-columns: 19vw 19vw 19vw 19vw 19vw; grid-template-rows: 19vh 19vh 19vh 19vh 19vh; align-content: center; display: none;">
     <div id="lives" style="grid-area: 1/1/1/1; align-items: center; justify-content: center;">
       <div id="lifeImage" style="display: flex; justify-content: center; image-rendering: pixelated; align-items: center;">
         <img width="50em" src="images/life.png">
@@ -563,5 +566,7 @@
   <script src="multiplayer/pleb.js"></script>
   <script src="multiplayer/pearnet.js"></script>
   <script src="multiplayer/multiplayer.js"></script>
+  <script src="campaign/alcohols.js"></script>
+  <script src="campaign/guns.js"></script>
 </body>
 </html>

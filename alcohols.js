@@ -21,7 +21,7 @@ class Beer extends Alcohol {
     super(turns, function onUse(player, turns) {
       turns--
 
-      const msg = "Guranteed Live"
+      const msg = (this.whenUsedDesc || "Guranteed Live")
       const effect = this.AlcoholEffect
       return [turns, msg, effect]
     })
@@ -49,7 +49,7 @@ class Red_Wine extends Alcohol {
     super(turns, function onUse(player, turns) {
       turns--
       
-      const msg = "Invincible For One Turn"
+      const msg = `Invincible For ${this.AlcoholEffect.turns} Turn(s)`
       const effect = this.AlcoholEffect
       return [turns, msg, effect]
     })
@@ -212,12 +212,16 @@ class Brandy extends Alcohol {
 }
 
 class White_Wine extends Alcohol {
-  constructor() {
+  constructor(healAmount=1) {
     const turns = 1
+
+    // Heal Amount Technically Is Damage, So Negative Is Needed
+    const damageAmount = -healAmount
+
     super(turns, function(player, turns) {
       turns--
-      player.damage(-1)
-      const msg = "Healed One"
+      player.damage(damageAmount)
+      const msg = "Healed " + healAmount + " Heart(s)"
       return[turns, msg, undefined]
     })
 

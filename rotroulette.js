@@ -13,7 +13,7 @@ let turnSpeed = 1.5
 let difficulty = "normal"
 
 let currentBlankChance = 13
-let currentLiveChance = 5
+let currentLiveChance = 6
 let currentAlcoholChance = 3
 let lastAlcoholGiven = {}
 
@@ -48,7 +48,7 @@ async function choosePlayer(player, turns, multiplayerContext, msg) {
         
   if (player.type === "Human") {
     getById("eventHeader").innerHTML = msg
-    applyEffectTo = players[await choseShoot(false)]
+    applyEffectTo = players[await choseShoot(true)]
   }
   else if (!(multiplayerContext === undefined) && multiplayerContext != "pleb") {
     applyEffectTo = players[multiplayerContext]
@@ -110,7 +110,7 @@ bulletList.generateBulletInsane = function() {
 }
 
 bulletList.generateBullet = function() {
-  let bullet = getRndInt(1, 22)
+  let bullet = getRndInt(1, 23)
   
   //Alcohol Bullet
   if (bullet <= currentAlcoholChance) {
@@ -189,6 +189,8 @@ class Player {
         alcoholToUse = use[1][0]
       }
 
+      this.clearEffects()
+
       let alcohol = this.activeAlcohol[alcoholToUse]
       let useAlcohol = await alcohol.useEffect(this, multiplayerContext)
       let alcoholEffect = useAlcohol[1]
@@ -202,8 +204,6 @@ class Player {
 
         removeItem(this.activeAlcohol, alcohol)
       }
-
-      this.clearEffects()
 
       if (alcoholEffect) {
         this.alcoholEffects.push(alcoholEffect)

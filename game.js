@@ -1,7 +1,7 @@
 let currentMode = "new"
 let thisPlayer
 let gameDisplay = "grid"
-let gameMode = "normal"
+let gameMode = "campaign"
 let localMultiplayer = false
 let peopleNum
 let alcoholUsed = []
@@ -12,7 +12,8 @@ const gameModes = {
   fivePlayers: "5players",
   alcoholGalore: "alcop",
   insane: "insane",
-  everything: "everything"
+  everything: "everything",
+  campaign: "campaign"
 }
 
 async function startGame(localMultiplayerPlayers) {
@@ -43,6 +44,8 @@ async function startGameSingleplayer() {
   addMultipleAlcohol(3)
 
   updatePlayers()
+
+  players[0].alcoholEffects.push(new Gun5050())
   
   const numberOfBullets = 100
   bulletList.generateNew(numberOfBullets)
@@ -236,6 +239,14 @@ async function sendXP(won) {
 }
 
 function addAlcoholSinglePlayer() {
+  if ((gameMode === gameModes.campaign || gameMode === gameModes.everything) && SuperAlcohols.length > 0 && getRndInt(1, 6) === 1) {
+    const alcoholNum = getRndInt(0, SuperAlcohols.length)
+    const alcohol = SuperAlcohols[alcoholNum]
+    gameAlcohol.push(alcohol)
+    removeItem(SuperAlcohols, alcohol)
+    return
+  }
+
   if ((gameMode === gameModes.alcoholGalore || gameMode === gameModes.everything) && SingleplayerAlcopAlcoholTypes.length > 0 && getRndInt(0, 2) === 0) {
     const alcoholNum = getRndInt(0, SingleplayerAlcopAlcoholTypes.length)
     const alcohol = SingleplayerAlcopAlcoholTypes[alcoholNum]

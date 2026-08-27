@@ -18,7 +18,7 @@ body {overscroll-behavior: none;}
 
 #imgMode {top: 0px;}
 
-#statusEffects, #players, #events, #centerThing, #lives, #messages, #collapsedCenterThing {overflow: scroll; border: solid;}
+#statusEffects, #players, #events, #centerThing, #lives, #messages, #collapsedCenterThing {overflow: scroll;}
 
 .startButton {color: black;}
 

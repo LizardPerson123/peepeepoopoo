@@ -304,7 +304,7 @@ async function basicTurnDisplay(turnFunc, addAlcohol = true) {
   }
   
   if (result instanceof Alcohol || result.typeObj === "multiplayerAlcohol") {
-    eventText.innerText = `${pronoun1} Attempted To Shoot ${playerDamagedName}, But Gave ${playerDamagedName} An Alcohol Instead`
+    eventText.innerText = `${pronoun1} Attempted To Shoot ${playerDamagedName}, But Gave ${playerDamagedName} An Alcohol Instead${msg}`
 
     if (playerDamaged.name === thisPlayer && addAlcohol) {
       status.innerHTML +=  `<p onclick='displayAlcoholInfo("${result.name}", "${result.description}", "${result.img}")' id='alcohol${result.id}' style="font-size: 2em; margin-top: 1px; margin-bottom: 0px; cursor: pointer">${result.name}</p>`
@@ -582,6 +582,10 @@ function getDisplay() {
   else if (window.innerWidth <= 900) {return displays.mobileLandscape}
   return displays.desktop
 }
+
+const observer = new MutationObserver(specialGameDisplay)
+
+observer.observe(getById('game'), { attributes: true, attributeFilter: ['style'] })
 
 function credits() {
   console.log(
