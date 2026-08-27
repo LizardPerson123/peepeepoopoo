@@ -367,7 +367,9 @@ class Player {
       if (effect.turns < 1) {
         removeItem(this.alcoholEffects, effect)
         effect.end(this)
-        getById(`${effect.id}Effect`).remove()
+        const effectInDom = getById(`${effect.id}Effect`)
+
+        effectInDom && effectInDom.remove()
       }
     }.bind(this))
   }
@@ -376,7 +378,9 @@ class Player {
     const tempNewAlcoholEffects = this.alcoholEffects.slice(0)
     tempNewAlcoholEffects.forEach(function(effect) {
       removeItem(this.alcoholEffects, effect)
-      getById(`${effect.id}Effect`).remove()
+      const effectInDom = getById(`${effect.id}Effect`)
+
+      effectInDom && effectInDom.remove()
     }.bind(this))
   }
 
