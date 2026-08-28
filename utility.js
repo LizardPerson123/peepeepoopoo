@@ -51,10 +51,16 @@ function playSound(url) {
   }
 
   const Audio = document.createElement('audio');
-  Audio.style.display = "none"; 
+  Audio.style.height = "0px" 
+  Audio.style.width = "0px" 
   Audio.src = "sounds/" + url; 
   Audio.playbackRate = 0.85 + getRndInt(0, 31) / 100;
   document.body.appendChild(Audio);
-  Audio.play()
   arrayOfDoom.push(Audio)
+  Audio.play()
+
+  Audio.onended = function() {
+    removeItem(arrayOfDoom, Audio)
+    Audio.remove()
+  }
 }
