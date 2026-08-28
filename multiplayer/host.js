@@ -87,7 +87,6 @@ async function beginGameHost(turns) {
   keyPressSendMessage()
   handlePhoneDisplays()
   getWheelSpeed()
-  getShowWheel()
 
   inGameBegin = true
   await endJoiningApi()
@@ -214,8 +213,6 @@ async function multiplayerGame() {
         }
 
         let nextTurn = players.getAlivePlayers()[players.getAlivePlayers().indexOf(players[i]) + 1] || players.getAlivePlayers()[0]
-
-        console.log(nextTurn.name)
 
         await players[i].multiplayerTurn(i, nextTurn)
       }
