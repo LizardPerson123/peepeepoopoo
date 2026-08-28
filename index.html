@@ -71,7 +71,7 @@
       padding-right: 0.8em;
     }
 
-    #statusEffects::-webkit-scrollbar, #players::-webkit-scrollbar, #events::-webkit-scrollbar, #centerThing::-webkit-scrollbar, #lives::-webkit-scrollbar, #messages::-webkit-scrollbar {
+    #statusEffects::-webkit-scrollbar, #players::-webkit-scrollbar, #events::-webkit-scrollbar, #centerThing::-webkit-scrollbar, #lives::-webkit-scrollbar, #messages::-webkit-scrollbar, #buttonSet1Grid button::-webkit-scrollbar {
       display: none;
     }
 
@@ -217,6 +217,13 @@
   </div>
 
   <div id="game" style="grid-template-columns: 19vw 19vw 19vw 19vw 19vw; grid-template-rows: 19vh 19vh 19vh 19vh 19vh; align-content: center; display: none;">
+    <div id="buttonsdiv" style="align-items: center;">
+      <p onclick="goBackToMainGame()">Back</p>
+      <a style="margin-left: auto; margin-right: 20px;" onclick="changeMobileView('players')">Players</a>
+      <a style=" margin-right: 20px;" onclick="changeMobileView('statusEffects', 'block')">Alcohol</a>
+      <a style=" margin-right: 20px;">Messages</a>
+    </div>
+
     <div id="lives" style="grid-area: 1/1/1/1; align-items: center; justify-content: center;">
       <div id="lifeImage" style="display: flex; justify-content: center; image-rendering: pixelated; align-items: center;">
         <img width="50em" src="images/life.png">
@@ -231,8 +238,7 @@
     </div>
 
     <div id="centerThing" style="grid-area: 1/2/5/5; display: flex; align-items: center; justify-content: center; position: relative;" >
-      <div id="wheelDiv" style="width: 80%; height: 80%; display: none; overflow: hidden; position: relative;" onclick="hideWheelPrompt()">
-        <p id="clickToHideWheelText" style="position: absolute; z-index: 5; color: white; background: none; left: 0; right: 0; bottom: 0; top: 50%;">Click to hide wheel</p>
+      <div id="wheelDiv" style="width: 80%; height: 80%; display: none; overflow: hidden; position: relative;">
         <img width="100%" height="100%" src="images/wheel.png" style="object-fit: contain; image-rendering: pixelated" id="wheel">
       </div>
 
@@ -285,14 +291,14 @@
       </div>
     </div>
 
-    <div style="grid-area: 1/5/5/5; display: flex;" id="players">
+    <div style="grid-area: 1/5/5/5;" id="players">
       <h1 id="playerText">Players</h1>
 
       <button id="showMsgButton" style="width: 70%; align-self: center; padding: none; font-size: 1.5em; border: solid; display: none;" onclick="getById('players').style.display = 'none'; getById('messages').style.display = 'flex'">Messages</button>
 
       <p style="display: none;" id="msgPreview"><span style="color: gray;">Example</span> Hello World!</p>
 
-      <div id="innerPlayers" style="display: flex;"></div>
+      <div id="innerPlayers" style="display: flex; flex-direction: column;"></div>
     </div>
 
     <div style="grid-area: 1/5/5/5; display: none; position: relative;" id="messages">
@@ -413,7 +419,6 @@
    <div id="buttonSet6" style="display: none; flex-grow: 1;">
      <button onclick="getById('buttonSet4').style.display = 'block'; getById('buttonSet6').style.display = 'none';" class="startGameButton largeButton">Back</button>
      <button onclick="setWheelSpeed()" id="wheelSpeed" class="startGameButton largeButton">Wheel Speed: 40 FPS</button>
-     <button onclick="setShowWheel()" id="showWheel" class="startGameButton largeButton">Show Wheel</button>
    </div>
 
    <div id="buttonSet5" style="display: none; flex-grow: 1;">

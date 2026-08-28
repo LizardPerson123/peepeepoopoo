@@ -4,7 +4,6 @@ function settings() {
   showTextSpeed()
   showWheelSpeed()
   showAutoplay()
-  showShowWheel()
 }
 
 function goBackSettings() {
@@ -101,24 +100,6 @@ function showAutoplay() {
   }
 }
 
-function getShowWheel() {
-  let rrShowWheel = (localStorage.getItem("rrShowWheel") || "true")
-
-  switch (rrShowWheel) {
-    case ("true"): return true
-    case ("false"): return false
-  }
-}
-
-function setShowWheel() {
-  let rrShowWheel = (localStorage.getItem("rrShowWheel") || "true")
-
-  switch (rrShowWheel) {
-    case ("false"): localStorage.setItem("rrShowWheel", "true"); getById("showWheel").innerHTML = "Show Wheel"; break
-    case ("true"): localStorage.setItem("rrShowWheel", "false"); getById("showWheel").innerHTML = "Don't Show Wheel"; break
-  }
-}
-
 function goToSingleplayer() {
   getById('buttonSet1').style.display = 'none' 
   getById('buttonSet2').style.display = 'block'
@@ -180,18 +161,4 @@ function enterLocalMultiplayer() {
   getById('buttonSet2').style.display = 'block' 
   getById('p5').style.display = 'none'
   localMultiplayer = true
-}
-
-function showShowWheel() {
-  if (getDisplay() !== displays.mobile) {
-    getById("showWheel").style.display = "none"
-    return
-  }
-
-  let rrShowWheel = (localStorage.getItem("rrShowWheel") || "true")
-
-  switch (rrShowWheel) {
-    case ("false"): getById("showWheel").innerHTML = "Don't Show Wheel"; break
-    case ("true"): getById("showWheel").innerHTML = "Show Wheel"; break
-  }
 }

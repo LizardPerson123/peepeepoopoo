@@ -51,7 +51,6 @@ async function startGameSingleplayer() {
   bulletList.generateNew(numberOfBullets)
 
   await firstAlcoholSingleplayer()
-  checkToHideWheel()
   
   addMultipleAlcohol(2)
   
@@ -76,8 +75,6 @@ async function startGameLocalMultiplayer(localMultiplayerPlayers) {
   bulletList.generateNew(bulletCount)
 
   await firstAlcoholLocalMultiplayer()
-
-  checkToHideWheel()
 
   addMultipleAlcoholMultiplayer(2)
 
@@ -380,8 +377,6 @@ async function firstAlcohol() {
           getById("op" + i + "Div").remove()
           getById("alcoholSelection").appendChild(alcoholOption)
         }
-        
-        clickWheelTextTimeout()
 
         // Change It Back On Mobile
         getById("chooseAlcoholMobileUI").style.display = "none"
@@ -399,12 +394,6 @@ async function firstAlcohol() {
       createOption(i + 3, i)
     }
   })
-}
-
-function clickWheelTextTimeout() {
-  setTimeout(function() {
-    getById("clickToHideWheelText").style.display = "none"
-  }, 3000)
 }
 
 async function firstAlcoholSingleplayer() {

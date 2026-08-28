@@ -448,6 +448,14 @@ function handlePhoneDisplays() {
   function manage() {
     const display = getDisplay()
 
+    if (display === displays.desktop || display === displays.mobileLandscape) {
+      resetEverythingToDesktop()
+    }
+
+    if (display === displays.mobile) {
+      goBackToMainGame()
+    }
+
     if (!displayGame) return
 
     gameDisplay = "flex"
@@ -472,9 +480,12 @@ function handlePhoneDisplays() {
       getById("game").style.display = "flex"
       gameDisplay = "flex"
 
+      goBackToMainGame()
+
       getById("showMsgButton").setAttribute("onclick", "getById('players').style.display = 'none'; getById('game').style.display = 'none'; getById('messages2').style.display = 'flex'")
     }
     else if (display === displays.mobileLandscape) {
+      resetEverythingToDesktop()
       getById("showMsgButton").setAttribute("onclick", "getById('players').style.display = 'none'; getById('game').style.display = 'none'; getById('messages2').style.display = 'flex'")
       getById("game").style.display = "grid"
       gameDisplay = "grid"
@@ -488,9 +499,9 @@ function handlePhoneDisplays() {
       getById("showMsgButton").setAttribute("onclick", "getById('players').style.display = 'none'; getById('messages').style.display = 'flex'")
 
       gameDisplay = "grid"
-    }
 
-    checkToHideWheel()
+      resetEverythingToDesktop()
+    }
   }
 
   globalManage = manage
@@ -555,27 +566,6 @@ function fixVerticalStackOverlap() {
 window.addEventListener('DOMContentLoaded', fixVerticalStackOverlap)
 window.addEventListener('resize', fixVerticalStackOverlap)
 
-function hideWheelPrompt() {
-  const showPrompt = true
-  getDisplay() === displays.mobile && confirm("Hide Wheel?") && hideWheel(showPrompt)
-}
-
-function hideWheel(showPrompt) {
-  getById('centerThing').style.display = 'none'
-  showPrompt && alert("This Can Be Changed Back In Settings")
-  localStorage.setItem("rrShowWheel", "false")
-}
-
-function canHideWheel() {
-  return !getShowWheel() && getById("wheelDiv").style.display !== "none" && getDisplay() === displays.mobile
-}
-
-function checkToHideWheel() {
-  if (canHideWheel()) {
-    const showPrompt = false
-    hideWheel(showPrompt)
-  }
-}
 
 function getDisplay() {
   if (window.innerWidth <= 600) {return displays.mobile}
@@ -587,6 +577,38 @@ function preLoadImage(imageName) {
   if (!imageName) {return}
   const image = new Image()
   image.src = `../images/` + imageName
+}
+
+function changeMobileView(elementName, displayAs="flex") {
+  getById(elementName).style.height = '80vh'
+  getById("game").querySelectorAll(":scope > div").forEach(function(element) {
+    element.style.display = "none"
+    console.log(element.innerHTML)
+  })
+
+  getById(elementName).style.display = displayAs
+  getById("buttonsdiv").style.display = "flex"
+}
+
+function goBackToMainGame() {
+  getById("game").querySelectorAll(":scope > div").forEach(function(element) {
+    element.style.display = "none"
+  })
+
+  getById("buttonsdiv").style.display = "flex"
+  getById("centerThing").style.display = "flex"
+  getById("events").style.display = "flex"
+}
+
+function resetEverythingToDesktop() {
+  getById("game").querySelectorAll(":scope > div").forEach(function(element) {
+    element.style.display = "flex"
+    element.style.height = ""
+  })
+
+  getById("statusEffects").style.display = "inline"
+  getById("buttonsdiv").style.display = "none"
+  getById("messages").style.display = "none"
 }
 
 const observer = new MutationObserver(specialGameDisplay)
