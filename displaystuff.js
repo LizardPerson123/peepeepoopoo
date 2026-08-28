@@ -612,7 +612,7 @@ function resetEverythingToDesktop() {
   })
   
   // Fix For Safari
-  getById("lives").offsetHeight
+  getById("lives").style.display = "none"
 
   getById("statusEffects").style.display = "inline"
   getById("buttonsdiv").style.display = "none"
