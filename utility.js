@@ -43,6 +43,8 @@ function shuffleArray(array) {
     }
 }
 
+const arrayOfDoom = []
+
 function playSound(url) {
   if (!getSoundEffects()) {
     return
@@ -52,6 +54,7 @@ function playSound(url) {
   Audio.style.display = "none"; 
   Audio.src = "sounds/" + url; 
   Audio.playbackRate = 0.85 + getRndInt(0, 31) / 100;
-  Audio.autoplay = true; 
   document.body.appendChild(Audio);
+  Audio.autoplay = true; 
+  arrayOfDoom.push(Audio)
 }
