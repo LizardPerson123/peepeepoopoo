@@ -48,7 +48,7 @@ async function choosePlayer(player, turns, multiplayerContext, msg) {
         
   if (player.type === "Human") {
     getById("eventHeader").innerHTML = msg
-    applyEffectTo = players[await choseShoot(true)]
+    applyEffectTo = players[await choseShoot(false)]
   }
   else if (!(multiplayerContext === undefined) && multiplayerContext != "pleb") {
     applyEffectTo = players[multiplayerContext]

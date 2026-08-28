@@ -305,6 +305,7 @@ async function basicTurnDisplay(turnFunc, addAlcohol = true) {
   }
   
   if (result instanceof Alcohol || result.typeObj === "multiplayerAlcohol") {
+    playSound("alcohol.mp3")
     eventText.innerText = `${pronoun1} Attempted To Shoot ${playerDamagedName}, But Gave ${playerDamagedName} An Alcohol Instead${msg}`
 
     if (playerDamaged.name === thisPlayer && addAlcohol) {
@@ -315,6 +316,7 @@ async function basicTurnDisplay(turnFunc, addAlcohol = true) {
   }
 
   else if (result === "alcoholUsed") {
+    playSound("drink.mp3")
     let alcohol = turn[1]
     let alcoholMessage = turn[2]
     eventText.innerText = `${pronoun1} Used ${alcohol.name}; ${alcoholMessage}`
@@ -322,6 +324,7 @@ async function basicTurnDisplay(turnFunc, addAlcohol = true) {
   }
 
   else if (result === true && turn[1]) {
+    playSound("live.mp3")
     eventText.innerText = `Live. Shot ${playerDamagedName}${msg}`
 
     if (this.name === playerDamaged.name) {
@@ -331,8 +334,9 @@ async function basicTurnDisplay(turnFunc, addAlcohol = true) {
       getById("wheel").src = "images/live.png"
     }
   }
-
   else {
+    playSound("blank.mp3")
+
     eventText.innerText = `${pronoun1} Attempted To Shoot ${playerDamagedName}, But It Was Blank${msg}`
     
     if (this.name === playerDamaged.name) {

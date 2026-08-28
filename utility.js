@@ -42,3 +42,16 @@ function shuffleArray(array) {
         array[j] = temp;
     }
 }
+
+function playSound(url) {
+  if (!getSoundEffects()) {
+    return
+  }
+
+  const Audio = document.createElement('audio');
+  Audio.style.display = "none"; 
+  Audio.src = "sounds/" + url; 
+  Audio.playbackRate = 0.85 + getRndInt(0, 31) / 100;
+  Audio.autoplay = true; 
+  document.body.appendChild(Audio);
+}

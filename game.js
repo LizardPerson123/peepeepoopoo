@@ -44,8 +44,6 @@ async function startGameSingleplayer() {
   addMultipleAlcohol(3)
 
   updatePlayers()
-
-  players[0].alcoholEffects.push(new Gun5050())
   
   const numberOfBullets = 100
   bulletList.generateNew(numberOfBullets)

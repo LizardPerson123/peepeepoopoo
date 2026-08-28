@@ -4,6 +4,7 @@ function settings() {
   showTextSpeed()
   showWheelSpeed()
   showAutoplay()
+  showSoundEffects()
 }
 
 function goBackSettings() {
@@ -97,6 +98,33 @@ function showAutoplay() {
   switch (rrAutoplay) {
     case ("false"): getById("autoplay").innerHTML = "Autoplay: Off"; break
     case ("true"): getById("autoplay").innerHTML = "Autoplay: On"; break
+  }
+}
+
+function getSoundEffects() {
+  let rrSoundEffects = (localStorage.getItem("rrSoundEffects") || "true")
+
+  switch (rrSoundEffects) {
+    case ("true"): return true
+    case ("false"): return false
+  }
+}
+
+function setSoundEffects() {
+  let rrSoundEffects = (localStorage.getItem("rrSoundEffects") || "true")
+
+  switch (rrSoundEffects) {
+    case ("false"): localStorage.setItem("rrSoundEffects", "true"); getById("soundEffects").innerHTML = "Sound Effects: On"; break
+    case ("true"): localStorage.setItem("rrSoundEffects", "false"); getById("soundEffects").innerHTML = "Sound Effects: Off"; break
+  }
+}
+
+function showSoundEffects() {
+  let rrSoundEffects = (localStorage.getItem("rrSoundEffects") || "true")
+
+  switch (rrSoundEffects) {
+    case ("false"): getById("soundEffects").innerHTML = "Sound Effects: Off"; break
+    case ("true"): getById("soundEffects").innerHTML = "Sound Effects: On"; break
   }
 }
 
