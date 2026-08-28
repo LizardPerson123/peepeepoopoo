@@ -55,6 +55,6 @@ function playSound(url) {
   Audio.src = "sounds/" + url; 
   Audio.playbackRate = 0.85 + getRndInt(0, 31) / 100;
   document.body.appendChild(Audio);
-  Audio.autoplay = true; 
+  Audio.play()
   arrayOfDoom.push(Audio)
 }
