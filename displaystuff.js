@@ -449,8 +449,12 @@ function handlePhoneDisplays() {
   function manage() {
     const display = getDisplay()
 
-    if (display === displays.desktop || display === displays.mobileLandscape) {
+    if (display === displays.desktop) {
       resetEverythingToDesktop()
+    }
+
+    if (display === displays.mobileLandscape) {
+      resetEverythingToLandscape()
     }
 
     if (display === displays.mobile && displayGameMobile) {
@@ -610,13 +614,15 @@ function resetEverythingToDesktop() {
     element.style.display = "flex"
     element.style.height = ""
   })
-  
-  // Fix For Safari
-  getById("lives").style.display = "none"
 
   getById("statusEffects").style.display = "inline"
   getById("buttonsdiv").style.display = "none"
   getById("messages").style.display = "none"
+}
+
+function resetEverythingToLandscape() {
+  // Safari Mobile Has A Bug I Think So This Has To Be Done
+  getById("lives").style.display = "none"
 }
 
 const observer = new MutationObserver(specialGameDisplay)
