@@ -3,6 +3,7 @@ let dontTurnWheel = false
 let alreadySpinningWheel = false
 let alreadySetKey = false
 let displayGame = true
+let displayGameMobile = true
 let globalManage
 
 const displays = {
@@ -452,7 +453,7 @@ function handlePhoneDisplays() {
       resetEverythingToDesktop()
     }
 
-    if (display === displays.mobile) {
+    if (display === displays.mobile && displayGameMobile) {
       goBackToMainGame()
     }
 
@@ -580,6 +581,8 @@ function preLoadImage(imageName) {
 }
 
 function changeMobileView(elementName, displayAs="flex") {
+  displayGameMobile = false
+
   getById(elementName).style.height = '80vh'
   getById("game").querySelectorAll(":scope > div").forEach(function(element) {
     element.style.display = "none"
@@ -591,6 +594,8 @@ function changeMobileView(elementName, displayAs="flex") {
 }
 
 function goBackToMainGame() {
+  displayGameMobile = true
+
   getById("game").querySelectorAll(":scope > div").forEach(function(element) {
     element.style.display = "none"
   })
