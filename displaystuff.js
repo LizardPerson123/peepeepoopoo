@@ -610,6 +610,9 @@ function resetEverythingToDesktop() {
     element.style.display = "flex"
     element.style.height = ""
   })
+  
+  // Fix For Safari
+  getById("lives").offsetHeight
 
   getById("statusEffects").style.display = "inline"
   getById("buttonsdiv").style.display = "none"
