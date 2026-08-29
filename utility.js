@@ -59,7 +59,10 @@ function playSound(url) {
   arrayOfDoom.push(Audio)
   Audio.play()
 
+  alert("no")
+
   Audio.onended = function() {
+    alert("yes")
     removeItem(arrayOfDoom, Audio)
     Audio.remove()
   }
