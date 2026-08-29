@@ -102,7 +102,7 @@ function showAutoplay() {
 }
 
 function getSoundEffects() {
-  let rrSoundEffects = (localStorage.getItem("rrSoundEffects") || "true")
+  let rrSoundEffects = (localStorage.getItem("rrSoundEffects") || "false")
 
   switch (rrSoundEffects) {
     case ("true"): return true
@@ -111,7 +111,7 @@ function getSoundEffects() {
 }
 
 function setSoundEffects() {
-  let rrSoundEffects = (localStorage.getItem("rrSoundEffects") || "true")
+  let rrSoundEffects = (localStorage.getItem("rrSoundEffects") || "false")
 
   switch (rrSoundEffects) {
     case ("false"): localStorage.setItem("rrSoundEffects", "true"); getById("soundEffects").innerHTML = "Sound Effects: On"; break
@@ -120,7 +120,7 @@ function setSoundEffects() {
 }
 
 function showSoundEffects() {
-  let rrSoundEffects = (localStorage.getItem("rrSoundEffects") || "true")
+  let rrSoundEffects = (localStorage.getItem("rrSoundEffects") || "false")
 
   switch (rrSoundEffects) {
     case ("false"): getById("soundEffects").innerHTML = "Sound Effects: Off"; break
