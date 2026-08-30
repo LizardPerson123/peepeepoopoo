@@ -233,22 +233,22 @@
   <div id="game" style="grid-template-columns: 19vw 19vw 19vw 19vw 19vw; grid-template-rows: 19vh 19vh 19vh 19vh 19vh; align-content: center; display: none;">
     <div id="buttonsdiv" style="align-items: center; padding-top: 2em; padding-bottom: 2em;">
       <div class="mobileNavDiv" style="display: flex; flex-direction: column; align-items: center; justify-content: center;" onclick="backButton()">
-        <img src="images/back.png" style="width: 40%; image-rendering: pixelated;">
+        <img src="images/back.png" style="width: 40%; image-rendering: pixelated; margin-bottom: 8px;">
         Back
       </div>
 
       <div class="mobileNavDiv" style="display: flex; flex-direction: column; align-items: center;" onclick="changeMobileView('players', 'flex')">
-        <img src="images/peopleicon.png" style="width: 40%; image-rendering: pixelated;">
+        <img src="images/peopleicon.png" style="width: 40%; image-rendering: pixelated; margin-bottom: 8px;">
         Players
       </div>
 
       <div class="mobileNavDiv" style=" display: flex; flex-direction: column; align-items: center;" onclick="changeMobileView('statusEffects', 'block')">
-        <img src="images/alcoholicon.png" style="width: 40%; image-rendering: pixelated;">
+        <img src="images/alcoholicon.png" style="width: 40%; image-rendering: pixelated; margin-bottom: 8px;">
         Alcohol
       </div>
 
-      <div class="mobileNavDiv" style=" display: flex; flex-direction: column; align-items: center;" onclick="changeMobileView('players')">
-        <img src="images/msgicon.png" style="width: 40%; image-rendering: pixelated;">
+      <div class="mobileNavDiv" style=" display: flex; flex-direction: column; align-items: center;" onclick="changeMobileView('messages', 'block')">
+        <img src="images/msgicon.png" style="width: 40%; image-rendering: pixelated; margin-bottom: 8px;">
         Messages
       </div>
     </div>
@@ -340,7 +340,7 @@
       <div style="display: flex; flex-direction: column; position: absolute; bottom: 0px; align-items: center; width: 100%; margin-bottom: 10px;">
         <input style="border: solid; width: 90%; font-size: 1.2em;" id="textMsgInput">
         <button class="playerOption" style="width: 90%; margin-top: 10px;" onclick="sendMessage()">Send Message</button>
-        <button class="playerOption" style="width: 90%; margin-top: 10px;" onclick="getById('messages').style.display = 'none'; getById('players').style.display = 'flex'">Go Back</button>
+        <button id="goBackMessageButton" class="playerOption" style="width: 90%; margin-top: 10px;" onclick="messageGoBack()">Go Back</button>
       </div>
     </div>
   </div>

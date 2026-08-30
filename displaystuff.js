@@ -463,6 +463,7 @@ function handlePhoneDisplays() {
 
     if (display === displays.mobile && displayGameMobile) {
       goBackToMainGame()
+      getById("goBackMessageButton").style.display = "none"
     }
 
     if (!displayGame) return
@@ -658,6 +659,11 @@ function exitGame() {
   }
 
   reload()
+}
+
+function goBackMessage() {
+  getById('messages').style.display = 'none'
+  getById('players').style.display = 'flex'
 }
 
 const observer = new MutationObserver(specialGameDisplay)
