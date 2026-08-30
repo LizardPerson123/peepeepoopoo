@@ -139,6 +139,12 @@ body {overscroll-behavior: none;}
   }
 }
 
+@media screen and (max-height: 500px) and (max-width: 600px)  {
+  #events {
+    height: 50vh;
+  }
+}
+
 @media screen and (max-height: 350px) and (min-width: 600px) and (max-width: 900px) {
   #events {
     height: 55vh !important;
@@ -169,19 +175,19 @@ body {overscroll-behavior: none;}
   .largeButton {width: 10em !important;}
 }
 
-@media screen and (max-height: 650px) {
+@media screen and (max-height: 650px) and (min-width: 900px) {
   #events {
     height: 35vh;
   }
 }
 
-@media screen and (max-height: 550px) {
+@media screen and (max-height: 550px) and (min-width: 900px) {
   #events {
     height: 38vh;
   }
 }
 
-@media screen and (max-height: 450px) {
+@media screen and (max-height: 450px) and (min-width: 900px) {
   #events {
     height: 41vh;
   }
@@ -194,6 +200,12 @@ body {overscroll-behavior: none;}
 
   #buttonSet1Alt {
     display: flex;
+  }
+}
+
+@media screen and (max-width: 320px) {
+  .mobileNavDiv {
+    font-size: 0;
   }
 }
 

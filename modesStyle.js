@@ -73,7 +73,8 @@ function specialGameDisplay() {
   
   getById("specialGameStyle").innerHTML = `
     body {
-      background-image: url("images/woodplanks.jpg")
+      background-image: url("images/woodplanks.jpg");
+      background-color: ${currentColor};
     }
 
     #game div {
