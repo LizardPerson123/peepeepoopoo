@@ -171,6 +171,20 @@
       }
     }
 
+    @media screen and (max-width: 350px){
+      .startGameButton {
+        font-size: 1.5em;
+      }
+
+      #rotting {
+        font-size: 3.5em;
+      }
+
+      #roulette {
+        font-size: 3em;
+      }
+    }
+
     @media screen and (max-height: 670px) {
       #startMultiplayer {
         margin-top: 0
@@ -217,11 +231,26 @@
   </div>
 
   <div id="game" style="grid-template-columns: 19vw 19vw 19vw 19vw 19vw; grid-template-rows: 19vh 19vh 19vh 19vh 19vh; align-content: center; display: none;">
-    <div id="buttonsdiv" style="align-items: center;">
-      <p onclick="goBackToMainGame()">Back</p>
-      <a style="margin-left: auto; margin-right: 20px;" onclick="changeMobileView('players')">Players</a>
-      <a style=" margin-right: 20px;" onclick="changeMobileView('statusEffects', 'block')">Alcohol</a>
-      <a style=" margin-right: 20px;">Messages</a>
+    <div id="buttonsdiv" style="align-items: center; padding-top: 2em; padding-bottom: 2em;">
+      <div class="mobileNavDiv" style="display: flex; flex-direction: column; align-items: center; justify-content: center;" onclick="goBackToMainGame()">
+        <img src="images/back.png" style="width: 40%; image-rendering: pixelated;">
+        Back
+      </div>
+
+      <div class="mobileNavDiv" style="display: flex; flex-direction: column; align-items: center;" onclick="changeMobileView('players', 'flex')">
+        <img src="images/peopleicon.png" style="width: 40%; image-rendering: pixelated;">
+        Players
+      </div>
+
+      <div class="mobileNavDiv" style=" display: flex; flex-direction: column; align-items: center;" onclick="changeMobileView('statusEffects', 'block')">
+        <img src="images/alcoholicon.png" style="width: 40%; image-rendering: pixelated;">
+        Alcohol
+      </div>
+
+      <div class="mobileNavDiv" style=" display: flex; flex-direction: column; align-items: center;" onclick="changeMobileView('players')">
+        <img src="images/msgicon.png" style="width: 40%; image-rendering: pixelated;">
+        Messages
+      </div>
     </div>
 
     <div id="lives" style="grid-area: 1/1/1/1; align-items: center; justify-content: center;">
