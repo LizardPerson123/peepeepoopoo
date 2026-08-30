@@ -589,6 +589,7 @@ function preLoadImage(imageName) {
 }
 
 function changeMobileView(elementName, displayAs="flex") {
+  inMainGame = false
   displayGameMobile = false
 
   getById(elementName).style.height = '80vh'
@@ -599,6 +600,18 @@ function changeMobileView(elementName, displayAs="flex") {
 
   getById(elementName).style.display = displayAs
   getById("buttonsdiv").style.display = "flex"
+}
+
+let inMainGame = true
+
+function backButton() {
+  if (inMainGame) {
+   exitGame()
+   return
+  }
+
+  inMainGame = true
+  goBackToMainGame()
 }
 
 function goBackToMainGame() {
@@ -627,6 +640,24 @@ function resetEverythingToDesktop() {
 function resetEverythingToLandscape() {
   // Safari Mobile Has A Bug I Think So This Has To Be Done
   getById("lives").style.display = "none"
+}
+
+let isExiting = false
+
+function exitGame() {
+  if (isExiting) {
+    return
+  }
+
+  isExiting = true
+
+  // Autoplay Appends Extra To The History Stack
+  if (getAutoplay()) {
+    history.back()
+    return
+  }
+
+  reload()
 }
 
 const observer = new MutationObserver(specialGameDisplay)
