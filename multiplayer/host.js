@@ -84,6 +84,7 @@ function newSession(username, password) {
 async function beginGameHost(turns) {
   achi.register("Play Rotting Roulette Multiplayer", "bronze")
   getById("showMsgButton").style.display = "block"
+  getById("mobileMessages").style.display = "flex"
   keyPressSendMessage()
   handlePhoneDisplays()
   getWheelSpeed()

@@ -85,6 +85,7 @@ async function beginGamePleb() {
   getById("multiplayerJoin").style.display = "none"
   getById("game").style.display = gameDisplay
   getById("showMsgButton").style.display = "block"
+  getById("mobileMessages").style.display = "flex"
   getById("eventHeader").innerText = "Events"
   getById("event").innerText = "Waiting For Game To Start..."
   getById("buttons").style.display = "none"
