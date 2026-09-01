@@ -247,7 +247,7 @@
         Alcohol
       </div>
 
-      <div class="mobileNavDiv" style=" display: flex; flex-direction: column; align-items: center;" onclick="changeMobileView('messages', 'block')">
+      <div class="mobileNavDiv" id="mobileMessages" style="display: none; flex-direction: column; align-items: center;" onclick="changeMobileView('messages', 'block')">
         <img src="images/msgicon.png" style="width: 40%; image-rendering: pixelated; margin-bottom: 8px;">
         Messages
       </div>
@@ -323,7 +323,7 @@
     <div style="grid-area: 1/5/5/5;" id="players">
       <h1 id="playerText">Players</h1>
 
-      <button id="showMsgButton" style="width: 70%; align-self: center; padding: none; font-size: 1.5em; border: solid; display: none;" onclick="getById('players').style.display = 'none'; getById('messages').style.display = 'flex'">Messages</button>
+      <button id="showMsgButton" style="width: 70%; align-self: center; padding: none; font-size: 1.5em; border: solid; display: none;" onclick="goToMessages()">Messages</button>
 
       <p style="display: none;" id="msgPreview"><span style="color: gray;">Example</span> Hello World!</p>
 
@@ -340,7 +340,7 @@
       <div style="display: flex; flex-direction: column; position: absolute; bottom: 0px; align-items: center; width: 100%; margin-bottom: 10px;">
         <input style="border: solid; width: 90%; font-size: 1.2em;" id="textMsgInput">
         <button class="playerOption" style="width: 90%; margin-top: 10px;" onclick="sendMessage()">Send Message</button>
-        <button id="goBackMessageButton" class="playerOption" style="width: 90%; margin-top: 10px;" onclick="messageGoBack()">Go Back</button>
+        <button id="goBackMessageButton" class="playerOption" style="width: 90%; margin-top: 10px;" onclick="messagesGoBack()">Go Back</button>
       </div>
     </div>
   </div>

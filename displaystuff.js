@@ -5,6 +5,8 @@ let alreadySetKey = false
 let displayGame = true
 let displayGameMobile = true
 let globalManage
+let lastHeight
+let lastWidth
 
 const displays = {
   mobile: "mobile",
@@ -454,16 +456,25 @@ function handlePhoneDisplays() {
     const display = getDisplay()
 
     if (display === displays.desktop) {
+      getById("messages2").style.display = "none"
+      getById("goBackMessageButton").style.display = "inline"
+      getById("showMsgButton").innerText = "Messages"
+      host && (getById("showMsgButton").style.display = "inline")
       resetEverythingToDesktop()
     }
 
     if (display === displays.mobileLandscape) {
       resetEverythingToLandscape()
+      getById("showMsgButton").innerText = "MSG"
+      host && (getById("showMsgButton").style.display = "inline")
     }
 
-    if (display === displays.mobile && displayGameMobile) {
+    if (display === displays.mobile && (lastWidth !== window.innerWidth || lastHeight !== window.innerHeight)) {
+      lastHeight = window.innerHeight
       goBackToMainGame()
-      getById("goBackMessageButton").style.display = "none"
+      host && (getById("messages2").style.display = "none")
+      host && (getById("goBackMessageButton").style.display = "none")
+      host && (getById("showMsgButton").style.display = "none")
     }
 
     if (!displayGame) return
@@ -499,7 +510,6 @@ function handlePhoneDisplays() {
       getById("showMsgButton").setAttribute("onclick", "getById('players').style.display = 'none'; getById('game').style.display = 'none'; getById('messages2').style.display = 'flex'")
       getById("game").style.display = "grid"
       gameDisplay = "grid"
-      getById("showMsgButton").innerText = "MSG"
       getById("centerThing").style.display = "flex"
     }
     else {
@@ -576,7 +586,6 @@ function fixVerticalStackOverlap() {
 window.addEventListener('DOMContentLoaded', fixVerticalStackOverlap)
 window.addEventListener('resize', fixVerticalStackOverlap)
 
-
 function getDisplay() {
   if (window.innerWidth <= 600) {return displays.mobile}
   else if (window.innerWidth <= 900) {return displays.mobileLandscape}
@@ -591,7 +600,6 @@ function preLoadImage(imageName) {
 
 function changeMobileView(elementName, displayAs="flex") {
   inMainGame = false
-  displayGameMobile = false
 
   getById(elementName).style.height = '80vh'
   getById("game").querySelectorAll(":scope > div").forEach(function(element) {
@@ -664,6 +672,18 @@ function exitGame() {
 function goBackMessage() {
   getById('messages').style.display = 'none'
   getById('players').style.display = 'flex'
+}
+
+function goToMessages() {
+  getById('players').style.display = 'none'
+  getById('messages').style.display = 'flex'
+  displayGame = false
+}
+
+function messagesGoBack() {
+  getById('messages').style.display = 'none'
+  getById('players').style.display = 'flex'
+  displayGame = true
 }
 
 const observer = new MutationObserver(specialGameDisplay)
