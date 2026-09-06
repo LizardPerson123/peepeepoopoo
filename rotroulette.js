@@ -171,10 +171,15 @@ class Player {
       return [undefined, undefined]
     }
 
+    if (this.altOutcome) {
+      const altOutcome = await this.altOutcome()
+      return ["altOutcome", altOutcome]
+    }
+
     if (this.skipTurn) {
       this.skipTurn--
       this.clearEffects()
-      return ["Skip Turn"]
+      return ["altOutcome", "Skip Turn"]
     }
 
     let use = await this.whatToDo()
@@ -194,7 +199,12 @@ class Player {
       let alcohol = this.activeAlcohol[alcoholToUse]
       let useAlcohol = await alcohol.useEffect(this, multiplayerContext)
       let alcoholEffect = useAlcohol[1]
-      let alcoholMessage = useAlcohol[0]
+      let alcoholMessage = "; " + useAlcohol[0]
+
+      const resultThing = "alcoholUsed"
+      const playerDamaged = null
+      const runEffectsResult = this.runEffectsShoot(resultThing, playerDamaged, alcoholMessage)
+      alcoholMessage = runEffectsResult[2]
 
       if (alcohol.turns < 1) {
         try {
@@ -263,17 +273,43 @@ class Player {
   }
 
   runEffectsShoot(resultThing, playerDamaged, msg) {
+    const alcoholEffectsImportanceValues = []
     this.alcoholEffects.forEach(function(effect) {
-      if (effect.shoot) {
-        let shootEffect = effect.shoot(this, resultThing, playerDamaged)
+      if (!isNaN(effect.importance) && !alcoholEffectsImportanceValues.includes(effect.importance)) {
+        alcoholEffectsImportanceValues.push(effect.importance)
+      }
+    })
 
+    alcoholEffectsImportanceValues.sort(function(a, b){return a - b})
+
+    alcoholEffectsImportanceValues.forEach(function(importance) {
+      [resultThing, playerDamaged, msg] = this.manageEffects(resultThing, playerDamaged, msg, importance)
+    }.bind(this))
+
+    return [resultThing, playerDamaged, msg]
+  }
+
+  manageEffects(resultThing, playerDamaged, msg, importance) {
+    this.alcoholEffects.forEach(function(effect) {
+      if (effect.importance !== importance || (!effect.shoot && !effect.alcohol)) {
+        return
+      }
+
+      let shootEffect
+      let effectMsg = ""
+
+      if (effect.shoot && resultThing !== "alcoholUsed") {
+        shootEffect = effect.shoot(this, resultThing, playerDamaged)
         resultThing = shootEffect[0]
-        let effectMsg = shootEffect[1]
+        effectMsg = shootEffect[1]
+      }
+      else if (effect.alcohol && resultThing === "alcoholUsed") {
+        effectMsg = effect.alcohol(this)
+      }
 
-        if (effectMsg != "") {
-          msg += "; "
-          msg += shootEffect[1]
-        }
+      if (effectMsg != "") {
+        msg += "; "
+        msg += effectMsg
       }
     }.bind(this))
 
@@ -281,6 +317,10 @@ class Player {
   }
 
   runEffectsDamage(attacker) {
+    if (!attacker) {
+      return ""
+    }
+
     let msg = ""
     this.alcoholEffects.forEach(function(effect) {
       if (effect.damage) {
@@ -386,7 +426,7 @@ class Player {
 
   damage(hp, attacker) {
     this.hp -= hp
-
+   
     let msg = this.runEffectsDamage(attacker)
 
     getById(`${this.id}LifeImages`).innerHTML = ""

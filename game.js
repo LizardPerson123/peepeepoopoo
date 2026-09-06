@@ -1,7 +1,7 @@
 let currentMode = "new"
 let thisPlayer
 let gameDisplay = "grid"
-let gameMode = "campaign"
+let gameMode = "normal"
 let localMultiplayer = false
 let peopleNum
 let alcoholUsed = []
@@ -38,7 +38,8 @@ async function startGameSingleplayer() {
   let botCount = (gameMode === gameModes.fivePlayers || gameMode == gameModes.everything) ? 4 : 2
 
   for (let i = 1; i <= botCount; i++) {
-    players.push(new Bot(`CPU ${i}`))
+    const cpu = cpus[getRndInt(0, cpus.length)]
+    players.push(new cpu(cpu.name + getRndInt(0, 50)))
   }
   
   addMultipleAlcohol(3)
@@ -80,13 +81,13 @@ async function startGameLocalMultiplayer(localMultiplayerPlayers) {
 }
 
 function addMultipleAlcohol(number) {
-  for (let i = 1; i <= 3; i++) {
+  for (let i = 1; i <= number; i++) {
     addAlcoholSinglePlayer()
   }
 }
 
 function addMultipleAlcoholMultiplayer(number) {
-  for (let i = 1; i <= 3; i++) {
+  for (let i = 1; i <= number; i++) {
     addAlcoholMultiplayer()
   }
 }
@@ -434,10 +435,12 @@ function updateUsernameAndPassword(username, password) {
 }
 
 function updatePlayers() {
+  // This Is For Resetting Players
   const playerDisplay = getById("innerPlayers")
   playerDisplay.innerHTML = ""
   players.forEach(player => {
     addPlayer(player)
+    player.damage(0)
   })
 }
 

@@ -29,12 +29,14 @@ class Beer extends Alcohol {
     const effectMsg = "Guranteed Live"
     const effectTurns = 1
     const onDamage = undefined
+    const onEnd = undefined
+    const importance = 0
 
     this.AlcoholEffect = new Effect(effectMsg, effectTurns, onDamage, function onShoot(player, result) {
       const newShootResult = true
       const msg = "Guranteed Live"
       return [newShootResult, msg]
-    })
+    }, onEnd, importance, undefined, true)
 
     this.name = "Beer"
     this.description = "Gives A Guranteed Live Next Turn"
@@ -198,11 +200,14 @@ class Brandy extends Alcohol {
     const effectMsg = "Forced Blanks"
     const effectTurns = 2
     const onDamage = undefined
+    const onEnd = undefined
+    const importance = 0
+
     this.AlcoholEffect = new Effect(effectMsg, effectTurns, onDamage, function onShoot(player, result) {
       const newShootResult = false
       const msg = "Forced Blank"
       return [newShootResult, msg]
-    })
+    }, onEnd, importance)
 
     this.name = "Brandy"
     this.description = "Give A Selected Player Forced Blanks For 2 Turns"
@@ -247,7 +252,11 @@ class Tequila extends Alcohol {
           multiplayerContext !== "pleb" && effect.end(player, true)
         })
 
-        removeEffectFrom.alcoholEffects = []
+        removeEffectFrom.alcoholEffects.forEach(function(effect) {
+          if (!effect.doNotRemoveUnnaturally) {
+            removeItem(removeEffectFrom.alcoholEffects, effect)
+          }
+        })
 
         if (multiplayerContext === "pleb") {
           const attackedPlayer = players.indexOf(removeEffectFrom)
@@ -255,6 +264,11 @@ class Tequila extends Alcohol {
         }
 
         getById(`${removeEffectFrom.id}Effects`).innerHTML = ''
+        
+        // Re-render Remaining Effects
+        removeEffectFrom.alcoholEffects.forEach(function(alcoholEffect) {
+          getById(`${removeEffectFrom.id}Effects`).innerHTML += `<p style='margin-top: 0px; margin-bottom: 2px' id='${alcoholEffect.id}Effect'>${alcoholEffect.name}</p>`
+        })
         
         const msg = "Cleared All Effects From " + removeEffectFrom.name
         resolve([turns, msg, undefined])
@@ -376,8 +390,19 @@ class Seltzer extends Alcohol {
         multiplayerContext !== "pleb" && effect.end(player, true)
       })
       
-      player.alcoholEffects.length = 0
+      player.alcoholEffects.forEach(function(effect) {
+        if (!effect.doNotRemoveUnnaturally) {
+          removeItem(player.alcoholEffects, effect)
+        }
+      })
+
       getById(`${player.id}Effects`).innerHTML = ''
+
+      // Re-render Remaining Effects
+      player.alcoholEffects.forEach(function(alcoholEffect) {
+        getById(`${player.id}Effects`).innerHTML += `<p style='margin-top: 0px; margin-bottom: 2px' id='${alcoholEffect.id}Effect'>${alcoholEffect.name}</p>`
+      })
+
       return [--turns, "Cleared All Effects", undefined]
     })
 
@@ -412,47 +437,6 @@ class IPA extends Alcohol {
   }
 
   oname = "IPA"
-}
-
-class EnergyBeer extends Alcohol {
-  constructor() {
-    const turns = 1
-    super(turns, function onUse(player, turns) {
-      turns--
-
-      const msg = "Guranteed Live For 2 Turns, But With A Risk Of Heart Attack"
-      const effect = this.AlcoholEffect
-      return [turns, msg, effect]
-    })
-    
-    const effectMsg = "Palpitations"
-    const effectTurns = 2
-    const onDamage = undefined
-
-    this.AlcoholEffect = new Effect(effectMsg, effectTurns, onDamage, function onShoot(player, result) {
-      let heartAttack = getRndInt(0, 3) === 0
-      if (heartAttack) {
-        if (player.hp === 1) {player.damage(1)}
-        while (player.hp > 1) {
-          player.damage(1)
-        }
-
-        this.turns = 0
-        return [false, `${player.name} Had A Heart Attack`]
-      }
-
-      const newShootResult = true
-      const msg = "Guranteed Live"
-      return [newShootResult, msg]
-    })
-
-    this.name = "Energy Beer"
-    this.description = "Gives A Guranteed Live For The Next Two Turns; But With A Risk Of Getting A Heart Attack And Losing A Lot Of Health"
-    this.shortDescription = "Double Lives With A Risk"
-    this.img = "energybeer.png"
-  }
-
-  oname = "EnergyBeer"
 }
 
 class Rum extends Alcohol {
@@ -598,13 +582,54 @@ class Cider extends Alcohol {
   }
 }
 
+class EnergyBeer extends Alcohol {
+  constructor() {
+    const turns = 1
+    super(turns, function(player, turns) {
+      const msg = "Double Damage"
+      return[--turns, msg, this.AlcoholEffect]
+    })
+    
+    const effectName = "Double"
+    const effectTurns = 3
+    const onDamage = undefined
+    const onEnd = undefined
+    const importance = 1
+
+    this.AlcoholEffect = new Effect(effectName, effectTurns, onDamage, function onShoot(player, result, playerDamaged) {
+      let msg = ""
+      
+      if (result instanceof Alcohol) {
+        msg = "Double Alcohol"
+        playerDamaged.activeAlcohol.push(result)
+        playerDamaged instanceof Human && (getById('status').innerHTML +=  `<p onclick='displayAlcoholInfo("${result.name}", "${result.description}", "${result.img}")' id='alcohol${result.id}' style="font-size: 2em; margin-top: 1px; margin-bottom: 0px; cursor: pointer">${result.name}</p>`)
+      }
+      else if (result) {
+        msg = "Double Live"
+        playerDamaged.damage(1)
+      }
+     
+      return [result, msg]
+    }, onEnd, importance)
+
+    this.name = "Energy Beer"
+    this.description = `Do Double Lives And Double Alcohol`
+    this.img = "energybeer.png"
+  }
+
+  oname = "EnergyBeer"
+}
+
 class Effect {
-  constructor(name, turns, onDamage = undefined, onShootResult = undefined, onEnd = () => {}) {
+  constructor(name, turns, onDamage = undefined, onShootResult = undefined, onEnd = () => {}, importance, alcohol, doNotRemoveUnnaturally=false) {
     this.turns = turns
     this.id = generateRandomCode(10, 0, 9)
     this.damage = onDamage
     this.shoot = onShootResult
     this.name = name
     this.end = onEnd
+    this.importance = importance
+    this.alcohol = alcohol
+    this.doNotRemoveUnnaturally = doNotRemoveUnnaturally
   }
 }

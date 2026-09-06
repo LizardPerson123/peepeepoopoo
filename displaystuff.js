@@ -5,7 +5,6 @@ let alreadySetKey = false
 let displayGame = true
 let displayGameMobile = true
 let globalManage
-let lastHeight
 let lastWidth
 
 const displays = {
@@ -288,8 +287,8 @@ async function basicTurnDisplay(turnFunc, addAlcohol = true) {
     return
   }
 
-  if (result === "Skip Turn") {
-    eventText.innerText = `Turn Skipped`
+  if (result === "altOutcome") {
+    eventText.innerText = turn[1]
     return new Promise(function(resolve) {
       setTimeout(function() {
         resolve(turn)
@@ -321,7 +320,7 @@ async function basicTurnDisplay(turnFunc, addAlcohol = true) {
     playSound("drink.mp3")
     let alcohol = turn[1]
     let alcoholMessage = turn[2]
-    eventText.innerText = `${pronoun1} Used ${alcohol.name}; ${alcoholMessage}`
+    eventText.innerText = `${pronoun1} Used ${alcohol.name}${alcoholMessage}`
     getById("wheel").src = "images/usealcohol.png"
   }
 
@@ -451,9 +450,14 @@ function keyPressSendMessage() {
 
 // This Function Really Needs To Be Cleaned Up
 function handlePhoneDisplays() {
-  const display = getDisplay()
   function manage() {
     const display = getDisplay()
+
+    if (lastWidth === window.innerWidth) {
+      return
+    }
+
+    lastWidth = window.innerWidth
 
     if (display === displays.desktop) {
       getById("messages2").style.display = "none"
@@ -469,8 +473,7 @@ function handlePhoneDisplays() {
       host && (getById("showMsgButton").style.display = "inline")
     }
 
-    if (display === displays.mobile && (lastWidth !== window.innerWidth || lastHeight !== window.innerHeight)) {
-      lastHeight = window.innerHeight
+    if (display === displays.mobile) {
       goBackToMainGame()
       host && (getById("messages2").style.display = "none")
       host && (getById("goBackMessageButton").style.display = "none")
