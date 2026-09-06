@@ -60,6 +60,7 @@ function resizeForDesktop() {
   getById("enemies").innerHTML = ""
   getById("alcoholInfo").style.display = "none"
   host && (getById("showMsgButton").style.display = "inline")
+  host && (getById("msgPreview").style.display = "inline")
   resetEverythingToDesktop()
   gameDisplay = "grid"
   getById("showMsgButton").setAttribute("onclick", "getById('players').style.display = 'none'; getById('messages').style.display = 'flex'")
@@ -77,6 +78,7 @@ function resizeForLandscape() {
   getById("enemies").innerHTML = ""
   getById("alcoholInfo").style.display = "none"
   host && (getById("showMsgButton").style.display = "inline")
+  host && (getById("msgPreview").style.display = "none")
   getById("showMsgButton").setAttribute("onclick", "getById('players').style.display = 'none'; getById('game').style.display = 'none'; getById('messages2').style.display = 'flex'")
   getById("game").style.display = "grid"
   gameDisplay = "grid"
@@ -99,6 +101,7 @@ function resizeForMobile() {
   host && (getById("messages2").style.display = "none")
   host && (getById("goBackMessageButton").style.display = "none")
   host && (getById("showMsgButton").style.display = "none")
+  host && (getById("msgPreview").style.display = "none")
   getById("game").style.display = "flex"
   gameDisplay = "flex"
 
