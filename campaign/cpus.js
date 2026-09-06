@@ -14,12 +14,20 @@ class Specialist extends Bot {
       }.bind(this), 2000)
     }.bind(this))
   }
+
+  constructor(name) {
+    super(name)
+    this.description = "Attacks Only You"
+    this.img = "singleperson.png"
+  }
 }
 
 class Tank extends Bot {
   constructor(name) {
     super(name)
     this.hp = 5
+    this.description = "Has 5 Hearts"
+    this.img = "singleperson.png"
   }
 }
 
@@ -27,6 +35,8 @@ class Duplex extends Bot {
   constructor(name) {
     super(name)
     this.hp = 2
+    this.description = "Splits Into Two Upon Death"
+    this.img = "singleperson.png"
   }
 
   damage(hp, attacker) {
@@ -52,6 +62,8 @@ class Expendable extends Bot {
   constructor(name) {
     super(name)
     this.hp = 2
+    this.description = "Only Shoots Itself, If It Kills Itself You Take 2 Hearts Of Damage; If You Kill It Nothing Happens"
+    this.img = "singleperson.png"
   }
 
   whatToDoDecision() {
@@ -121,12 +133,20 @@ class CantDie extends Bot {
     this.alcoholEffects.push(giveUpAlcoholEffect)
 
     this.hp = 5
+    this.description = "Cannot Take Damage From Other Players, Instead, It Takes One Heart Of Damage Every Round"
+    this.img = "singleperson.png"
   }
 }
 
 class Innocent extends Bot {
   altOutcome() {
     return "Can't Do Anything"
+  }
+
+  constructor(name) {
+    super(name)
+    this.description = "Does Nothing; You Do Not Have To Kill It"
+    this.img = "singleperson.png"
   }
 }
 
@@ -161,6 +181,8 @@ class CanGoInsane extends Bot {
 
     const insaneEffect = new Effect(effectName, turns, onDamage, onShoot, onEnd, importance, onAlcohol, doNotRemoveUnnaturally)
     this.alcoholEffects.push(insaneEffect)
+    this.description = "Acts Like A Normal CPU, But Randomly Goes Insane; When It Is Insane It Has Infinite Guranteed Lives"
+    this.img = "singleperson.png"
   }
 }
 
@@ -184,6 +206,9 @@ class InfiniteAlcohol extends Bot {
 
     const giveUpAlcoholEffect = new Effect(effectName, turns, onDamage, onShoot, onEnd, importance, onAlcohol, doNotRemoveUnnaturally)
     this.alcoholEffects.push(giveUpAlcoholEffect)
+
+    this.description = "Has Infinite Alcohol"
+    this.img = "singleperson.png"
   }
 }
 
@@ -218,6 +243,9 @@ class Sniper extends Bot {
     this.untilSuperchargedMax = 3
     this.untilSupercharged = this.untilSuperchargedMax
     this.altOutcome = this.altOutcomeFunction
+
+    this.description = "Takes Up Several Rounds To Charge Up A Shot, This Shot Does 2 Damage"
+    this.img = "singleperson.png"
   }
 
   altOutcomeFunction() {
