@@ -16,6 +16,8 @@ function handlePhoneDisplays() {
     
     alert(lastWidth)
     alert(window.innerWidth)
+    alert(bypassWidthCheck)
+    
     if (lastWidth === window.innerWidth && !bypassWidthCheck) {
       return
     }
