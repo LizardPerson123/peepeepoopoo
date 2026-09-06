@@ -13,7 +13,9 @@ const displays = {
 function handlePhoneDisplays() {
   function manage(bypassWidthCheck=false) {
     const display = getDisplay()
-
+    
+    alert(lastWidth)
+    alert(window.innerWidth)
     if (lastWidth === window.innerWidth && !bypassWidthCheck) {
       return
     }
