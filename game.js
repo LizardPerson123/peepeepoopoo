@@ -210,8 +210,9 @@ async function end(won) {
     document.querySelector("body").innerText = "Please Wait..."
 
     await sendXP(won)
-    reload()
   }
+
+  reload()
 }
 
 async function sendXP(won) {

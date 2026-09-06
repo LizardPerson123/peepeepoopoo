@@ -127,9 +127,6 @@ let achi = new RottingExtension({
     }.bind(this))
 
     this.laterRegi = function(name, type) {
-      try {
-
-      
       if (!localStorage.getItem("username")) {return}
 
       let achi = localStorage.getItem("achi") 
@@ -146,10 +143,6 @@ let achi = new RottingExtension({
       else {laterAchi = []}
       laterAchi.push({acheName: name, type: type})
       localStorage.setItem("laterAchi", JSON.stringify(laterAchi))
-      }
-      catch(e) {
-        alert(e)
-      }
     }
 
     this.animate = function (i, maxI, id) {
