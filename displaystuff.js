@@ -562,11 +562,6 @@ function resetEverythingToDesktop() {
 }
 
 function displayEnemies() {
-  getById("enemiesOuter").style.display = "flex"
-  getById("enemies").style.display = "flex"
-  getById("campaignOptionsLandscape").style.display = "none"
-  getById("game").style.display = "none"
-  
   players.forEach(function(player){
     if (!(player instanceof Bot)) {
       return
@@ -574,7 +569,7 @@ function displayEnemies() {
 
     getById("enemies").innerHTML += `
     <div id='enemy${player.id}' style='display: flex; justify-content: center; align-items: center; width: 100%;' class="enemyOption" onclick='displayAlcoholInfo("${player.name}", "${player.description}", "${player.img}"); getById("goBackAlcohol").onclick = goBackFromEnemy'>
-      <img width="150em" id="enemyImg${player.id}" style="image-rendering: pixelated; flex-shrink: 0; margin-right: 20px" src="images/${player.img}"/>
+      <img width="120em" id="enemyImg${player.id}" style="image-rendering: pixelated; flex-shrink: 0; margin-right: 20px" src="images/${player.img}"/>
       <h1 class='textForEnemy' id="enemyName${player.id}">${player.name}</h1>
     </div>
     `
@@ -588,6 +583,11 @@ function displayEnemies() {
       enemyText.style.fontSize = size + 'px';
     }
   })
+
+  getById("enemiesOuter").style.display = "flex"
+  getById("enemies").style.display = "flex"
+  getById("campaignOptionsLandscape").style.display = "none"
+  getById("game").style.display = "none"
 }
 
 function goBackFromEnemies() {
