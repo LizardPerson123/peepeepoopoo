@@ -30,7 +30,7 @@ function isNumberKey(evt) {
 function reload() {
   alreadyReloading = true
   document.querySelector("body").innerHTML = ""
-  window.location.reload()
+  window.location.href = window.location.href
   throw "This Is Intentional"
 }
 
