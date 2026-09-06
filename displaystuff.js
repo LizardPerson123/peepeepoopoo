@@ -562,6 +562,9 @@ function resetEverythingToDesktop() {
 }
 
 function displayEnemies() {
+  getById("enemies").style.display = "flex"
+  getById("enemiesOuter").style.display = "flex"
+
   players.forEach(function(player){
     if (!(player instanceof Bot)) {
       return
@@ -579,14 +582,11 @@ function displayEnemies() {
     let size = 24;
 
     while (enemyDiv.scrollWidth > window.innerWidth) {
-      alert("ah yes")
       size--
       enemyText.style.fontSize = size + 'px'
     }
   })
 
-  getById("enemiesOuter").style.display = "flex"
-  getById("enemies").style.display = "flex"
   getById("campaignOptionsLandscape").style.display = "none"
   getById("game").style.display = "none"
 }
