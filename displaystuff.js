@@ -579,8 +579,9 @@ function displayEnemies() {
     let size = 24;
 
     while (enemyDiv.scrollWidth > window.innerWidth) {
+      alert("ah yes")
       size--
-      enemyText.style.fontSize = size + 'px';
+      enemyText.style.fontSize = size + 'px'
     }
   })
 
