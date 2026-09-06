@@ -2,16 +2,6 @@ let wheelFunc = 0
 let dontTurnWheel = false
 let alreadySpinningWheel = false
 let alreadySetKey = false
-let displayGame = true
-let displayGameMobile = true
-let globalManage
-let lastWidth
-
-const displays = {
-  mobile: "mobile",
-  mobileLandscape: "landscape",
-  desktop: "desktop"
-}
 
 function waitForPlayerInput() {
   getById("buttons").style.display = "flex"
@@ -393,13 +383,25 @@ function displayAlcoholInfo(name, desc, img) {
   getById("alcoholImg").src = "images/" + img
   getById("name").innerText = name
   getById("description").innerText = desc
+  getById("enemies").style.display = "none"
+  getById("enemiesOuter").style.display = "none"
+  getById("enemies").innerHTML = ""
 }
 
 function goBack() {
   displayGame = true
   getById("game").style.display = gameDisplay
   getById("alcoholInfo").style.display = "none"
-  globalManage()
+  globalManage(true)
+}
+
+function goBackFromEnemy() {
+  displayGame = true
+  getById("enemies").style.display = "flex"
+  getById("enemiesOuter").style.display = "flex"
+  getById("alcoholInfo").style.display = "none"
+  getById("goBackAlcohol").onclick = goBack
+  displayEnemies()
 }
 
 function goBackHelp() {
@@ -446,92 +448,6 @@ function keyPressSendMessage() {
       sendMessage()
     }
   }
-}
-
-// This Function Really Needs To Be Cleaned Up
-function handlePhoneDisplays() {
-  function manage() {
-    const display = getDisplay()
-
-    if (lastWidth === window.innerWidth) {
-      return
-    }
-
-    lastWidth = window.innerWidth
-
-    if (display === displays.desktop) {
-      getById("messages2").style.display = "none"
-      getById("goBackMessageButton").style.display = "inline"
-      getById("showMsgButton").innerText = "Messages"
-      host && (getById("showMsgButton").style.display = "inline")
-      resetEverythingToDesktop()
-    }
-
-    if (display === displays.mobileLandscape) {
-      resetEverythingToLandscape()
-      getById("showMsgButton").innerText = "MSG"
-      host && (getById("showMsgButton").style.display = "inline")
-    }
-
-    if (display === displays.mobile) {
-      goBackToMainGame()
-      host && (getById("messages2").style.display = "none")
-      host && (getById("goBackMessageButton").style.display = "none")
-      host && (getById("showMsgButton").style.display = "none")
-    }
-
-    if (!displayGame) return
-
-    gameDisplay = "flex"
-
-    if (display === displays.desktop || display === displays.mobileLandscape) {
-      gameDisplay = "grid"
-    }
-
-    if (getById('chooseAlcoholMobileUI').style.display !== "none" && display === displays.desktop) {
-      getById('chooseAlcoholMobileUI').style.display = "none"
-      getById('game').style.display = "grid"
-      return
-    }
-
-    if (getById('firstAlcohol').style.display !== "none" && display !== displays.desktop) {
-      getById('chooseAlcoholMobileUI').style.display = "block"
-      getById('game').style.display = "none"
-      return
-    }
-
-    if (display === displays.mobile) {
-      getById("game").style.display = "flex"
-      gameDisplay = "flex"
-
-      goBackToMainGame()
-
-      getById("showMsgButton").setAttribute("onclick", "getById('players').style.display = 'none'; getById('game').style.display = 'none'; getById('messages2').style.display = 'flex'")
-    }
-    else if (display === displays.mobileLandscape) {
-      resetEverythingToDesktop()
-      getById("showMsgButton").setAttribute("onclick", "getById('players').style.display = 'none'; getById('game').style.display = 'none'; getById('messages2').style.display = 'flex'")
-      getById("game").style.display = "grid"
-      gameDisplay = "grid"
-      getById("centerThing").style.display = "flex"
-    }
-    else {
-      getById("game").style.display = "grid"
-      getById("centerThing").style.display = "flex"
-
-      getById("showMsgButton").setAttribute("onclick", "getById('players').style.display = 'none'; getById('messages').style.display = 'flex'")
-
-      gameDisplay = "grid"
-
-      resetEverythingToDesktop()
-    }
-  }
-
-  globalManage = manage
-
-  addEventListener("resize", manage)
-
-  manage()
 }
 
 //DISCLAIMER: THIS FUNCTION WAS (partially) WRITTEN BY AI (Google)
@@ -589,12 +505,6 @@ function fixVerticalStackOverlap() {
 window.addEventListener('DOMContentLoaded', fixVerticalStackOverlap)
 window.addEventListener('resize', fixVerticalStackOverlap)
 
-function getDisplay() {
-  if (window.innerWidth <= 600) {return displays.mobile}
-  else if (window.innerWidth <= 900) {return displays.mobileLandscape}
-  return displays.desktop
-}
-
 function preLoadImage(imageName) {
   if (!imageName) {return}
   const image = new Image()
@@ -604,10 +514,10 @@ function preLoadImage(imageName) {
 function changeMobileView(elementName, displayAs="flex") {
   inMainGame = false
 
-  getById(elementName).style.height = '80vh'
+  getById(elementName).style.minHeight = '80vh'
+  getById(elementName).style.height = "auto"
   getById("game").querySelectorAll(":scope > div").forEach(function(element) {
     element.style.display = "none"
-    console.log(element.innerHTML)
   })
 
   getById(elementName).style.display = displayAs
@@ -641,17 +551,50 @@ function goBackToMainGame() {
 function resetEverythingToDesktop() {
   getById("game").querySelectorAll(":scope > div").forEach(function(element) {
     element.style.display = "flex"
+    element.style.minHeight = ''
     element.style.height = ""
   })
 
   getById("statusEffects").style.display = "inline"
   getById("buttonsdiv").style.display = "none"
   getById("messages").style.display = "none"
+  gameMode !== gameModes.campaign && (getById("campaignOptions").style.display = "none")
 }
 
-function resetEverythingToLandscape() {
-  // Safari Mobile Has A Bug I Think So This Has To Be Done
-  getById("lives").style.display = "none"
+function displayEnemies() {
+  getById("enemiesOuter").style.display = "flex"
+  getById("enemies").style.display = "flex"
+  getById("campaignOptionsLandscape").style.display = "none"
+  getById("game").style.display = "none"
+  
+  players.forEach(function(player){
+    if (!(player instanceof Bot)) {
+      return
+    }
+
+    getById("enemies").innerHTML += `
+    <div id='enemy${player.id}' style='display: flex; justify-content: center; align-items: center; width: 100%;' class="enemyOption" onclick='displayAlcoholInfo("${player.name}", "${player.description}", "${player.img}"); getById("goBackAlcohol").onclick = goBackFromEnemy'>
+      <img width="150em" id="enemyImg${player.id}" style="image-rendering: pixelated; flex-shrink: 0; margin-right: 20px" src="images/${player.img}"/>
+      <h1 class='textForEnemy' id="enemyName${player.id}">${player.name}</h1>
+    </div>
+    `
+
+    const enemyDiv = document.getElementById(`enemy${player.id}`)
+    const enemyText = document.getElementById(`enemyName${player.id}`)
+    let size = 24;
+
+    while (enemyDiv.scrollWidth > window.innerWidth) {
+      size--
+      enemyText.style.fontSize = size + 'px';
+    }
+  })
+}
+
+function goBackFromEnemies() {
+  getById("enemies").style.display = "none"
+  getById("enemies").innerHTML = ""
+
+  globalManage(true)
 }
 
 let isExiting = false
@@ -687,6 +630,16 @@ function messagesGoBack() {
   getById('messages').style.display = 'none'
   getById('players').style.display = 'flex'
   displayGame = true
+}
+
+function campaignOptionsLandscape() {
+  getById("game").style.display = "none"
+  getById("campaignOptionsLandscape").style.display = "block"
+}
+
+function backFromCampaignOptions() {
+  getById("game").style.display = gameDisplay
+  getById("campaignOptionsLandscape").style.display = "none"
 }
 
 const observer = new MutationObserver(specialGameDisplay)

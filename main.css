@@ -4,6 +4,8 @@
   display: none
 }
 
+#tooSmall {display: none;}
+
 #players, #messages, #innerPlayers {
   flex-direction: column;
 }
@@ -12,11 +14,19 @@
   display: flex;
 }
 
+#campaignOptions {
+  display: flex;
+}
+
+.enemyOption {
+  cursor: pointer;
+}
+
 body {overscroll-behavior: none;}
 
 #imgMode {top: 0px;}
 
-#statusEffects, #players, #events, #centerThing, #lives, #messages, #collapsedCenterThing {overflow: scroll;}
+#statusEffects, #players, #events, #centerThing, #lives, #campaignOptions, #messages, #collapsedCenterThing {overflow: scroll;}
 
 .startButton {color: black;}
 
@@ -34,16 +44,16 @@ body {overscroll-behavior: none;}
   display: none;
 }
 
-@media screen and (max-width: 900px) and (min-width: 600px)  {
+@media screen and (max-width: 900px) and (min-width: 550px)  {
   #statusEffects h1, #players h1, #lives {display: none;}
   #statusEffects {grid-area: 1/1/5/1 !important}
-  #events {height: 45vh !important;}
+  #events {height: 25vh !important;}
   #playerText, #msgPreview {display: none;}
   #showMsgButton {margin-top: 1em;}
   #chooseAlcohol {display: none;}
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 550px) {
   #game {
     flex-direction: column;
     justify-content: space-evenly;
@@ -52,7 +62,7 @@ body {overscroll-behavior: none;}
 
   #chooseAlcohol {display: none;}
 
-  #lives {display: none;}
+  #lives, #campaignOptions {display: none;}
 
   #innerPlayers img {
     width: 1.5em;
@@ -115,7 +125,16 @@ body {overscroll-behavior: none;}
   }
 }
 
-@media screen and (max-height: 850px) and (max-width: 600px) {
+@media screen and (max-width: 200px), (max-height: 190px) {
+  * {display: none !important;}
+
+  #tooSmall, html, body {
+    display: block !important;
+    background-image: none !important;
+  }
+}
+
+@media screen and (max-height: 850px) and (max-width: 550px) {
   #events {
     height: 40vh;
   }
@@ -127,7 +146,7 @@ body {overscroll-behavior: none;}
   }
 }
 
-@media screen and (max-height: 640px) and (max-width: 600px)  {
+@media screen and (max-height: 640px) and (max-width: 550px)  {
   #events {
     height: 45vh;
   }
@@ -139,39 +158,55 @@ body {overscroll-behavior: none;}
   }
 }
 
-@media screen and (max-height: 500px) and (max-width: 600px)  {
+@media screen and (max-height: 500px) and (max-width: 550px)  {
   #events {
-    height: 50vh;
+    height: 40vh;
   }
 }
 
-@media screen and (max-height: 350px) and (min-width: 600px) and (max-width: 900px) {
+@media screen and (max-height: 700px) and (min-width: 550px) and (max-width: 900px) {
   #events {
-    height: 55vh !important;
+    height: 40vh !important;
   }
 }
 
-@media screen and (max-height: 300px) and (min-width: 600px) and (max-width: 900px) {
+@media screen and (max-height: 550px) and (min-width: 550px) and (max-width: 900px) {
+  #events {
+    height: 50vh !important;
+  }
+}
+
+@media screen and (max-height: 500px) and (min-width: 550px) and (max-width: 900px) {
   #events {
     height: 60vh !important;
   }
 }
 
-@media screen and (max-height: 260px) and (min-width: 600px) and (max-width: 900px) {
+@media screen and (max-height: 350px) and (min-width: 550px) and (max-width: 900px) {
+  #events {
+    height: 65vh !important;
+  }
+}
+
+@media screen and (max-height: 300px) and (min-width: 550px) and (max-width: 900px) {
   #events {
     height: 70vh !important;
   }
-
-  #players, #centerThing, #statusEffects {height: 95vh;}
 }
 
-@media screen and (max-height: 230px) and (min-width: 600px) and (max-width: 900px) {
+@media screen and (max-height: 260px) and (min-width: 550px) and (max-width: 900px) {
   #events {
-    height: 75vh !important;
+    height: 85vh !important;
   }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-height: 230px) and (min-width: 550px) and (max-width: 900px) {
+  #events {
+    height: 55vh !important;
+  }
+}
+
+@media screen and (max-width: 550px) {
   .largeButton {width: 10em !important;}
 }
 
@@ -211,4 +246,6 @@ body {overscroll-behavior: none;}
 
 @media (hover: hover) {
   #achiLists div:hover {opacity: 0.8;}
+
+  .enemyOption:hover, .campaignOption:hover {opacity: 0.6; cursor: pointer}
 }

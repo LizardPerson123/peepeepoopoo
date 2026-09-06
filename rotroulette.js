@@ -521,6 +521,10 @@ class Bot extends Player {
   constructor(name) {
     super(name)
     this.type = "Bot"
+
+    // Only For Campaign
+    this.description = "Basic Enemy"
+    this.img = "singleperson.png"
   }
 
   async turn() {

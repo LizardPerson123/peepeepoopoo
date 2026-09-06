@@ -33,13 +33,24 @@ async function startGame(localMultiplayerPlayers) {
 }
 
 async function startGameSingleplayer() {
+  if (gameMode === gameModes.campaign) {
+    getDisplay() === displays.desktop && (getById("campaignOptions").style.display = "flex")
+    getById("lives").style.display = "none"
+    getById("campaignMore").style.display = "flex"
+  }
+
   players.push(new Human("Player"))
 
   let botCount = (gameMode === gameModes.fivePlayers || gameMode == gameModes.everything) ? 4 : 2
 
   for (let i = 1; i <= botCount; i++) {
-    const cpu = cpus[getRndInt(0, cpus.length)]
-    players.push(new cpu(cpu.name + getRndInt(0, 50)))
+    if (gameMode === gameModes.campaign) {
+      const cpu = cpus[getRndInt(0, cpus.length)]
+      players.push(new cpu(cpu.name + getRndInt(0, 50)))
+      continue
+    }
+
+    players.push(new Bot(`CPU ${i}`))
   }
   
   addMultipleAlcohol(3)
