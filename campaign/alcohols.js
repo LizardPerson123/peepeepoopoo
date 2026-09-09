@@ -21,6 +21,11 @@ class SuperBrandy extends Brandy {
     const effectMsg = "Forced Alcohols"
     const effectTurns = this.AlcoholEffect.turns
     const onDamage = undefined
+    const onEnd = undefined
+    const importance = 0
+    const alcohol = undefined
+    const doNotRemoveUnnaturally = false
+
     this.AlcoholEffect = new Effect(effectMsg, effectTurns, onDamage, function onShoot(player, result, playerDamaged) {
       let newShootResult = new gameAlcohol[getRndInt(0, gameAlcohol.length)]()
       let msg = "Forced Alcohol"
@@ -31,7 +36,7 @@ class SuperBrandy extends Brandy {
       }
 
       return [newShootResult, msg]
-    })
+    }, onEnd, importance, alcohol, doNotRemoveUnnaturally)
   }
 
   oname = "SuperBrandy"
