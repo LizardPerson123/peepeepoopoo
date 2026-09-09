@@ -47,10 +47,11 @@ body {overscroll-behavior: none;}
 @media screen and (max-width: 900px) and (min-width: 550px)  {
   #statusEffects h1, #players h1, #lives {display: none;}
   #statusEffects {grid-area: 1/1/5/1 !important}
-  #events {height: 25vh !important;}
+  #events {height: 25vh !important; background-clip: content-box; padding-bottom: 20px;}
   #playerText, #msgPreview {display: none;}
   #showMsgButton {margin-top: 1em;}
   #chooseAlcohol {display: none;}
+
 }
 
 @media screen and (max-width: 550px) {

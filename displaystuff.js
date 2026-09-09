@@ -298,9 +298,10 @@ async function basicTurnDisplay(turnFunc, addAlcohol = true) {
   if (result instanceof Alcohol || result.typeObj === "multiplayerAlcohol") {
     playSound("alcohol.mp3")
     eventText.innerText = `${pronoun1} Attempted To Shoot ${playerDamagedName}, But Gave An Alcohol Instead${msg}`
-
+    
+    const alcohol = result
     if (playerDamaged.name === thisPlayer && addAlcohol) {
-      status.innerHTML +=  `<p onclick='displayAlcoholInfo("${result.name}", "${result.description}", "${result.img}")' id='alcohol${result.id}' style="font-size: 2em; margin-top: 1px; margin-bottom: 0px; cursor: pointer">${result.name}</p>`
+      status.innerHTML += `<p onclick="displayAlcoholInfo('${alcohol.name.replace(/'/g, "\\'")}', '${alcohol.description.replace(/'/g, "\\'")}', '${alcohol.img}')" id="alcohol${alcohol.id}" style="font-size: 2em; margin-top: 1px; margin-bottom: 0px; cursor: pointer">${alcohol.name}</p>`
     }
 
     getById("wheel").src = "images/alcoholget.png"
@@ -608,7 +609,7 @@ function exitGame() {
   isExiting = true
 
   // Autoplay Appends Extra To The History Stack
-  if (getAutoplay()) {
+  if (getAutoplay() || gameMode === gameModes.campaign) {
     history.back()
     return
   }

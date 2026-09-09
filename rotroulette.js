@@ -79,6 +79,11 @@ bulletList.generateNew = function(num) {
       continue
     }
 
+    if (gameMode === gameModes.campaign) {
+      bulletList.generateBulletCampaign()
+      continue
+    }
+
     bulletList.generateBullet()
    
     if (currentAlcoholChance <= 5 && (i % 3 === 0 || i % 4 === 0)) {
@@ -140,6 +145,30 @@ bulletList.generateBullet = function() {
   else {
     bulletList.push(false)
   }
+}
+
+bulletList.generateBulletCampaign = function() {
+  let bullet = getRndInt(1, 4)
+  
+  // Live
+  if (bullet === 1) {
+    bulletList.push(true)
+    return
+  }
+  else if (bullet === 2) {
+    bulletList.push(false)
+    return
+  }
+  
+  // Alcohol
+  let type
+  do {
+    type = getRndInt(0, gameAlcohol.length)
+    currentAlcohol = gameAlcohol[type]
+  }
+  while (currentAlcohol.name === lastAlcoholGiven.name)
+
+  bulletList.push(new gameAlcohol[type])
 }
 
 players.getAlivePlayers = function() {
@@ -524,7 +553,7 @@ class Bot extends Player {
 
     // Only For Campaign
     this.description = "Basic Enemy"
-    this.img = "singleperson.png"
+    this.img = "basic.png"
   }
 
   async turn() {

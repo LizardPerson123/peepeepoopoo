@@ -75,7 +75,7 @@
       display: none;
     }
 
-    #p5 {
+    #p5, #campaignContinue {
       color: #0000cd;
     }
 
@@ -231,6 +231,12 @@
         if (Number(localMultiplayerPlayers) > 0) localMultiplayer = true
         startGame(Number(localMultiplayerPlayers))
       }
+      else if (origin === "campaign") {
+        gameMode = gameModes.campaign
+        difficulty = "easy"
+        startGame()
+      }
+
       else {getById("startGame").style.display = "flex"}
     })
 
@@ -262,7 +268,7 @@
       </div>
 
       <div class="mobileNavDiv" id="mobileMessages" style="display: none; flex-direction: column; align-items: center;" onclick="changeMobileView('messages', 'block')">
-        <img src="images/msgicon.png" style="width: 40%; image-rendering: pixelated; margin-bottom: 8px;">
+        <img src="images/3dot.png" style="width: 40%; image-rendering: pixelated; margin-bottom: 8px;">
         Messages
       </div>
 
@@ -292,9 +298,9 @@
         Enemies
       </div>
 
-      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;" class="campaignOption" onclick="backButton()">
-        <img width="50em" style="margin-bottom: 8px;" src="images/alcohol.png">
-        Forfeit
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;" class="campaignOption" onclick="skipRound()">
+        <img width="50em" style="margin-bottom: 8px;" src="images/skip.png">
+        Skip
       </div>
     </div>
 
@@ -390,7 +396,7 @@
    <div id="buttonSet1" style="width: 100%; height: 100%; flex-grow: 1;">
 
    <div id="buttonSet1Grid">
-     <button onclick="gameMode = gameModes.campaign; startGameLink()" style="grid-area: 1/1/3/3; color: red;">
+     <button onclick="campaign()" style="grid-area: 1/1/3/3; color: red;">
       <img src="images/campaign.png" style="margin-right: 6px; image-rendering: pixelated; cursor: pointer; background-color: transparent; width: 1.2em;">
       <p>Campaign</p>
      </button>
@@ -619,7 +625,7 @@
   </div>
 
   <div style="width: 100%; display: none;" id="chooseAlcoholMobileUI">
-        <h1 style="margin-bottom: 2em;">Choose Alcohol</h1>
+        <h1 style="margin-bottom: 2em;" id="chooseAlcoholMobileUIText">Choose Alcohol</h1>
         <div style="display: flex; flex-wrap: wrap; justify-content: space-evenly; width: 100%; align-items: center; gap: 20px">
           <div class="hoverTransparent" id="op4Div" style="width: 30%;">
             <img id="op4Img" width="100%" class="startImage" style="image-rendering: pixelated;" src="images/alcohol.png">
@@ -655,11 +661,31 @@
             <p id="campaignOp2Text" style="font-size: 1.5em;">Enemies</p>
           </div>
 
-          <div class="hoverTransparent" id="campaignOp3Div" style="width: 20%;">
-            <img id="campaignOp3Img" class="startImage" width="100%" style="image-rendering: pixelated;" src="images/alcohol.png">
-            <p id="campaignOp3Text" style="font-size: 1.5em;">Forfeit</p>
+          <div class="hoverTransparent" id="campaignOp3Div" style="width: 20%;" onclick="skipRound()">
+            <img id="campaignOp3Img" class="startImage" width="100%" style="image-rendering: pixelated;" src="images/skip.png">
+            <p id="campaignOp3Text" style="font-size: 1.5em;">Skip</p>
           </div>
         </div>
+  </div>
+
+  <div id="campaign" style="display: none;">
+    <img src="images/campaign.png" style="width: 8em; margin-top: 10px; image-rendering: pixelated;">
+    <h1 style="font-size: 3em;">Campaign</h1>
+    <p style="font-size: 2em;">In Campaign Mode, You Have To Complete Multiple Randomly Generated Levels</p>
+    <p style="font-size: 2em;">There Are Special Enemies, New Alcohol, Maps, And More</p>
+    <div style="display: flex; flex-direction: column; align-items: center;">
+      <button onclick="startCampaign()" style="color: red;" class="startGameButton">
+        New
+      </button>
+
+      <button onclick="continueCampaign()" id="campaignContinue" style="display: none;" class="startGameButton">
+        Continue
+      </button>
+
+      <button onclick="backFromCampaign()" style="color: rgb(1, 196, 1);" class="startGameButton">
+        Back
+      </button>
+    </div>
   </div>
   
   <script src="alcohols.js"></script>
@@ -675,6 +701,7 @@
   <script src="multiplayer/multiplayer.js"></script>
   <script src="campaign/alcohols.js"></script>
   <script src="campaign/cpus.js"></script>
+  <script src="campaign/campaign.js"></script>
 
   <p id="tooSmall" style="word-break: break-all;">Too Small To Display</p>
 </body>

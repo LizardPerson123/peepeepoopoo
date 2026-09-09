@@ -19,7 +19,7 @@ function letThereBeDark() {
 
     .startButton, #showMsgButton, .startGameButton, #whatDoing, #new, #join, #startMultiplayer, #multiplayerButton2, #buttonSet1 button p {color: white}
 
-    #p5 {
+    #p5, #campaignContinue {
       color: #00bfff
     }
 

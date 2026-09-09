@@ -37,9 +37,19 @@ async function startGameSingleplayer() {
     getDisplay() === displays.desktop && (getById("campaignOptions").style.display = "flex")
     getById("lives").style.display = "none"
     getById("campaignMore").style.display = "flex"
-  }
+    const importData = saveDataImport()
+    
+    // Show Special Screen
+    if (importData[0] === "special") {
+      handleSpecialAction(importData[1])
+      return
+    }
 
-  players.push(new Human("Player"))
+    players.push(importData)
+  }
+  else {
+    players.push(new Human("Player"))
+  }
 
   let botCount = (gameMode === gameModes.fivePlayers || gameMode == gameModes.everything) ? 4 : 2
 
@@ -171,7 +181,7 @@ function updatePlayerInLocalMultiplayer(player) {
   alcoholDisplay.innerHTML = "<h1>Alcohol</h1>"
 
   player.activeAlcohol.forEach(function(alcohol) {
-    alcoholDisplay.innerHTML += `<p onclick='displayAlcoholInfo("${alcohol.name}", "${alcohol.description}", "${alcohol.img}")' id='alcohol${alcohol.id}' style="font-size: 2em; margin-top: 1px; margin-bottom: 0px; cursor: pointer">${alcohol.name}</p>`
+    alcoholDisplay.innerHTML += `<p onclick="displayAlcoholInfo('${alcohol.name.replace(/'/g, "\\'")}', '${alcohol.description.replace(/'/g, "\\'")}', '${alcohol.img}')" id="alcohol${alcohol.id}" style="font-size: 2em; margin-top: 1px; margin-bottom: 0px; cursor: pointer">${alcohol.name}</p>`
   })
   
   const lifeImages = getById("lifeImage")
@@ -182,6 +192,12 @@ function updatePlayerInLocalMultiplayer(player) {
 }
 
 function startGameLink() {
+  if (gameMode === gameModes.campaign) {
+    history.pushState("", "", `?origin=campaign`)
+    reload()
+    return
+  }
+
   if (!getAutoplay()) {
     startGame()
     return
@@ -198,6 +214,11 @@ function historyPush(localMultiplayerPlayers, difficulty, gameMode) {
 }
 
 async function end(won) {
+  if (gameMode === gameModes.campaign) {
+    manageEndCampaign(won)
+    return
+  }
+
   //this is for an achievement
   const howMuchAlcoholUsed = checkIfAllAlcoholUsed()
   const wonMsg = won ? "You Won" : "You Lose"
@@ -378,7 +399,7 @@ async function firstAlcohol() {
       optionDescription.innerText = alcohol.shortDescription || alcohol.description
 
       optionDiv.addEventListener("click", function a() {
-        getById("statusEffects").innerHTML +=  `<p onclick='displayAlcoholInfo("${alcohol.name}", "${alcohol.description}", "${alcohol.img}")' id='alcohol${alcohol.id}' style="font-size: 2em; margin-top: 1px; margin-bottom: 0px; cursor: pointer">${alcohol.name}</p>`
+        getById("statusEffects").innerHTML +=  `<p onclick="displayAlcoholInfo('${alcohol.name.replace(/'/g, "\\'")}', '${alcohol.description.replace(/'/g, "\\'")}', '${alcohol.img}')" id="alcohol${alcohol.id}" style="font-size: 2em; margin-top: 1px; margin-bottom: 0px; cursor: pointer">${alcohol.name}</p>`
         getById("firstAlcohol").style.display = "none"
         getById("wheelDiv").style.display = "block"
 
@@ -481,4 +502,18 @@ function localMultiplayerStart() {
   }
   
   getById("buttonSet5").style.display = "block"
+}
+
+function campaign() {
+  getById("startGame").style.display = "none"
+  getById("campaign").style.display = "block"
+
+  if (localStorage.getItem("rrSaveData")) {
+    getById("campaignContinue").style.display = "inline"
+  }
+}
+
+function backFromCampaign() {
+  getById("campaign").style.display = "none"
+  getById("startGame").style.display = "flex"
 }

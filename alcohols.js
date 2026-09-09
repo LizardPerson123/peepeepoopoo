@@ -162,9 +162,9 @@ class Vodka extends Alcohol {
 
         stealFrom.activeAlcohol.forEach(function(alcohol) {
           player.activeAlcohol.push(alcohol)
-          status.innerHTML +=  `<p id='alcohol${alcohol.id}' onclick='displayAlcoholInfo("${alcohol.name}", "${alcohol.description}", "${alcohol.img}")' style="font-size: 2em; margin-top: 1px; margin-bottom: 0px">${alcohol.name}</p>`
+          status.innerHTML += `<p onclick="displayAlcoholInfo('${alcohol.name.replace(/'/g, "\\'")}', '${alcohol.description.replace(/'/g, "\\'")}', '${alcohol.img}')" id="alcohol${alcohol.id}" style="font-size: 2em; margin-top: 1px; margin-bottom: 0px; cursor: pointer">${alcohol.name}</p>`
         })
-
+        
         stealFrom.activeAlcohol = []
 
         if (multiplayerContext === "pleb") {
