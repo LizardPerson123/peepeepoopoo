@@ -2,6 +2,7 @@ let displayGame = true
 let displayGameMobile = true
 let globalManage
 let lastWidth
+let showButtonsDiv = true
 
 const displays = {
   mobile: "mobile",

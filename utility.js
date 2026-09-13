@@ -43,8 +43,6 @@ function shuffleArray(array) {
     }
 }
 
-const arrayOfDoom = []
-
 function playSound(url) {
   if (!getSoundEffects()) {
     return

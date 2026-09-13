@@ -53,11 +53,21 @@ function waitForPlayerInput() {
       resetButton()
     }.bind(this)
 
+    let forfeitButtonClick = function() {
+      resolveFunc("forfeit")
+
+      resetButton()
+    }.bind(this)
+
     if (this.activeAlcohol.length === 0) {
       getById("alcoholButton").style.display = "none"
     }
     else {
       getById("alcoholButton").style.display = "flex"
+    }
+
+    if (this.addForfeit) {
+      getById("forfeitButton").style.display = "flex"
     }
 
     players.forEach(function(player) {
@@ -66,10 +76,13 @@ function waitForPlayerInput() {
 
     clickEvents.push(alcoholButtonClick)
     clickEvents.push(shootButtonClick)
+    clickEvents.push(forfeitButtonClick)
 
     getById("alcoholButton").addEventListener("click", alcoholButtonClick)
 
     getById("shootButton").addEventListener("click", shootButtonClick)
+
+    getById("forfeitButton").addEventListener("click", forfeitButtonClick)
 
     if (confused) {
       getById("alcoholButton").innerHTML = "?"
@@ -544,7 +557,7 @@ function goBackToMainGame() {
     element.style.display = "none"
   })
 
-  getById("buttonsdiv").style.display = "flex"
+  showButtonsDiv && (getById("buttonsdiv").style.display = "flex")
   getById("centerThing").style.display = "flex"
   getById("events").style.display = "flex"
 }

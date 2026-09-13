@@ -36,7 +36,7 @@ class Beer extends Alcohol {
       const newShootResult = true
       const msg = "Guranteed Live"
       return [newShootResult, msg]
-    }, onEnd, importance, undefined, true)
+    }, onEnd, importance, undefined)
 
     this.name = "Beer"
     this.description = "Gives A Guranteed Live Next Turn"
@@ -621,7 +621,7 @@ class EnergyBeer extends Alcohol {
 }
 
 class Effect {
-  constructor(name, turns, onDamage = undefined, onShootResult = undefined, onEnd = () => {}, importance, alcohol, doNotRemoveUnnaturally=false) {
+  constructor(name, turns, onDamage = undefined, onShootResult = undefined, onEnd = () => {}, importance=5, alcohol, doNotRemoveUnnaturally=false, forfeit = () => {}) {
     this.turns = turns
     this.id = generateRandomCode(10, 0, 9)
     this.damage = onDamage
@@ -631,5 +631,6 @@ class Effect {
     this.importance = importance
     this.alcohol = alcohol
     this.doNotRemoveUnnaturally = doNotRemoveUnnaturally
+    this.forfeit = forfeit
   }
 }

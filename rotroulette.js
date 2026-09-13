@@ -148,10 +148,10 @@ bulletList.generateBullet = function() {
 }
 
 bulletList.generateBulletCampaign = function() {
-  let bullet = getRndInt(1, 4)
+  let bullet = getRndInt(1, 5)
   
   // Live
-  if (bullet === 1) {
+  if (bullet === 1 || bullet === 4) {
     bulletList.push(true)
     return
   }
@@ -175,7 +175,7 @@ players.getAlivePlayers = function() {
   let toReturn = []
   
   players.forEach(function(player) {
-    if (player.hp > 0) {
+    if (player.hp > 0 && !player.actAsDead) {
       toReturn.push(player)
     }
   })
@@ -195,13 +195,14 @@ class Player {
   }
 
   async turn(addAlcohol = true) {
-    if (this.hp < 1) {
+    if (this.hp < 1 || this.actAsDead) {
       //Returning Undefined Will Skip Turn
       return [undefined, undefined]
     }
 
     if (this.altOutcome) {
       const altOutcome = await this.altOutcome()
+      this.clearEffects()
       return ["altOutcome", altOutcome]
     }
 
@@ -212,6 +213,13 @@ class Player {
     }
 
     let use = await this.whatToDo()
+
+    if (use === null) {
+      this.runEffectsForfeit()
+      this.clearEffects()
+      return ["altOutcome", "Forfeited Turn"]
+    }
+
     const chosenAction = use[0]
 
     if (chosenAction === "alcohol") {
@@ -316,6 +324,12 @@ class Player {
     }.bind(this))
 
     return [resultThing, playerDamaged, msg]
+  }
+
+  runEffectsForfeit() {
+    this.alcoholEffects.forEach(function(effect) {
+      effect.forfeit(this)
+    }.bind(this))
   }
 
   manageEffects(resultThing, playerDamaged, msg, importance) {
@@ -520,6 +534,11 @@ class Human extends Player {
   async whatToDo(useAlcohol = false, multiplayerContext = undefined) {
     let whatToDo = await this.waitForPlayerInput()
 
+    if (whatToDo === "forfeit") {
+      getById("buttons").style.display = "none"
+      return null
+    }
+
     if (whatToDo === "alcohol" && this.activeAlcohol.length > 0) {
       let alcohol = await this.choseAlcohol(useAlcohol, multiplayerContext)
 
@@ -547,7 +566,7 @@ class Human extends Player {
 }
 
 class Bot extends Player {
-  constructor(name) {
+  constructor(name="Bot") {
     super(name)
     this.type = "Bot"
 
@@ -566,7 +585,7 @@ class Bot extends Player {
       async function whatToDoLocal() {
         let whatToDoBind = whatToDo.bind(this)
         let chosenAction = whatToDoBind()
-        if (rejectAlgorithim(chosenAction, this)) {
+        if (rejectAlgorithim(chosenAction, this) || chosenAction === "alcohol" && getRndInt(0, 3) === 0) {
           return await whatToDoLocal.bind(this)()
         }
 

@@ -45,22 +45,20 @@ async function startGameSingleplayer() {
       return
     }
 
-    players.push(importData)
+    if (importData[0] === "boss") {
+      bossHandle(importData[1], importData[2])
+    }
+    else {
+      players.push(importData)
+      createCPUSCampaign()
+    }
   }
   else {
     players.push(new Human("Player"))
-  }
-
-  let botCount = (gameMode === gameModes.fivePlayers || gameMode == gameModes.everything) ? 4 : 2
-
-  for (let i = 1; i <= botCount; i++) {
-    if (gameMode === gameModes.campaign) {
-      const cpu = cpus[getRndInt(0, cpus.length)]
-      players.push(new cpu(cpu.name + getRndInt(0, 50)))
-      continue
+    let botCount = (gameMode === gameModes.fivePlayers || gameMode == gameModes.everything) ? 4 : 2
+    for (let i = 1; i <= botCount; i++) {
+      players.push(new Bot(`CPU ${i}`))
     }
-
-    players.push(new Bot(`CPU ${i}`))
   }
   
   addMultipleAlcohol(3)
@@ -191,7 +189,21 @@ function updatePlayerInLocalMultiplayer(player) {
   }
 }
 
-function startGameLink() {
+async function startGameLink(newCampaign=false) {
+  if (gameMode === gameModes.campaign && newCampaign) {
+    handlePhoneDisplays()
+    generateMap()
+    saveDataExportFirst()
+    getById("game").style.display = gameDisplay
+    getById("centerThing").style.gridArea = "1/1/5/6"
+    getById("wheel").src = mapImage
+    getById("firstAlcohol").style.display = "none"
+    getById("wheelDiv").style.display = "block"
+    getById("buttonsdiv").style.display = "none"
+    getById("chooseAlcoholMobileUI").style.display = "none"
+    await campaignBegin()
+  }
+
   if (gameMode === gameModes.campaign) {
     history.pushState("", "", `?origin=campaign`)
     reload()
@@ -249,7 +261,11 @@ async function end(won) {
 
 async function sendXP(won) {
   // xpType 0 means loss, 1 means success (there are other codes, but they are not used here)
-  const xpType = won ? 1 : 0
+  let xpType = won ? 1 : 0
+
+  if (won === "veryMuchSo") {
+    xpType = 3
+  }
   
   // intentionally ignore the error (it's not critical)
   try {
@@ -508,7 +524,9 @@ function campaign() {
   getById("startGame").style.display = "none"
   getById("campaign").style.display = "block"
 
-  if (localStorage.getItem("rrSaveData")) {
+  const saveData = JSON.parse(localStorage.getItem("rrSaveData"))
+
+  if (saveData && saveData.thereIsData) {
     getById("campaignContinue").style.display = "inline"
   }
 }
