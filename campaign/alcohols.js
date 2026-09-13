@@ -65,4 +65,4 @@ class SuperGin extends Gin {
   oname = "SuperGin"
 }
 
-let SuperAlcohols = [SuperBeer, SuperBrandy, SuperGin, SuperRedWine]
+let SuperAlcohols = [SuperBeer]
